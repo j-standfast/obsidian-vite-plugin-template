@@ -21,10 +21,6 @@ import {
 // @ts-ignore
 import type { CommandsCommandsRecord } from "obsidian-typings";
 
-// const commandsWithHotkeys = Object.keys(commands).filter(
-// 	(commandId) => commands[commandId].hotkeys
-// );
-
 interface KeymapInfoRecord {
 	[commandId: string]: KeymapInfo[];
 }
