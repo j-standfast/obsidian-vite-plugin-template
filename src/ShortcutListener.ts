@@ -133,12 +133,12 @@ export class ShortcutListener {
 	executeCommand() {
 		const msg = this.sequenceMessage();
 		const commandId = this.sequence[this.sequence.length - 1].node?.value;
-		// console.log(`${msg} was pressed, executing command ${commandId}`);
+		console.log(`${msg} was pressed, executing command ${commandId}`);
 		if (!commandId) throw new Error("No command id found");
 		this.app.commands.executeCommandById(commandId);
-		this.reset();
+        this.reset();
 
-		// (this.app as any).commands.executeCommandById(id)
+		
 	}
 
 	waitForNextChord() {
