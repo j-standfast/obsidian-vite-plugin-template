@@ -137,8 +137,6 @@ export class ShortcutListener {
 		if (!commandId) throw new Error("No command id found");
 		this.app.commands.executeCommandById(commandId);
         this.reset();
-
-		
 	}
 
 	waitForNextChord() {

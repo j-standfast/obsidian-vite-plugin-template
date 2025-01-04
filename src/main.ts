@@ -3,10 +3,10 @@ import { App, Plugin, PluginManifest } from "obsidian";
 import { ShortcutListener } from "src/ShortcutListener";
 
 // import { DEFAULT_SETTINGS } from "./src/constants";
-import { serializedSettingsSchema } from "./src/schemas";
+import { serializedSettingsSchema } from "./schemas";
 import { deserializeKeybindings, serializeKeybindings } from "src/serialize";
 import { importShortcuts, waitAndAudit } from "src/audit.ts/importShortcuts";
-import type { Settings } from "./src/types";
+import type { Settings } from "./types";
 import { auditCommands } from "src/audit.ts/importShortcuts";
 
 export default class BCShortcutsPlugin extends Plugin {
