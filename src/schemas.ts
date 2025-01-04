@@ -3,7 +3,7 @@ import {
 	CODES_CHROME_CAMEL,
 	MODIFIER_CODES_CHROME_CAMEL,
 	MODIFIER_KEYS,
-} from "./newConstants";
+} from "./constants";
 import type {
 	Expect,
 	CoExtends,
@@ -11,25 +11,28 @@ import type {
 	CodeCamel,
 	Chord,
 	ChordKeyModifiers,
-    ModifierKey,
-    ValidChord,
-} from "./newTypes";
+	ModifierKey,
+	ValidChord,
+} from "./types";
 
-export const modifierCodeSchema = z.enum(MODIFIER_CODES_CHROME_CAMEL)
+export const modifierCodeSchema = z.enum(MODIFIER_CODES_CHROME_CAMEL);
 export const modifierKeySchema = z.enum(MODIFIER_KEYS);
-export const chordKeyModifiersSchema = z.map(modifierKeySchema, z.literal(true));
+export const chordKeyModifiersSchema = z.map(
+	modifierKeySchema,
+	z.literal(true)
+);
 export const codeCamelSchema = z.enum(CODES_CHROME_CAMEL);
 export const validChordSchema = z.object({
 	modifiers: chordKeyModifiersSchema,
-    base: codeCamelSchema,
-    type: z.literal("valid"),
+	base: codeCamelSchema,
+	type: z.literal("valid"),
 });
 
-export const keybindingSerializedSchema = z.object({
+export const serializedKeybdingsSchema = z.object({
 	key: z.string(),
 	id: z.string(),
 });
-export type KeybindingSerialized = z.infer<typeof keybindingSerializedSchema>;
+export type KeybindingSerialized = z.infer<typeof serializedKeybdingsSchema>;
 
 export const keybindingSchema = z.object({
 	key: z.array(validChordSchema),
@@ -43,9 +46,12 @@ export const sequenceHotkeySerializedSchema = z.object({
 	chords: z.array(z.string()),
 });
 
-export const settingsSerializedSchema = z.object({
-	keybindings: z.array(keybindingSerializedSchema),
-	hotkeys: z.array(sequenceHotkeySerializedSchema),
+export const serializedSettingsSchema = z.object({
+	keybindings: z.array(serializedKeybdingsSchema),
+    obsidianHotkeys: z.record(z.string(), z.array(z.object({
+        modifiers: z.array(z.string()),
+        key: z.string(),
+    }))),
 });
 
 // type tests
@@ -59,8 +65,7 @@ type ValidChordSchemaType = z.infer<typeof validChordSchema>;
 type TypeTests = [
 	Expect<CoExtends<ModifierCodeSchemaType, ModifierCodeCamel>>,
 	Expect<CoExtends<ModifierKeySchemaType, ModifierKey>>,
-    Expect<CoExtends<CodeSchemaType, CodeCamel>>,
+	Expect<CoExtends<CodeSchemaType, CodeCamel>>,
 	Expect<CoExtends<ChordKeyModifiersSchemaType, ChordKeyModifiers>>,
-	Expect<CoExtends<ValidChordSchemaType, ValidChord>>,
+	Expect<CoExtends<ValidChordSchemaType, ValidChord>>
 ];
-

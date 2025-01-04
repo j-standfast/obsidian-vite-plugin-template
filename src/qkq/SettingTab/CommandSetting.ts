@@ -80,19 +80,19 @@ export class CommandSetting extends Setting {
 				text: "Press hotkey...",
 			});
 			const onUpdate = (chords: KeyChord[]) => {
-				console.log("onUpdate callback (from CommandSetting)", {
-					this: this,
-					chordsKeyChord: chords,
-				});
+				// console.log("onUpdate callback (from CommandSetting)", {
+				// 	this: this,
+				// 	chordsKeyChord: chords,
+				// });
 				newHotkeySpanText.setText(
 					chords.map((c) => c.toString()).join(" ")
 				);
 			};
 			const onComplete = (chords: KeyChord[]) => {
-				console.log("onComplete callback (from CommandSetting)", {
-					this: this,
-					chordsKeyChord: chords,
-				});
+				// console.log("onComplete callback (from CommandSetting)", {
+				// 	this: this,
+				// 	chordsKeyChord: chords,
+				// });
 				this.setCancelCapture(undefined);
 				this.onCreated?.(this.command.id, chords);
 			};

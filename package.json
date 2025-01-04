@@ -25,6 +25,7 @@
 		"esbuild": "0.13.12",
 		"jest": "^28.1.0",
 		"obsidian": "latest",
+		"obsidian-typings": "^2.8.1",
 		"ts-jest": "^28.0.2",
 		"tslib": "2.3.1",
 		"typescript": "^5.7.2",
@@ -33,7 +34,6 @@
 	},
 	"dependencies": {
 		"@reduxjs/toolkit": "^1.9.7",
-		"obsidian-typings": "^2.8.1",
 		"zod": "^3.24.1"
 	}
 }

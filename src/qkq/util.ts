@@ -1,6 +1,5 @@
 import type { Command } from "obsidian";
 import type { SequenceHotkey } from "./types";
-import type { SequenceHotkeysSettings } from "./types";
 import type { KeyChord } from "./KeyChord";
 import { CODE_STR_MAP } from "./constants";
 

@@ -1,6 +1,6 @@
 import { App } from "obsidian";
-import { MODIFIER_CODES_CHROME_CAMEL } from "./newConstants";
-import { Chord, Keybinding } from "./newTypes";
+import { MODIFIER_CODES_CHROME_CAMEL } from "./constants";
+import { Chord, Keybinding } from "./types";
 import {
 	isModifierCodeCamel,
 	keyEventToChord,
@@ -24,7 +24,7 @@ class Trie<T> {
 	}
 
 	insert(keys: string[], value: T) {
-		console.log("Trie |insert", { this: this, keys, value });
+		// console.log("Trie |insert", { this: this, keys, value });
 		let node = this.root;
 		for (const key of keys) {
 			const child = node.get(key) ?? new TrieNode<T>();
@@ -44,6 +44,7 @@ export class ShortcutListener {
 		chordName: string;
 		node: TrieNode<string> | undefined;
 	}[];
+
 	constructor(app: App, keybindings: Keybinding[]) {
 		this.trie = new Trie<string>();
 		this.node = undefined;
@@ -58,24 +59,26 @@ export class ShortcutListener {
 		this.executeCommand = this.executeCommand.bind(this);
 		this.waitForNextChord = this.waitForNextChord.bind(this);
 		this.reset = this.reset.bind(this);
+		this.onLoad = this.onLoad.bind(this);
+		this.unload = this.unload.bind(this);
+	}
 
-		this.insertKeybindings(keybindings);
+	onLoad(keybindings: Keybinding[]) {
 		document.addEventListener("keydown", this.handleKey, {
 			capture: true,
 		});
 		document.addEventListener("keyup", this.handleKey, { capture: true });
-		// this.handleKeyup = this.handleKeyup.bind(this);
-		// this.destruct = this.destruct.bind(this);
+		this.insertKeybindings(keybindings);
 	}
 
 	insertKeybinding(keybinding: Keybinding) {
 		const keys = serializeChords(keybinding.key);
-		console.log("insertKeybinding", { this: this, keys, keybinding });
+		// console.log("insertKeybinding", { this: this, keys, keybinding });
 		this.trie.insert(keys, keybinding.id);
 	}
 
 	insertKeybindings(keybindings: Keybinding[]) {
-		console.log("insertKeybindings", { this: this, keybindings });
+		// console.log("insertKeybindings", { this: this, keybindings });
 		for (const keybinding of keybindings) {
 			this.insertKeybinding(keybinding);
 		}
@@ -90,7 +93,7 @@ export class ShortcutListener {
 		const isFirstChord = this.sequence.length === 0;
 		const prevNode = isFirstChord ? this.trie.root : this.node;
 
-		console.log({ event, chord, chordName, isFirstChord, prevNode });
+		// console.log({ event, chord, chordName, isFirstChord, prevNode });
 		if (!prevNode) throw new Error("Active sequence but no previous node");
 		const node = prevNode.get(chordName);
 		if (!node && !this.node) {
@@ -113,7 +116,7 @@ export class ShortcutListener {
 			action = "wait";
 			this.waitForNextChord();
 		}
-		console.log({ action, this: this, chord, chordName, node, prevNode });
+		// console.log({ action, this: this, chord, chordName, node, prevNode });
 	}
 
 	sequenceMessage() {
@@ -123,14 +126,15 @@ export class ShortcutListener {
 
 	cancelSequence() {
 		const msg = this.sequenceMessage();
-		console.log(`${msg} was pressed, cancelling sequence`);
+		// console.log(`${msg} was pressed, cancelling sequence`);
 		this.reset();
 	}
 
 	executeCommand() {
 		const msg = this.sequenceMessage();
 		const commandId = this.sequence[this.sequence.length - 1].node?.value;
-		console.log(`${msg} was pressed, executing command ${commandId}`);
+		// console.log(`${msg} was pressed, executing command ${commandId}`);
+		if (!commandId) throw new Error("No command id found");
 		this.app.commands.executeCommandById(commandId);
 		this.reset();
 
@@ -140,11 +144,20 @@ export class ShortcutListener {
 	waitForNextChord() {
 		this.node = this.sequence[this.sequence.length - 1].node;
 		const msg = this.sequenceMessage();
-		console.log(`${msg} was pressed, waiting for next chord...`);
+		// console.log(`${msg} was pressed, waiting for next chord...`);
 	}
 
 	reset() {
 		this.sequence = [];
 		this.node = undefined;
+	}
+
+	unload() {
+		document.removeEventListener("keydown", this.handleKey, {
+			capture: true,
+		});
+		document.removeEventListener("keyup", this.handleKey, {
+			capture: true,
+		});
 	}
 }

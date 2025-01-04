@@ -33,7 +33,9 @@ export class ChordListener {
 		document.addEventListener("keydown", this.handleKeydown, {
 			capture: false,
 		});
-		document.addEventListener("keyup", this.handleKeyup, { capture: false });
+		document.addEventListener("keyup", this.handleKeyup, {
+			capture: false,
+		});
 	}
 
 	chordPress = (event: KeyboardEvent) => {

@@ -1,10 +1,10 @@
 {
-	"id": "barraclough-sequence-hotkeys",
-	"name": "Barraclough Sequence Hotkeys",
+	"id": "bc-shortcuts",
+	"name": "barraclough shortcuts",
 	"version": "0.1.0",
 	"minAppVersion": "0.12.0",
-	"description": "This plugin allows you to set hotkeys with key sequences instead of a single chord.",
-	"author": "Ruan Moolman (modified by Barraclough)",
+	"description": "Shortcut manager for Obsidian",
+	"author": "Mr. Barraclough",
 	"authorUrl": "",
 	"isDesktopOnly": true
 }

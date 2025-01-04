@@ -9,8 +9,8 @@ export class KeyChord {
 
 	constructor(input: KeyboardEvent | string) {
 		// console.log(
-			// "Bsk KeyPress | constructor",
-			// input instanceof KeyboardEvent ? input.code : input
+		// "Bsk KeyPress | constructor",
+		// input instanceof KeyboardEvent ? input.code : input
 		// );
 		// console.log("Bsk KeyPress | constructor", { input });
 		// If one checks `input instanceof KeyboardEvent` the jest tests fail

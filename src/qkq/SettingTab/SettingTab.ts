@@ -8,11 +8,7 @@ import {
 import type { App, Command, MenuItem } from "obsidian";
 
 import { CommandSetting } from "./CommandSetting";
-import {
-	changeFilter,
-	changeFilterOption,
-	store,
-} from "../store";
+import { changeFilter, changeFilterOption, store } from "../store";
 import {
 	hotkeysEqual,
 	keySequencePartiallyEqual,
@@ -21,13 +17,13 @@ import {
 	allCommands,
 } from "../util";
 
-import type { SequenceHotkeysPlugin } from "../../main";
+import type { SequenceHotkeysPlugin } from "../../../main";
 import type {
 	CommandSettingHotkey,
-    FilterOption,
-    SequenceHotkey,
+	FilterOption,
+	SequenceHotkey,
 } from "../types";
-import type { Settings } from "../new/newTypes";
+import type { Settings } from "../../types";
 
 export class SequenceHotkeysSettingTab extends PluginSettingTab {
 	plugin: SequenceHotkeysPlugin;
@@ -142,8 +138,11 @@ export class SequenceHotkeysSettingTab extends PluginSettingTab {
 		spacer.addClass("setting-filter-container");
 
 		const commandsContainer = containerEl.createDiv();
-        
-        console.log('Bsk | SequenceHotkeysSettingTab | display | allCommands(this.app)', allCommands(this.app));
+
+		// console.log(
+		// 	"Bsk | SequenceHotkeysSettingTab | display | allCommands(this.app)",
+		// 	allCommands(this.app)
+		// );
 		this.commandSettingEls = allCommands(this.app).map(
 			(command: Command) =>
 				new CommandSetting(
