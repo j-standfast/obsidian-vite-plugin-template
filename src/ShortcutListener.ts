@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { MODIFIER_CODES_CHROME_CAMEL } from "./constants";
+import { MODIFIER_CODES_CHROME_CAMEL } from "./constants/constants";
 import { Chord, Keybinding } from "./types";
 import {
 	isModifierCodeCamel,
@@ -136,7 +136,7 @@ export class ShortcutListener {
 		console.log(`${msg} was pressed, executing command ${commandId}`);
 		if (!commandId) throw new Error("No command id found");
 		this.app.commands.executeCommandById(commandId);
-        this.reset();
+		this.reset();
 	}
 
 	waitForNextChord() {

@@ -3,7 +3,7 @@ import {
 	CODES_CHROME_CAMEL,
 	MODIFIER_CODES_CHROME_CAMEL,
 	MODIFIER_KEYS,
-} from "./constants";
+} from "./constants/constants";
 import type {
 	Expect,
 	CoExtends,
@@ -48,10 +48,15 @@ export const sequenceHotkeySerializedSchema = z.object({
 
 export const serializedSettingsSchema = z.object({
 	keybindings: z.array(serializedKeybdingsSchema),
-    obsidianHotkeys: z.record(z.string(), z.array(z.object({
-        modifiers: z.array(z.string()),
-        key: z.string(),
-    }))),
+	obsidianHotkeys: z.record(
+		z.string(),
+		z.array(
+			z.object({
+				modifiers: z.array(z.string()),
+				key: z.string(),
+			})
+		)
+	),
 });
 
 // type tests

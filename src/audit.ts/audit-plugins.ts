@@ -1,26 +1,8 @@
-import { Chord, Settings } from "../types";
-import {
-	Command,
-	Modifier,
-	Hotkey,
-	App,
-	KeymapInfo,
-	PluginManifest,
-} from "obsidian";
-
-import {
-	OBSIDIAN_KEY_TO_CHROME_CODE,
-	OBSIDIAN_MODIFIER_KEYS_MAP,
-} from "../constants";
-import {
-	Keybinding,
-	ModifierKey,
-	CodeCamel,
-	ChordKeyModifiers,
-} from "../types";
+import { Command, App, KeymapInfo, PluginManifest } from "obsidian";
 // @ts-ignore
-import type { CommandsCommandsRecord } from "obsidian-typings";
 
+import type { CommandsCommandsRecord } from "obsidian-typings";
+import type { BSKSettings } from "../types";
 interface KeymapInfoRecord {
 	[commandId: string]: KeymapInfo[];
 }
@@ -104,12 +86,12 @@ const getKeymapProps = (id: string, kmir: KeymapInfoRecord, prefix: string) => {
 		  };
 };
 
-export function auditCommands(app: App, settings: Settings) {
-    // app.commands
-    if (!app.hotkeyManager.baked) {
-        console.error(' not baked')
-        return;
-    }
+export function auditCommands(app: App, settings: BSKSettings) {
+	// app.commands
+	if (!app.hotkeyManager.baked) {
+		console.error(" not baked");
+		return;
+	}
 	const commandsRecord = app.commands.commands;
 	const cmds = Object.values(commandsRecord);
 	const edCmds = Object.values(app.commands.editorCommands);
@@ -308,7 +290,7 @@ export function auditCommands(app: App, settings: Settings) {
 	const cmdAuditSummary = {
 		nCmds: cmds.length,
 		nNamed: cmds.filter((c) => c.name).length,
-        nUnnamed: cmds.filter((c) => !c.name).length,
+		nUnnamed: cmds.filter((c) => !c.name).length,
 		plugin: {
 			nPluginContexts: cmdAudit.filter((c) => c.pluginId).length,
 			nPluginContextsName: cmdAudit.filter((c) => c.pluginName).length,

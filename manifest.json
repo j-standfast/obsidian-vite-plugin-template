@@ -1,6 +1,6 @@
 {
-	"id": "bc-shortcuts",
-	"name": "barraclough shortcuts",
+	"id": "barraclough-tailor-cuts",
+	"name": "barraclough-tailor-cuts",
 	"version": "0.1.0",
 	"minAppVersion": "0.12.0",
 	"description": "Shortcut manager for Obsidian",

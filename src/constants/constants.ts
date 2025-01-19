@@ -1,6 +1,6 @@
-import type { SerializedSettings, Settings, CodeCamel } from "./types";
+import type { SerializedSettings, BSKSettings, CodeCamel } from "../types";
 import { Modifier } from "obsidian";
-import { ModifierKey } from "./types";
+import { ModifierKey } from "../types";
 
 export const DEFAULT_SETTINGS: SerializedSettings = {
 	keybindings: [],

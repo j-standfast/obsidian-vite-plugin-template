@@ -12,7 +12,7 @@ import {
 	CODES_CHROME_CAMEL,
 	MODIFIER_CODES_CHROME_CAMEL,
 	MODIFIER_KEYS,
-} from "./constants";
+} from "./constants/constants";
 
 export const isModifierCodeCamel = (v: unknown): v is ModifierCodeCamel =>
 	MODIFIER_CODES_CHROME_CAMEL.some((c) => c === v);
@@ -96,11 +96,11 @@ export const deserializeKeybindings = (
 			errors
 		);
 	} else {
-		console.log(`${res.length} keybindings deserialized successfully`);
-		console.log("deserializeKeybindings", {
-			serialized: kbs,
-			deserialized: res,
-		});
+		// console.log(`${res.length} keybindings deserialized successfully`);
+		// console.log("deserializeKeybindings", {
+		// 	serialized: kbs,
+		// 	deserialized: res,
+		// });
 	}
 	return res;
 };

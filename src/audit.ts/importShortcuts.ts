@@ -1,4 +1,4 @@
-import { Chord, Settings } from "../types";
+import { Chord, BSKSettings } from "../types";
 import {
 	Command,
 	Modifier,
@@ -11,7 +11,7 @@ import {
 import {
 	OBSIDIAN_KEY_TO_CHROME_CODE,
 	OBSIDIAN_MODIFIER_KEYS_MAP,
-} from "../constants";
+} from "../constants/constants";
 import {
 	Keybinding,
 	ModifierKey,
@@ -227,7 +227,7 @@ const getKeymapProps = (id: string, kmir: KeymapInfoRecord, prefix: string) => {
 		  };
 };
 
-export function auditCommands(app: App, settings: Settings) {
+export function auditCommands(app: App, settings: BSKSettings) {
 	// app.commands
 	const commandsRecord = app.commands.commands;
 	const cmds = Object.values(commandsRecord);
