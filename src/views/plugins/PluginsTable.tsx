@@ -68,27 +68,26 @@ const boolCellOption = (
 	}
 	return <BoolCell value={value} />;
 };
-// const makeBoolCellOption: (
-// 	options?: BooleanishOptions
-// ) => ColumnDef<PluginMeta, Booleanish>["cell"] = (options) => {
-// 	return (info: CellContext<PluginMeta, Booleanish>) => {
-// 		let value = info.getValue() as boolean | null | undefined;
-// 		if (value === null && options?.null !== undefined) {
-// 			value = options.null;
-// 		} else if (value === undefined && options?.undefined !== undefined) {
-// 			value = options.undefined;
-// 		}
-// 		return <BoolCell value={value} />;
-// 	};
-// };
 
-export const PluginTable = ({
-	data,
-	className,
-}: PluginTableProps) => {
-    const [sorting, setSorting] = useState<SortingState>([]);
+export const PluginTable = ({ data, className }: PluginTableProps) => {
+	// initial sorting state; see:
+    // https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
+    const [sorting, setSorting] = useState<SortingState>([
+        {
+            id: 'isEnabled',
+            desc: true,
+        },
+        {
+            id: 'isCore',
+            desc: true,
+        },
+        {
+            id: 'id',
+            desc: false,
+        }
+    ]);
 
-    const columns = useMemo<ColumnDef<PluginMeta>[]>(
+	const columns = useMemo<ColumnDef<PluginMeta>[]>(
 		() => [
 			{
 				id: "id",
@@ -108,7 +107,8 @@ export const PluginTable = ({
 				id: "isCore",
 				header: "Core?",
 				accessorKey: "isCore",
-				cell: (info) => boolCellOption(info, { null: false, undefined: false }),
+				cell: (info) =>
+					boolCellOption(info, { null: false, undefined: false }),
 				sortUndefined: "last",
 			},
 			{
@@ -137,7 +137,8 @@ export const PluginTable = ({
 				id: "isInstantiated",
 				header: "Instantiated",
 				accessorKey: "isInstantiated",
-				cell: (info) => boolCellOption(info, { null: false, undefined: true }),
+				cell: (info) =>
+					boolCellOption(info, { null: false, undefined: true }),
 				sortUndefined: "last",
 			},
 			{
@@ -166,10 +167,48 @@ export const PluginTable = ({
 		state: {
 			sorting: sorting,
 		},
+        initialState: {
+            columnVisibility: {
+                name: false,
+                isInstantiated: false,
+                isLoaded: false,
+            },
+            // initial sorting state in useState call; see https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
+        }
 	});
 
 	return (
 		<div className={className}>
+			<div>
+				<label>
+					<input
+						{...{
+							type: "checkbox",
+							checked: table.getIsAllColumnsVisible(),
+							onChange:
+								table.getToggleAllColumnsVisibilityHandler(),
+						}}
+					/>{" "}
+					Toggle All
+				</label>
+				{table.getAllLeafColumns().map((col) => {
+					return (
+						<div key={col.id}>
+							<label>
+								<input
+									{...{
+										type: "checkbox",
+										checked: col.getIsVisible(),
+										onChange:
+											col.getToggleVisibilityHandler(),
+									}}
+								/>{" "}
+								{col.id}
+							</label>
+						</div>
+					);
+				})}
+			</div>
 			<table>
 				<thead>
 					{table.getHeaderGroups().map((headerGroup) => {
