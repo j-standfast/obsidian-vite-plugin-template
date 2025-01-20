@@ -36,11 +36,11 @@ export const CommandsDashboard = ({
 				display: "flex",
 				flexDirection: "column",
 				alignItems: "center",
-				justifyContent: "center",
+				justifyContent: "start",
 				gap: "10px",
 			}}
 		>
-			<h1>Commands (Plugins for now) Dashboard</h1>
+			<h1>Commands Dashboard</h1>
 			<button
 				onClick={() => {
 					console.log("commands dashboard button click", {

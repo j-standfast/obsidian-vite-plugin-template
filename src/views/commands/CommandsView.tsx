@@ -12,6 +12,8 @@ export class CommandsView extends ItemView {
     plugin: TailorCutsPlugin;
     navigation = false;
     root: Root | null = null;
+    _viewType = VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS;
+    _displayText = "Commands Dashboard";
 
     constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
         super(leaf);
@@ -23,11 +25,11 @@ export class CommandsView extends ItemView {
     }
 
     getViewType(): string {
-        return VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS;
+        return this._viewType;
     }
 
     getDisplayText(): string {
-        return "Commands Dashboard";
+        return this._displayText;
     }
 
     async onOpen() {

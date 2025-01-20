@@ -10,6 +10,8 @@ export class PluginsView extends ItemView {
 	plugin: TailorCutsPlugin;
 	navigation = true;
 	root: Root | null = null;
+    _viewType = VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS;
+    _displayText = "Plugins Dashboard";
 
 	constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
 		super(leaf);
@@ -21,11 +23,11 @@ export class PluginsView extends ItemView {
 	}
 
 	getViewType(): string {
-		return VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS;
+        return this._viewType;
 	}
 
 	getDisplayText(): string {
-		return "Plugins View";
+		return this._displayText;
 	}
 
 	async onOpen() {

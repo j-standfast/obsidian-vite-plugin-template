@@ -82,24 +82,24 @@ export const PluginTable = ({ data, className }: PluginTableProps) => {
             desc: true,
         },
         {
-            id: 'id',
+            id: 'name',
             desc: false,
         }
     ]);
 
 	const columns = useMemo<ColumnDef<PluginMeta>[]>(
 		() => [
-			{
-				id: "id",
-				header: "ID",
-				accessorKey: "id",
+            {
+				id: "name",
+				header: "Name",
+				accessorKey: "name",
 				cell: (info) => info.getValue(),
 				sortUndefined: "last",
 			},
 			{
-				id: "name",
-				header: "Name",
-				accessorKey: "name",
+				id: "id",
+				header: "ID",
+				accessorKey: "id",
 				cell: (info) => info.getValue(),
 				sortUndefined: "last",
 			},
@@ -126,13 +126,13 @@ export const PluginTable = ({ data, className }: PluginTableProps) => {
 					boolCellOption(info, { null: false, undefined: false }),
 				sortUndefined: "last",
 			},
-			// {
-			// 	id: "isUserDisabled",  // should never be true (2025-01-20) because data refresh waits for plugin to be removed (transition state lasting <10ms)
-			// 	header: "User Disabled",
-			// 	accessorKey: "isUserDisabled",
-			// 	cell: boolCellOption,
-			// 	sortUndefined: "last",
-			// },
+			{
+				id: "isUserDisabled",  // should never be true (2025-01-20) because data refresh waits for plugin to be removed (transition state lasting <10ms)
+				header: "User Disabled",
+				accessorKey: "isUserDisabled",
+				cell: boolCellOption,
+				sortUndefined: "last",
+			},
 			{
 				id: "isInstantiated",
 				header: "Instantiated",
@@ -165,13 +165,18 @@ export const PluginTable = ({ data, className }: PluginTableProps) => {
 		getSortedRowModel: getSortedRowModel(),
 		onSortingChange: setSorting,
 		state: {
-			sorting: sorting,
+			sorting,
 		},
         initialState: {
             columnVisibility: {
-                name: false,
+                name: true,
+                id: true,
+                isCore: true,
                 isInstantiated: false,
                 isLoaded: false,
+                isEnabled: true,
+                isUserDisabled: false,
+                lastDataModifiedTime: true,
             },
             // initial sorting state in useState call; see https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
         }

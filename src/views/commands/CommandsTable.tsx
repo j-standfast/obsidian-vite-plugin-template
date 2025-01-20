@@ -17,7 +17,7 @@ export interface CommandTableProps {
 	className: string;
 }
 
-export const CommandTable = ({
+export const CommandsTable = ({
 	data,
 	// setData,
 	sorting,
