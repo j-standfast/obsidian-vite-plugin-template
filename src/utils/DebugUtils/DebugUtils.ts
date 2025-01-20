@@ -11,10 +11,8 @@ import {
 	getCommandHotkeyData,
 	getKeybindings,
 	getPluginData,
-} from "@/DataManager/get-command-data";
+} from "@/DataManager/commands";
 import type { TailorCutsPlugin } from "@/main";
-import { auditCommands } from "@/_STALE/audit-plugins";
-import { importShortcuts } from "@/_STALE/importShortcuts";
 
 interface TodoNavigator {
 	keyboard: {
@@ -36,10 +34,10 @@ const TEST_COMMANDS: Command[] = [
 		id: "debug-test",
 		name: "debug-test",
 		callback: () => {
-			console.log("EXECUTED tailor-cuts: test");
+			// console.log("EXECUTED tailor-cuts: test");
 		},
 		checkCallback: () => {
-			console.log("CHECKED tailor-cuts: test");
+			// console.log("CHECKED tailor-cuts: test");
 			return true;
 		},
 	},
@@ -47,7 +45,7 @@ const TEST_COMMANDS: Command[] = [
 		id: "debug-test-2",
 		name: "debug-test-2",
 		callback: () => {
-			console.log("EXECUTED tailor-cuts: test2");
+			// console.log("EXECUTED tailor-cuts: test2");
 		},
 	},
 ];
@@ -67,22 +65,10 @@ export class DebugUtils {
 	}
 
 	onload() {
-		this.plugin.addCommand({
-			id: "debug-audit-commands",
-			name: "Audit commands and hotkeys",
-			callback: () => auditCommands(this.app, this.plugin.settings),
-		});
-		this.plugin.addCommand({
-			id: "debug-import-shortcuts",
-			name: "Import shortcuts",
-			callback: () => importShortcuts(this.app),
-		});
 		this.TEST_COMMANDS.forEach((cmd) => this.plugin.addCommand(cmd));
 	}
 
 	unload() {
-		this.plugin.removeCommand("debug-audit-commands");
-		this.plugin.removeCommand("debug-import-shortcuts");
 		this.TEST_COMMANDS.forEach((cmd) => this.plugin.removeCommand(cmd.id));
 	}
 

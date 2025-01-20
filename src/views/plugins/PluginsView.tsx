@@ -34,7 +34,6 @@ export class PluginsView extends ItemView {
 			<StrictMode>
 				<PluginsDashboard
 					dataManager={this.plugin.dataManager}
-					view={this}
 				/>
 			</StrictMode>
 		);

@@ -1,5 +1,5 @@
 import type { App } from "obsidian";
-import { CommandMeta, PluginMeta } from "src/types";
+import { CommandMeta, PluginMeta } from "@/types";
 
 // TODO: struggling to import this from obsidian-typings
 type InternalPluginNameType = keyof typeof app.internalPlugins.config;

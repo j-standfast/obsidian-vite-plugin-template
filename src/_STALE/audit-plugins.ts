@@ -73,7 +73,7 @@ const getCmdProps = (c: Command | undefined, prefix: string) => {
 	};
 };
 
-const getKeymapProps = (id: string, kmir: HotkeyRecord, prefix: string) => {
+const getKeymapProps = <T extends string>(id: string, kmir: HotkeyRecord, prefix: T): {} => {
 	return id in kmir
 		? {
 				[`${prefix}`]: true,
@@ -85,7 +85,7 @@ const getKeymapProps = (id: string, kmir: HotkeyRecord, prefix: string) => {
 		  };
 };
 
-export function auditCommands(app: App, settings: TailorCutsSettings) {
+function auditCommands(app: App, settings: TailorCutsSettings) {
 	// app.commands
 	if (!app.hotkeyManager.baked) {
 		console.error(" not baked");

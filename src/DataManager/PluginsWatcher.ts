@@ -1,37 +1,44 @@
 import type { App, Plugin } from "obsidian";
 import { WatchedProxy } from "@/utils/WatchedProxy";
 import type { TailorCutsPlugin } from "@/main";
+import type { WatchedProxyEvent } from "@/utils/WatchedProxy";
 
 type Plugins = App["plugins"];
 
 export class PluginsWatcher {
 	app: App;
 	plugin: TailorCutsPlugin;
-	// enabledPluginsWatcher: WatchedProxy<Record<string, Plugin>> | null;
-	pluginsWatcher: WatchedProxy<Plugins> | null;
+	enabledPluginsWatcher: WatchedProxy<Record<string, Plugin>> | null;
+	communityPluginsWatcher: WatchedProxy<Plugins> | null;
 	subscribers: ((plugins: Record<string, Plugin>) => void)[] = [];
-	private _isLoadedPromise: Promise<void> | null = null;
+	#_isLoaded: Promise<void> | null = null;
+	#_logHeader = "PluginsWatcher";
 
 	constructor(app: App, plugin: TailorCutsPlugin) {
 		this.app = app;
-        this.plugin = plugin;
-		// this.enabledPluginsWatcher = null;
-		this.pluginsWatcher = null;
-		this._isLoadedPromise = new Promise((resolve) => {
-			this.app.workspace.onLayoutReady(async () => {
-				await this._load();
-				resolve();
-			});
-		});
+		this.plugin = plugin;
+		this.enabledPluginsWatcher = null;
+		this.communityPluginsWatcher = null;
 
 		this.subscribe = this.subscribe.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.unload = this.unload.bind(this);
 		this._load = this._load.bind(this);
+
+		this._load();
 	}
 
 	async _load() {
+		this.#_isLoaded = new Promise((resolve) => {
+			this.app.workspace.onLayoutReady(async () => {
+				await this._loadWatchers();
+				resolve();
+			});
+        });
+	}
+
+	async _loadWatchers() {
 		// this.enabledPluginsWatcher = new WatchedProxy(this.app.plugins.plugins, 'app.plugins.plugins', 2);
 		// this.enabledPluginsWatcher.onChange((e) => {
 		//     console.log("enabledPluginsWatcher", { e });
@@ -39,30 +46,49 @@ export class PluginsWatcher {
 		// })
 		// this.app.plugins.plugins = this.enabledPluginsWatcher.proxy;
 
-		this.pluginsWatcher = new WatchedProxy(
+		this.communityPluginsWatcher = new WatchedProxy(
 			this.app.plugins,
 			"app.plugins",
 			3
 		);
-		this.pluginsWatcher.onChange((e) => {
-			console.log("app.plugins changed", { e });
-			this.onChange(this.app.plugins.plugins);
-		});
-		this.app.plugins = this.pluginsWatcher.proxy;
-	}
-
-	async load() {
-		await this._isLoadedPromise;
+		this.communityPluginsWatcher.onChange(
+			(e: WatchedProxyEvent<Plugins>) => {
+                const header =
+                    "communityPluginsWatcher (WatchedProxy) onChange callback";
+                let msg = "Community plugins changed";
+                let onChange = false;
+                if (e.detail.prop === "_userDisabled") {
+                    msg += "\n_userDisabled prop set; delete expected; not pushed";
+                } else {
+                    onChange = true;
+                }
+                console.log(`${this.#_logHeader} / ${header}:\n${msg}`, {e});
+				if (onChange) this.onChange(this.app.plugins.plugins);
+			}
+		);
+        this.app.plugins = this.communityPluginsWatcher.proxy;
+        this.onChange(this.app.plugins.plugins);
 	}
 
 	async unload() {
-		this.pluginsWatcher?.unload();
+		this.communityPluginsWatcher?.unload();
 		// this.enabledPluginsWatcher?.unload();
 	}
 
-	async subscribe(callback: () => void) {
-		await this._isLoadedPromise;
+	async reload() {
+		await this.unload();
+		await this._load();
+	}
+
+	subscribe(callback: (plugins: Record<string, Plugin>) => void) {
 		this.subscribers.push(callback);
+		const msg = "Subscribed to plugins change";
+		console.log(`${this.#_logHeader} / subscribe: ${msg}`, {
+			subscribers: this.subscribers,
+        });
+        if (this.#_isLoaded) {
+            callback(this.app.plugins.plugins);
+        }
 	}
 
 	unsubscribe(callback: (plugins: Record<string, Plugin>) => void) {

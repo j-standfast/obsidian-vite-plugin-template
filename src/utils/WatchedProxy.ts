@@ -1,6 +1,6 @@
-type WatchedProxyEventDetailType = "set" | "delete";
+export type WatchedProxyEventDetailType = "set" | "delete";
 
-interface WatchedProxyEventDetail<U extends object> {
+export interface WatchedProxyEventDetail<U extends object> {
 	path: string;
 	prop: string | symbol;
 	prev: U | undefined;
@@ -8,7 +8,7 @@ interface WatchedProxyEventDetail<U extends object> {
 	type: WatchedProxyEventDetailType;
 }
 
-interface WatchedProxyEvent<U extends object> extends CustomEvent {
+export interface WatchedProxyEvent<U extends object> extends CustomEvent {
 	detail: WatchedProxyEventDetail<U>;
 }
 

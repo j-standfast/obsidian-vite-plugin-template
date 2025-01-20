@@ -10,106 +10,28 @@ import { RotateCcw } from "lucide-react";
 
 import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
 import type {
-	CommandData,
-	KeybindingDatum,
-	KeybindingMeta,
-	PluginData,
 	PluginMeta,
 } from "@/types";
-import type { PluginsView } from "./PluginsView";
 import { PluginTable } from "./PluginsTable";
-import { PropertyWatcher } from "@/utils/PropertyWatcher";
-
-interface UsePluginsDashboardDataReturn {
-	commandData: CommandData[];
-	pluginData: PluginData[];
-	keybindingData: KeybindingDatum[];
-	refresh: () => void;
-}
-
-interface UsePluginsDashboardDataProps {
-	view: PluginsView;
-	dataManager: TailorCutsDataManager;
-}
-
-const usePluginsDashboardData = ({
-	view,
-	dataManager,
-}: UsePluginsDashboardDataProps): UsePluginsDashboardDataReturn => {
-	const [commandData, setCommandData] = useState<CommandData[]>([]);
-	const [pluginData, setPluginData] = useState<PluginData[]>([]);
-	const [keybindingData, setKeybindingData] = useState<KeybindingDatum[]>([]);
-
-	const refresh = useCallback(async () => {
-		dataManager.onDataLoaded(async (dataManager) => {
-			const { commandData, pluginData, keybindingData } =
-				dataManager.getAllData();
-			setCommandData(commandData);
-			setPluginData(pluginData);
-			setKeybindingData(keybindingData);
-		}, true);
-	}, [
-		view,
-		dataManager,
-		dataManager.app,
-		dataManager.app.plugins,
-		setCommandData,
-		setPluginData,
-		setKeybindingData,
-	]);
-
-	useEffect(() => {
-		const watcher = new PropertyWatcher(
-			() => dataManager.app.plugins.plugins,
-			() => {
-				console.log("plugins changed - PropertyWatcher 1");
-				refresh();
-			},
-			100
-		);
-		// note - the plugins object is mutated on enable/disable, so this is a bit of a hack
-		const watcher2 = new PropertyWatcher(
-			() =>
-				Object.values(dataManager.app.plugins.plugins)
-					.map((p) => p.manifest.id)
-					.join(","),
-			(prev, curr) => {
-				console.log("plugins changed - PropertyWatcher 2", {
-					prev,
-					curr,
-				});
-				refresh();
-			},
-			250
-		);
-		watcher.start();
-		watcher2.start();
-		refresh();
-		return () => {
-			watcher.stop();
-			watcher2.stop();
-		};
-	}, [view, refresh, dataManager]);
-
-	return { commandData, pluginData, keybindingData, refresh };
-};
 
 export interface PluginsDashboardProps {
-	view: PluginsView;
 	dataManager: TailorCutsDataManager;
 }
 export const PluginsDashboard = ({
-	view,
 	dataManager,
 }: PluginsDashboardProps): ReactNode => {
 	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
-	const { commandData, pluginData, keybindingData, refresh } =
-		usePluginsDashboardData({ view, dataManager });
-	const [commandSorting, setCommandSorting] = useState<SortingState>([]);
 	const [pluginSorting, setPluginSorting] = useState<SortingState>([]);
-	const [keybindingSorting, setKeybindingSorting] = useState<SortingState>(
-		[]
-	);
+    const [pluginData, setPluginData] = useState<PluginMeta[]>([]);
+
+    useEffect(() => {
+        const unsubscribe = dataManager.subscribePluginChange((plugins) => {
+            setPluginData(plugins);
+        });
+        return () => {
+            unsubscribe();
+        };
+    }, [dataManager]);
 
 	return (
 		<div
@@ -124,9 +46,12 @@ export const PluginsDashboard = ({
 			<h1>Plugins Dashboard</h1>
 			<button
 				onClick={() => {
-					refresh();
-					rerender();
-					console.log("plugins dashboard refresh/rerender");
+					console.log("commands dashboard button click", {
+						pluginData,
+						dataManager,
+						app: dataManager.plugin.app,
+						plugins: dataManager.plugin.app.plugins.plugins,
+					});
 				}}
 				className="bc-refresh-button"
 				style={{

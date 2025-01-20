@@ -116,7 +116,7 @@ const maybeHotkeyArrayToShortcuts = (
 	return singleChordHotkeysToShortcuts(id, hotkeys);
 };
 
-export function importShortcuts(app: App) {
+function importShortcuts(app: App) {
 	if (!app.hotkeyManager.baked) app.hotkeyManager.bake();
 	const defaultShortcuts: (ShortcutsRecord | undefined)[] = [];
 	const customShortcuts: (ShortcutsRecord | undefined)[] = [];
@@ -227,7 +227,7 @@ const getKeymapProps = (id: string, kmir: KeymapInfoRecord, prefix: string) => {
 		  };
 };
 
-export function auditCommands(app: App, settings: TailorCutsSettings) {
+function auditCommands(app: App, settings: TailorCutsSettings) {
 	// app.commands
 	const commandsRecord = app.commands.commands;
 	const cmds = Object.values(commandsRecord);
