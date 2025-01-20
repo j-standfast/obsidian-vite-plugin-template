@@ -9,7 +9,7 @@ import React, {
 import { RotateCcw } from "lucide-react";
 
 import type { PluginMeta } from "@/types";
-import type { TailorCutsDataManager } from "@/data/TailorCutsDataManager";
+import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
 import { PluginTable } from "@/views/plugins/PluginsTable";
 
 export interface CommandsDashboardProps {

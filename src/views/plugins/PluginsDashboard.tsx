@@ -4,12 +4,18 @@ import React, {
 	useCallback,
 	useEffect,
 	useReducer,
-	useState,   
+	useState,
 } from "react";
 import { RotateCcw } from "lucide-react";
 
-import type { TailorCutsDataManager } from "@/data/TailorCutsDataManager";
-import type { CommandData, KeybindingDatum, KeybindingMeta, PluginData, PluginMeta } from "@/types";
+import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
+import type {
+	CommandData,
+	KeybindingDatum,
+	KeybindingMeta,
+	PluginData,
+	PluginMeta,
+} from "@/types";
 import type { PluginsView } from "./PluginsView";
 import { PluginTable } from "./PluginsTable";
 import { PropertyWatcher } from "@/utils/PropertyWatcher";

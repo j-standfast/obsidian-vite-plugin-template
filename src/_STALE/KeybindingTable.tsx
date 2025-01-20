@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-table";
 import { SetStateAction, useMemo, useReducer } from "react";
 
-import { KeybindingMeta } from "src/types";
+import { KeybindingMeta } from "@/types";
 
 export interface KeybindingTableProps {
 	data: KeybindingMeta[];

@@ -267,9 +267,3 @@ export interface KeybindingDatumWithoutConflicts {
 export interface KeybindingDatum extends KeybindingDatumWithoutConflicts {
 	conflictsWith: Keysig[];
 }
-
-export interface TodoNavigator {
-	keyboard: {
-		getLayoutMap(): Promise<Map<string, string>>;
-	};
-}

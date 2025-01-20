@@ -1,5 +1,5 @@
 import { App } from "obsidian";
-import { KeybindingMeta, PluginMeta, CommandMeta } from "src/types";
+import { KeybindingMeta, PluginMeta, CommandMeta } from "@/types";
 
 export const getKeybindingMetaData = (
 	app: App,

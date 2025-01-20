@@ -16,20 +16,6 @@ export interface HotkeyManagerCustomKeysRecord extends Record<string, Hotkey[]> 
 export interface HotkeyManagerDefaultKeysRecord extends Record<string, Hotkey[]> {
 }
 
-
-
-// export interface HotkeyManager {
-//     getDefaultHotkeys(commandId: string): Hotkey[] | undefined;
-//     getHotkeys(commandId: string): Hotkey[] | undefined;
-//     bakedHotkeys: KeymapInfo[];
-//     bakedIds: string[];
-//     defaultKeys: Record<string, Hotkey[]>;
-//     customKeys: Record<string, Hotkey[]>;
-//     setHotkeys(commandId: string, hotkeys: Hotkey[]): void;
-//     removeHotkeys(commandId: string): void;
-//     bake(): void;
-// }
-
 declare module "obsidian" {
     interface HotkeyManager {
         /**
@@ -82,7 +68,7 @@ declare module "obsidian" {
         // getHotkeys(command: string): KeymapInfo[];   // !NOTE: corrected
         getHotkeys(command: string): Hotkey[];
         /** @internal Load hotkeys from storage */
-        load(): void;
+        load(): void; // TODO!: async?
         /** @internal */
         onRaw(e: unknown): void;
         /**
@@ -113,7 +99,7 @@ declare module "obsidian" {
          */
         removeHotkeys(command: string): void;
         /** @internal Save custom hotkeys to storage */
-        save(): void;
+        save(): void;  // TODO!: async?
         /**
          * Add a hotkey to the custom hotkeys (overrides default hotkeys)
          *
@@ -129,11 +115,11 @@ declare module "obsidian" {
     }
     
 	interface Plugin {
-		_loaded: boolean;
-		_userDisabled: boolean;
-		_lastDataModifiedTime: number;
-		_children: Component[];
-		_events: EventRef[];
+        _lastDataModifiedTime: number;
+        _userDisabled: boolean;
+		// _children: Component[];
+		// _events: EventRef[];
+		// _loaded: boolean;
     }
     
     interface App {

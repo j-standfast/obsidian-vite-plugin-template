@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { App, Command, Hotkey, KeymapInfo } from "obsidian";
 import { useState, Dispatch, SetStateAction } from "react";
+
 import type {
 	CommandData,
 	CommandHotkeyData,
@@ -14,7 +15,7 @@ import type {
 	Keysig,
 	PluginData,
 	PluginId,
-} from "src/types";
+} from "@/types";
 import { getCommunityPluginMetaData } from "./plugin";
 
 export const getCommandMetaData = (app: App): CommandMeta[] => {

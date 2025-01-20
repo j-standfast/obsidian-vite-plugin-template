@@ -1,11 +1,16 @@
 import type { App, Plugin } from "obsidian";
 
-import { getCommandMetaData } from "@/data/get-command-data";
-import { getKeybindingMetaData } from "@/data/keybinding";
-import { getPluginMetaData } from "@/data/plugin";
-import { PluginsWatcher } from "@/data/PluginsWatcher";
+import { getCommandMetaData } from "@/DataManager/get-command-data";
+import { getKeybindingMetaData } from "@/DataManager/keybinding";
+import { getPluginMetaData } from "@/DataManager/plugin";
+import { PluginsWatcher } from "@/DataManager/PluginsWatcher";
 import type { TailorCutsPlugin } from "@/main";
-import type { CommandData, KeybindingMeta, PluginData, PluginMeta } from "@/types";
+import type {
+	CommandData,
+	KeybindingMeta,
+	PluginData,
+	PluginMeta,
+} from "@/types";
 
 export class TailorCutsDataManager {
 	app: App;
