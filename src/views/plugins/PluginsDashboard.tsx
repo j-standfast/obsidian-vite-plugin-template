@@ -20,8 +20,9 @@ export interface PluginsDashboardProps {
 export const PluginsDashboard = ({
 	dataManager,
 }: PluginsDashboardProps): ReactNode => {
+    console.log("PluginsDashboard rerender");
+
 	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
-	const [pluginSorting, setPluginSorting] = useState<SortingState>([]);
     const [pluginData, setPluginData] = useState<PluginMeta[]>([]);
 
     useEffect(() => {
@@ -62,28 +63,10 @@ export const PluginsDashboard = ({
 			>
 				<RotateCcw />
 			</button>
-			{/* <Keeb /> */}
-			{/* <CommandTable
-				data={commandData}
-				// setData={setCmdData}
-				sorting={commandSorting}
-				setSorting={setCommandSorting}
-				className="bc-command-table"
-			/> */}
 			<PluginTable
 				data={pluginData}
-				// setData={setPluginData}
-				sorting={pluginSorting}
-				setSorting={setPluginSorting}
 				className="bc-plugin-table"
 			/>
-			{/* <KeybindingTable
-				data={keybindingData}
-				// setData={setKeybindingData}
-				sorting={keybindingSorting}
-				setSorting={setKeybindingSorting}
-				className="bc-keybinding-table"
-			/> */}
 		</div>
 	);
 };

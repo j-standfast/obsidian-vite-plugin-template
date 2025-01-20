@@ -18,7 +18,7 @@ export const getInternalPluginMetaData = (
             name: plugin.instance.name,
             description: plugin.instance.description,
             isEnabled: isEnabled, 
-            isInternal: true,
+            isCore: true,
             isInstantiated: undefined,  // TODO: unsure about this
             isLoaded: plugin._loaded,
             isUserDisabled: undefined,  // TODO: unsure about this
@@ -52,7 +52,7 @@ export const getCommunityPluginMetaData = (
 		return {
 			...manifest,
             isEnabled: isEnabled,
-			isInternal: false,
+			isCore: false,
             isInstantiated: manifest.id in app.plugins.plugins, 
             isLoaded: instance ? instance._loaded : undefined, 
 			isUserDisabled: instance ? instance._userDisabled : false,

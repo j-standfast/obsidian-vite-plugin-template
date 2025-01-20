@@ -9,15 +9,12 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import React, { SetStateAction, useMemo, useReducer } from "react";
+import React, { SetStateAction, useMemo, useReducer, useState } from "react";
 
 import type { PluginMeta } from "@/types";
 
 export interface PluginTableProps {
 	data: PluginMeta[];
-	// setData: (data: PluginMeta[]) => void;
-	sorting: SortingState;
-	setSorting: (value: SetStateAction<SortingState>) => void;
 	className: string;
 }
 
@@ -57,20 +54,40 @@ const BoolCell = ({ value }: { value: boolean | null | undefined }) => {
 	);
 };
 
-const boolCellOption: ColumnDef<
-	PluginMeta,
-	unknown // boolean | null | undefined
->["cell"] = (info: CellContext<PluginMeta, unknown>) => (
-	<BoolCell value={info.getValue() as boolean | null | undefined} />
-);
+type Booleanish = boolean | null | undefined;
+type BooleanishOptions = { null?: Booleanish; undefined?: Booleanish };
+const boolCellOption = (
+	info: CellContext<PluginMeta, unknown>,
+	options?: BooleanishOptions
+) => {
+	let value = info.getValue() as Booleanish;
+	if (value === null && options?.null !== undefined) {
+		value = options.null;
+	} else if (value === undefined && options?.undefined !== undefined) {
+		value = options.undefined;
+	}
+	return <BoolCell value={value} />;
+};
+// const makeBoolCellOption: (
+// 	options?: BooleanishOptions
+// ) => ColumnDef<PluginMeta, Booleanish>["cell"] = (options) => {
+// 	return (info: CellContext<PluginMeta, Booleanish>) => {
+// 		let value = info.getValue() as boolean | null | undefined;
+// 		if (value === null && options?.null !== undefined) {
+// 			value = options.null;
+// 		} else if (value === undefined && options?.undefined !== undefined) {
+// 			value = options.undefined;
+// 		}
+// 		return <BoolCell value={value} />;
+// 	};
+// };
 
 export const PluginTable = ({
 	data,
-	// setData,
-	sorting,
-	setSorting,
 	className,
 }: PluginTableProps) => {
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const columns = useMemo<ColumnDef<PluginMeta>[]>(
 		() => [
 			{
@@ -88,10 +105,10 @@ export const PluginTable = ({
 				sortUndefined: "last",
 			},
 			{
-				id: "isInternal",
-				header: "Internal",
-				accessorKey: "isInternal",
-				cell: boolCellOption,
+				id: "isCore",
+				header: "Core?",
+				accessorKey: "isCore",
+				cell: (info) => boolCellOption(info, { null: false, undefined: false }),
 				sortUndefined: "last",
 			},
 			{
@@ -105,34 +122,35 @@ export const PluginTable = ({
 				id: "isLoaded",
 				header: "Loaded",
 				accessorKey: "isLoaded",
-				cell: boolCellOption,
+				cell: (info) =>
+					boolCellOption(info, { null: false, undefined: false }),
 				sortUndefined: "last",
 			},
-			{
-				id: "isUserDisabled",
-				header: "User Disabled",
-				accessorKey: "isUserDisabled",
-				cell: boolCellOption,
-				sortUndefined: "last",
-			},
+			// {
+			// 	id: "isUserDisabled",  // should never be true (2025-01-20) because data refresh waits for plugin to be removed (transition state lasting <10ms)
+			// 	header: "User Disabled",
+			// 	accessorKey: "isUserDisabled",
+			// 	cell: boolCellOption,
+			// 	sortUndefined: "last",
+			// },
 			{
 				id: "isInstantiated",
 				header: "Instantiated",
 				accessorKey: "isInstantiated",
-				cell: boolCellOption,
+				cell: (info) => boolCellOption(info, { null: false, undefined: true }),
 				sortUndefined: "last",
 			},
 			{
 				id: "lastDataModifiedTime",
-				header: "Last Data Modified Time",
+				header: "Modified",
 				accessorKey: "lastDataModifiedTime",
 				cell: (info) => {
 					const date = info.getValue();
-					// console.log({date});
-					if (date === null || date === undefined)
-						return String(date);
-					if (date.valueOf() === 0) return "-";
-					return date.toLocaleString();
+					return date === null || date === undefined
+						? "--"
+						: date.valueOf() === 0
+						? "-"
+						: date.toLocaleString();
 				},
 				sortUndefined: "last",
 			},
@@ -149,7 +167,6 @@ export const PluginTable = ({
 			sorting: sorting,
 		},
 	});
-	
 
 	return (
 		<div className={className}>
