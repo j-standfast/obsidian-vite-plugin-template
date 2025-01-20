@@ -1,4 +1,3 @@
-import type { SortingState } from "@tanstack/react-table";
 import React, {
 	ReactNode,
 	useCallback,
@@ -12,7 +11,7 @@ import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager"
 import type {
 	PluginMeta,
 } from "@/types";
-import { PluginTable } from "./PluginsTable";
+import { PluginsTable } from "./PluginsTable";
 
 export interface PluginsDashboardProps {
 	dataManager: TailorCutsDataManager;
@@ -23,11 +22,11 @@ export const PluginsDashboard = ({
     console.log("PluginsDashboard rerender");
 
 	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
-    const [pluginData, setPluginData] = useState<PluginMeta[]>([]);
+    const [data, setData] = useState<PluginMeta[]>([]);
 
     useEffect(() => {
         const unsubscribe = dataManager.subscribePluginChange((plugins) => {
-            setPluginData(plugins);
+            setData(plugins);
         });
         return () => {
             unsubscribe();
@@ -47,8 +46,8 @@ export const PluginsDashboard = ({
 			<h1>Plugins Dashboard</h1>
 			<button
 				onClick={() => {
-					console.log("commands dashboard button click", {
-						pluginData,
+					console.log("PluginsDashboard refresh button onClick", {
+						pluginData: data,
 						dataManager,
 						app: dataManager.plugin.app,
 						plugins: dataManager.plugin.app.plugins.plugins,
@@ -63,9 +62,9 @@ export const PluginsDashboard = ({
 			>
 				<RotateCcw />
 			</button>
-			<PluginTable
-				data={pluginData}
-				className="bc-plugin-table"
+			<PluginsTable
+				data={data}
+				className="barraclough-tailor-cuts-plugins-table"
 			/>
 		</div>
 	);

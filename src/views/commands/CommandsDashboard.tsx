@@ -10,7 +10,7 @@ import { RotateCcw } from "lucide-react";
 
 import type { PluginMeta } from "@/types";
 import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
-import { PluginTable } from "@/views/plugins/PluginsTable";
+import { PluginsTable } from "@/views/plugins/PluginsTable";
 
 export interface CommandsDashboardProps {
 	dataManager: TailorCutsDataManager;
@@ -43,7 +43,7 @@ export const CommandsDashboard = ({
 			<h1>Commands Dashboard</h1>
 			<button
 				onClick={() => {
-					console.log("commands dashboard button click", {
+					console.log("CommandsDashboard refresh button onClick", {
 						data,
 						dataManager,
 						app: dataManager.plugin.app,
@@ -67,12 +67,10 @@ export const CommandsDashboard = ({
 				setSorting={setCommandSorting}
 				className="bc-command-table"
 			/> */}
-			<PluginTable
+			<PluginsTable
 				data={data}
 				// setData={setPluginData}
-				sorting={sorting}
-				setSorting={setSorting}
-				className="bc-plugin-table"
+				className="barraclough-tailor-cuts-commands-table"
 			/>
 			{/* <KeybindingTable
 				data={keybindingData}

@@ -10,16 +10,18 @@ import type {
 	KeybindingMeta,
 	PluginMeta,
 } from "@/types";
+import { CommandsWatcher } from "./CommandsWatcher";
 
 export class TailorCutsDataManager {
 	app: App;
 	plugin: TailorCutsPlugin;
 	#_pluginData: PluginMeta[];
 	#_commandData: CommandData[];
-	#_keybindingData: KeybindingMeta[];
+    #_keybindingData: KeybindingMeta[];
 	#_isLoaded: boolean = false;
 	#_pluginsWatcher: PluginsWatcher | null;
-	#_pluginsWatcherSubscribers: ((data: PluginMeta[]) => void)[] = [];
+    #_pluginsWatcherSubscribers: ((data: PluginMeta[]) => void)[] = [];
+    #_commandsWatcher: CommandsWatcher | null;
 	#_isLoadedPromise: Promise<void> | null = null;
 
 	constructor(app: App, plugin: TailorCutsPlugin) {

@@ -69,7 +69,7 @@ const boolCellOption = (
 	return <BoolCell value={value} />;
 };
 
-export const PluginTable = ({ data, className }: PluginTableProps) => {
+export const PluginsTable = ({ data, className }: PluginTableProps) => {
 	// initial sorting state; see:
     // https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
     const [sorting, setSorting] = useState<SortingState>([
