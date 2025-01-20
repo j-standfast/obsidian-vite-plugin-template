@@ -7,12 +7,12 @@ import type {
 	SerializedKeybinding,
 	Keybinding,
 	ValidChord,
-} from "./types";
+} from "@/types";
 import {
 	CODES_CHROME_CAMEL,
 	MODIFIER_CODES_CHROME_CAMEL,
 	MODIFIER_KEYS,
-} from "./constants/constants";
+} from "@/constants/constants";
 
 export const isModifierCodeCamel = (v: unknown): v is ModifierCodeCamel =>
 	MODIFIER_CODES_CHROME_CAMEL.some((c) => c === v);

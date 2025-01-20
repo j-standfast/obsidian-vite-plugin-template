@@ -1,4 +1,8 @@
-import type { SerializedSettings, BSKSettings, CodeCamel } from "../types";
+import type {
+	SerializedSettings,
+	TailorCutsSettings,
+	CodeCamel,
+} from "../types";
 import { Modifier } from "obsidian";
 import { ModifierKey } from "../types";
 

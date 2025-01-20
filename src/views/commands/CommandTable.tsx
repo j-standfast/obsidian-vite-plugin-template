@@ -1,8 +1,4 @@
-import type {
-	CellContext,
-	ColumnDef,
-	SortingState,
-} from "@tanstack/react-table";
+import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import {
 	flexRender,
 	getCoreRowModel,
@@ -11,67 +7,24 @@ import {
 } from "@tanstack/react-table";
 import { SetStateAction, useMemo, useReducer } from "react";
 
-import { PluginMeta } from "src/types";
+import { CommandData } from "@/types";
 
-export interface PluginTableProps {
-	data: PluginMeta[];
-	// setData: (data: PluginMeta[]) => void;
+export interface CommandTableProps {
+	data: CommandData[];
+	// setData: (data: CommandMeta[]) => void;
 	sorting: SortingState;
 	setSorting: (value: SetStateAction<SortingState>) => void;
 	className: string;
 }
 
-const BoolCircle = ({ value }: { value: boolean | null | undefined }) => {
-	const fill =
-		value === undefined
-			? undefined
-			: value === null
-			? "gray"
-			: value
-			? "green"
-			: "red";
-	return (
-		<div
-			style={{
-				backgroundColor: fill,
-				border: "1px solid black",
-				width: "5px",
-				height: "5px",
-				borderRadius: "9999px",
-			}}
-		/>
-	);
-};
-
-const BoolCell = ({ value }: { value: boolean | null | undefined }) => {
-	return (
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-			}}
-		>
-			<BoolCircle value={value} />
-		</div>
-	);
-};
-
-const boolCellOption: ColumnDef<
-	PluginMeta,
-	unknown // boolean | null | undefined
->["cell"] = (info: CellContext<PluginMeta, unknown>) => (
-	<BoolCell value={info.getValue() as boolean | null | undefined} />
-);
-
-export const PluginTable = ({
+export const CommandTable = ({
 	data,
 	// setData,
 	sorting,
 	setSorting,
 	className,
-}: PluginTableProps) => {
-    const columns = useMemo<ColumnDef<PluginMeta>[]>(
+}: CommandTableProps) => {
+	const columns = useMemo<ColumnDef<CommandData>[]>(
 		() => [
 			{
 				id: "id",
@@ -88,52 +41,10 @@ export const PluginTable = ({
 				sortUndefined: "last",
 			},
 			{
-				id: "isInternal",
-				header: "Internal",
-				accessorKey: "isInternal",
-				cell: boolCellOption,
-				sortUndefined: "last",
-			},
-			{
-				id: "isEnabled",
-				header: "Enabled",
-				accessorKey: "isEnabled",
-				cell: boolCellOption,
-				sortUndefined: "last",
-			},
-			{
-				id: "isLoaded",
-				header: "Loaded",
-				accessorKey: "isLoaded",
-				cell: boolCellOption,
-				sortUndefined: "last",
-			},
-			{
-				id: "isUserDisabled",
-				header: "User Disabled",
-				accessorKey: "isUserDisabled",
-				cell: boolCellOption,
-				sortUndefined: "last",
-			},
-			{
-				id: "isInstantiated",
-				header: "Instantiated",
-				accessorKey: "isInstantiated",
-				cell: boolCellOption,
-				sortUndefined: "last",
-			},
-			{
-				id: "lastDataModifiedTime",
-				header: "Last Data Modified Time",
-				accessorKey: "lastDataModifiedTime",
-				cell: (info) => {
-					const date = info.getValue();
-					// console.log({date});
-					if (date === null || date === undefined)
-						return String(date);
-					if (date.valueOf() === 0) return "-";
-					return date.toLocaleString();
-				},
+				id: "isListed",
+				header: "Listed",
+				accessorKey: "isListed",
+				cell: (info) => info.getValue() ? 'T' : '',
 				sortUndefined: "last",
 			},
 		],
@@ -149,7 +60,7 @@ export const PluginTable = ({
 			sorting: sorting,
 		},
 	});
-	
+	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
 
 	return (
 		<div className={className}>

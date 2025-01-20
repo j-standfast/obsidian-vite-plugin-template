@@ -2,30 +2,32 @@ import { createRoot, Root } from 'react-dom/client';
 import React, { StrictMode } from 'react';
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 
-import { BCShortcutsPlugin } from 'src/main';
-import { VIEW_TYPE_BC_COMMANDS } from 'src/constants/plugin';
-import { CommandsDashboard } from 'src/components/CommandsDashboard';
+import { TailorCutsPlugin } from '@/main';
+import { VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS } from '@/constants/plugin';
+import { CommandsDashboard } from '@/views/commands/CommandsDashboard';
+
+// https://docs.obsidian.md/Plugins/User+interface/Views
 
 export class CommandsView extends ItemView {
-    plugin: BCShortcutsPlugin;
+    plugin: TailorCutsPlugin;
     navigation = false;
     root: Root | null = null;
 
-    constructor(leaf: WorkspaceLeaf, plugin: BCShortcutsPlugin) {
+    constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
         super(leaf);
         this.plugin = plugin;
     }
 
     async onload() {
-        super.onload();
+        super.onload(); 
     }
 
     getViewType(): string {
-        return VIEW_TYPE_BC_COMMANDS;
+        return VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS;
     }
 
     getDisplayText(): string {
-        return "BC Commands";
+        return "Commands Dashboard";
     }
 
     async onOpen() {

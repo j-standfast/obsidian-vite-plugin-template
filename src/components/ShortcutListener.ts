@@ -1,12 +1,12 @@
 import { App } from "obsidian";
-import { MODIFIER_CODES_CHROME_CAMEL } from "./constants/constants";
-import { Chord, Keybinding } from "./types";
+import { MODIFIER_CODES_CHROME_CAMEL } from "../constants/constants";
+import { Chord, Keybinding } from "../types";
 import {
 	isModifierCodeCamel,
 	keyEventToChord,
 	serializeChord,
 	serializeChords,
-} from "./serialize";
+} from "../utils/serialize";
 
 class TrieNode<T> extends Map<string, TrieNode<T>> {
 	value: T | undefined;

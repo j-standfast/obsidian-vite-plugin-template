@@ -16,11 +16,12 @@ const context = await esbuild.context({
 		js: banner,
 	},
 	entryPoints: [
-		{ in: "src/main.ts", out: "main" },
-		{ in: "src/styles.css", out: "styles" },
+		{ in: "./src/main.ts", out: "main" },
+		{ in: "./src/styles.css", out: "styles" },
 	],
     bundle: true,
     outdir: ".",
+    // resolveExtensions: [".tsx", ".ts", ".jsx", ".js"],
 	external: [
 		"obsidian",
 		"electron",
@@ -48,11 +49,11 @@ const context = await esbuild.context({
 			inject: false,
 		}),
 	],
-	target: "es2018",
+	target: "es2022",
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
-	minify: prod,
+    minify: prod,
 });
 
 if (prod) {

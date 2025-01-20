@@ -8,30 +8,27 @@ import React, {
 } from "react";
 import { RotateCcw } from "lucide-react";
 
-// import type { BCDataManager } from 'src/data/BCDataManager';
-// import type { CommandsView } from 'src/views/CommandsView';
-// import { CommandTable } from './CommandTable';
-import { PluginTable } from "./PluginTable";
-import type { PluginMeta } from "src/types";
-import type { BCDataManager } from "src/data/BCDataManager";
+import type { PluginMeta } from "@/types";
+import type { TailorCutsDataManager } from "@/data/TailorCutsDataManager";
+import { PluginTable } from "@/views/plugins/PluginsTable";
 
 export interface CommandsDashboardProps {
-	dataManager: BCDataManager;
+	dataManager: TailorCutsDataManager;
 }
 
 export const CommandsDashboard = ({
 	dataManager,
 }: CommandsDashboardProps): ReactNode => {
 	const [sorting, setSorting] = useState<SortingState>([]);
-    const [data, setData] = useState<PluginMeta[]>([]);
-    useEffect(() => {
-        const unsubscribe = dataManager.subscribePluginChange((plugins) => {
-            setData(plugins);
-        });
-        return () => {
-            unsubscribe();
-        }
-    }, [dataManager]);
+	const [data, setData] = useState<PluginMeta[]>([]);
+	useEffect(() => {
+		const unsubscribe = dataManager.subscribePluginChange((plugins) => {
+			setData(plugins);
+		});
+		return () => {
+			unsubscribe();
+		};
+	}, [dataManager]);
 
 	return (
 		<div
@@ -46,8 +43,12 @@ export const CommandsDashboard = ({
 			<h1>Commands (Plugins for now) Dashboard</h1>
 			<button
 				onClick={() => {
-					console.log("commands dashboard button click", { data, dataManager, app: dataManager.plugin.app, plugins: dataManager.plugin.app.plugins.plugins });
-
+					console.log("commands dashboard button click", {
+						data,
+						dataManager,
+						app: dataManager.plugin.app,
+						plugins: dataManager.plugin.app.plugins.plugins,
+					});
 				}}
 				className="bc-refresh-button"
 				style={{

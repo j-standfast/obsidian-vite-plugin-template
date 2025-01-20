@@ -1,10 +1,11 @@
 import type { Command, Hotkey, KeymapInfo, PluginManifest } from "obsidian";
+
 import {
 	CODES_CHROME_CAMEL,
 	MODIFIER_CODES_CHROME_CAMEL,
 	MODIFIER_KEYS,
-} from "./constants/constants";
-import { isCodeCamel } from "./serialize";
+} from "@/constants/constants";
+import { isCodeCamel } from "@/utils/serialize";
 
 // utility / test types
 export type Expect<T extends true> = T;
@@ -49,7 +50,7 @@ export interface SerializedSettings {
 	obsidianHotkeys: SerializedHotkeys;
 }
 
-export interface BSKSettings {
+export interface TailorCutsSettings {
 	keybindings: Keybinding[];
 	obsidianHotkeys: SerializedHotkeys;
 }

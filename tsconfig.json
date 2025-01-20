@@ -1,22 +1,21 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
+		"allowJs": false,
+		"esModuleInterop": true,
+        "importHelpers": true,
 		"inlineSourceMap": true,
 		"inlineSources": true,
-		"module": "NodeNext",
-		"target": "ES2020",
-		"allowJs": true,
-		"noImplicitAny": true,
-		"moduleResolution": "NodeNext",
-		"importHelpers": true,
 		"isolatedModules": true,
-		"strict": true,
+        "jsx": "react-jsx",
 		"lib": ["DOM", "ES5", "ES6", "ES7", "ESNext"],
-		"types": ["obsidian-typings", "react", "react-dom"],
-		"paths": {
-			"src": ["src/*"]
-		}, 
-        "jsx": "react-jsx"
+		"module": "ESNext",
+		"moduleResolution": "node",
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+		"strict": true,
+		"target": "ES2022",
+		"types": ["obsidian-typings", "react", "react-dom"]
 	},
-	"include": ["**/*.ts", "src/**/*.ts"]
+	"include": ["./src/**/*.ts", "./src/**/*.tsx"]
 }

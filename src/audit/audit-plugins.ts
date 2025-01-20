@@ -1,162 +1,19 @@
-import { Chord, BSKSettings } from "../types";
-import {
-	Command,
-	Modifier,
-	Hotkey,
-	App,
-	KeymapInfo,
-	PluginManifest,
-} from "obsidian";
+import type { App, Command, Hotkey, KeymapInfo, PluginManifest } from "obsidian";
+import type { CommandData, TailorCutsSettings } from "@/types";
 
-import {
-	OBSIDIAN_KEY_TO_CHROME_CODE,
-	OBSIDIAN_MODIFIER_KEYS_MAP,
-} from "../constants/constants";
-import {
-	Keybinding,
-	ModifierKey,
-	CodeCamel,
-	ChordKeyModifiers,
-} from "../types";
-// @ts-ignore
-import type { CommandsCommandsRecord } from "obsidian-typings";
-
-const hotkeyToChord = (hotkey: Hotkey): Chord => {
-	const modifiers: ChordKeyModifiers = new Map();
-	for (const modifier of hotkey.modifiers) {
-		const modifierKey =
-			OBSIDIAN_MODIFIER_KEYS_MAP[
-				modifier.toLowerCase() as Lowercase<Modifier>
-			];
-		if (!modifierKey) {
-			throw new Error(
-				`new new new |importShortcuts / hotkeyToChord / modifierKey not found: ${modifier}`
-			);
-		}
-		modifiers.set(modifierKey, true);
-	}
-	const base =
-		OBSIDIAN_KEY_TO_CHROME_CODE[
-			hotkey.key.toLowerCase() as keyof typeof OBSIDIAN_KEY_TO_CHROME_CODE
-		];
-	if (!base) {
-		throw new Error(
-			`importShortcuts / hotkeyToChord / base not found: ${hotkey.key}`
-		);
-	}
-	return {
-		modifiers,
-		base: base,
-		type: "valid",
-	};
-};
-
-const keymapToHotkey = (keymap: KeymapInfo): Hotkey => {
-	return {
-		modifiers: keymap.modifiers
-			? (keymap.modifiers.split(",") as Modifier[])
-			: [],
-		key: keymap.key as string,
-	};
-};
-
-type ShortcutsRecord = {
-	id: string;
-	shortcuts: Keybinding[];
-};
-
-const singleChordHotkeysToShortcuts = (
-	id: string,
-	hotkeys: Hotkey[] | undefined
-): ShortcutsRecord | undefined => {
-	if (!hotkeys) return undefined;
-	let keybindings: Keybinding[] = [];
-	for (const v of hotkeys) {
-		try {
-			keybindings.push({
-				id,
-				key: [hotkeyToChord(v)],
-			});
-		} catch (error) {
-			return undefined;
-		}
-	}
-	return { id, shortcuts: keybindings };
-};
-const isHotkey = (hotkey: unknown): hotkey is Hotkey => {
-	if (typeof hotkey !== "object" || hotkey === null) return false;
-	if (!("modifiers" in hotkey) || !("key" in hotkey)) return false;
-	if (!Array.isArray(hotkey.modifiers)) return false;
-	if (
-		!hotkey.modifiers.every((m) =>
-			["Shift", "Ctrl", "Alt", "Meta", "Mod"].includes(m)
-		)
-	)
-		return false;
-	if (typeof hotkey.key !== "string") return false;
-	return true;
-};
-
-const isHotkeyArray = (hotkeys: unknown): hotkeys is Hotkey[] => {
-	return Array.isArray(hotkeys) && hotkeys.every(isHotkey);
-};
-
-const maybeHotkeyArrayToShortcuts = (
-	id: string,
-	hotkeys: unknown | undefined
-): ShortcutsRecord | undefined => {
-	if (!hotkeys) return undefined;
-	if (!isHotkeyArray(hotkeys)) {
-		console.log(
-			"maybeHotkeyArrayToShortcuts / hotkeys is not an array of hotkeys:",
-			{ id, hotkeys }
-		);
-		return undefined;
-	}
-	return singleChordHotkeysToShortcuts(id, hotkeys);
-};
-
-export function importShortcuts(app: App) {
-	if (!app.hotkeyManager.baked) app.hotkeyManager.bake();
-	const defaultShortcuts: (ShortcutsRecord | undefined)[] = [];
-	const customShortcuts: (ShortcutsRecord | undefined)[] = [];
-	const activeShortcuts: (ShortcutsRecord | undefined)[] = [];
-	for (const c of Object.values(app.commands.commands)) {
-		const def = maybeHotkeyArrayToShortcuts(
-			c.id,
-			app.hotkeyManager.getDefaultHotkeys(c.id)
-		);
-		const cust = maybeHotkeyArrayToShortcuts(
-			c.id,
-			app.hotkeyManager.getHotkeys(c.id)
-		);
-		if (def) defaultShortcuts.push(def);
-		if (cust) customShortcuts.push(cust);
-		if (def || cust) activeShortcuts.push(def || cust);
-	}
-	console.log("importShortcuts / defaultShortcuts", {
-		defaultShortcuts,
-		customShortcuts,
-		activeShortcuts,
-	});
-}
-// const commandsWithHotkeys = Object.keys(commands).filter(
-// 	(commandId) => commands[commandId].hotkeys
-// );
-
-interface KeymapInfoRecord {
-	[commandId: string]: KeymapInfo[];
+interface HotkeyRecord {
+	[commandId: string]: Hotkey[];
 }
 
 const getCommandsHotkeysFromManager = (
 	app: App,
 	cmds: Command[]
 ): {
-	managerGottenKeymapInfo: KeymapInfoRecord;
-	managerGottenDefaultKeymapInfo: KeymapInfoRecord;
+	managerGottenKeymapInfo: HotkeyRecord;
+	managerGottenDefaultKeymapInfo: HotkeyRecord;
 } => {
-	let managerGottenKeymapInfo: KeymapInfoRecord = {};
-	let managerGottenDefaultKeymapInfo: KeymapInfoRecord = {};
+	let managerGottenKeymapInfo: HotkeyRecord = {};
+	let managerGottenDefaultKeymapInfo: HotkeyRecord = {};
 	for (const c of cmds) {
 		try {
 			const hotkeys = app.hotkeyManager.getHotkeys(c.id);
@@ -175,21 +32,22 @@ const getCommandsHotkeysFromManager = (
 	return { managerGottenKeymapInfo, managerGottenDefaultKeymapInfo };
 };
 
-const getCustomKeymapInfoFromManager = (app: App): KeymapInfoRecord => {
+const getCustomKeymapInfoFromManager = (app: App): HotkeyRecord => {
 	const customSym = Object.getOwnPropertySymbols(
 		app.hotkeyManager
 	)[0] as unknown as keyof typeof app.hotkeyManager;
 	return app.hotkeyManager[customSym] as {
-		[commandId: string]: KeymapInfo[];
+		[commandId: string]: Hotkey[];
 	};
 };
 
-const getBakedKeymapInfoFromManager = (app: App): KeymapInfoRecord => {
+// TODO fix
+const getBakedKeymapInfoFromManager = (app: App): HotkeyRecord => {
 	const bakedHotkeys = app.hotkeyManager.bakedIds.reduce((acc, id, i) => {
 		if (acc[id] === undefined) acc[id] = [];
-		acc[id].push(app.hotkeyManager.bakedHotkeys[i]);
+		acc[id].push(app.hotkeyManager.bakedHotkeys[i] as any);  // TODO
 		return acc;
-	}, {} as KeymapInfoRecord);
+	}, {} as HotkeyRecord);
 	return bakedHotkeys;
 };
 
@@ -215,7 +73,7 @@ const getCmdProps = (c: Command | undefined, prefix: string) => {
 	};
 };
 
-const getKeymapProps = (id: string, kmir: KeymapInfoRecord, prefix: string) => {
+const getKeymapProps = (id: string, kmir: HotkeyRecord, prefix: string) => {
 	return id in kmir
 		? {
 				[`${prefix}`]: true,
@@ -227,8 +85,12 @@ const getKeymapProps = (id: string, kmir: KeymapInfoRecord, prefix: string) => {
 		  };
 };
 
-export function auditCommands(app: App, settings: BSKSettings) {
+export function auditCommands(app: App, settings: TailorCutsSettings) {
 	// app.commands
+	if (!app.hotkeyManager.baked) {
+		console.error(" not baked");
+		return;
+	}
 	const commandsRecord = app.commands.commands;
 	const cmds = Object.values(commandsRecord);
 	const edCmds = Object.values(app.commands.editorCommands);
@@ -350,7 +212,7 @@ export function auditCommands(app: App, settings: BSKSettings) {
 		},
 	};
 
-	const cmdAudit = [];
+	const cmdAudit: CommandData[] = [];
 	for (const c of cmds) {
 		const idContext =
 			c.id.split(":").length > 1 ? c.id.split(":")[0] : undefined;
@@ -397,7 +259,7 @@ export function auditCommands(app: App, settings: BSKSettings) {
 			...getKeymapProps(c.id, defaultKeymapInfo, "mgrDefault"),
 			...getKeymapProps(
 				c.id,
-				settingsSerializedHotkeys as unknown as KeymapInfoRecord,
+				settingsSerializedHotkeys as unknown as HotkeyRecord,
 				"settingCustom"
 			),
 		};

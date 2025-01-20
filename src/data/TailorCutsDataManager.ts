@@ -1,24 +1,24 @@
 import type { App, Plugin } from "obsidian";
 
-import type { BCShortcutsPlugin } from "src/main";
-import { getCommandMetaData } from "src/data/get-command-data";
-import { getPluginMetaData } from "src/data/plugin";
-import { getKeybindingMetaData } from "src/data/keybinding";
-import type { KeybindingMeta, CommandMeta, PluginMeta } from "src/types";
-import { PluginsWatcher } from "src/data/PluginsWatcher";
+import { getCommandMetaData } from "@/data/get-command-data";
+import { getKeybindingMetaData } from "@/data/keybinding";
+import { getPluginMetaData } from "@/data/plugin";
+import { PluginsWatcher } from "@/data/PluginsWatcher";
+import type { TailorCutsPlugin } from "@/main";
+import type { CommandData, KeybindingMeta, PluginData, PluginMeta } from "@/types";
 
-export class BCDataManager {
+export class TailorCutsDataManager {
 	app: App;
-	plugin: BCShortcutsPlugin;
-	_commandData: CommandMeta[];
-	pluginData: PluginMeta[];
+	plugin: TailorCutsPlugin;
+	_commandData: CommandData[];
+	pluginData: PluginData[];
 	_keybindingData: KeybindingMeta[];
 	_isLoaded: boolean = false;
 	_pluginsWatcher: PluginsWatcher | null;
-	_pluginsWatcherSubscribers: ((data: PluginMeta[]) => void)[] = [];
+	_pluginsWatcherSubscribers: ((data: PluginData[]) => void)[] = [];
 	private _isLoadedPromise: Promise<void> | null = null;
 
-	constructor(app: App, plugin: BCShortcutsPlugin) {
+	constructor(app: App, plugin: TailorCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this._commandData = [];
@@ -44,9 +44,9 @@ export class BCDataManager {
 		if (!this._pluginsWatcher) {
 			throw new Error("Failed to create enabledPluginsWatcher");
 		}
-        await this._pluginsWatcher.load();
-        this.onChangePluginData();
-        this._pluginsWatcher.subscribe(() => this.onChangePluginData());
+		await this._pluginsWatcher.load();
+		this.onChangePluginData();
+		this._pluginsWatcher.subscribe(() => this.onChangePluginData());
 	}
 
 	async _refreshCommandData() {
@@ -114,7 +114,7 @@ export class BCDataManager {
 	}
 
 	async onDataLoaded<T>(
-		callback: (dataManager: BCDataManager) => T,
+		callback: (dataManager: TailorCutsDataManager) => T,
 		refresh: boolean = false
 	) {
 		await this._isLoadedPromise;
@@ -125,14 +125,14 @@ export class BCDataManager {
 	}
 
 	subscribePluginChange(callback: (data: PluginMeta[]) => void) {
-        this._pluginsWatcherSubscribers.push(callback);
-        return () => this.unsubscribePluginChange(callback);
+		this._pluginsWatcherSubscribers.push(callback);
+		return () => this.unsubscribePluginChange(callback);
 	}
 
 	async onChangePluginData() {
-        await this._refreshPluginData();
-        this._pluginsWatcherSubscribers.forEach((callback) =>
-            callback(this.pluginData)
+		await this._refreshPluginData();
+		this._pluginsWatcherSubscribers.forEach((callback) =>
+			callback(this.pluginData)
 		);
 	}
 

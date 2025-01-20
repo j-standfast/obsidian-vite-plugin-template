@@ -4,38 +4,35 @@ import React, {
 	useCallback,
 	useEffect,
 	useReducer,
-	useState,
+	useState,   
 } from "react";
 import { RotateCcw } from "lucide-react";
 
-import type { BCDataManager } from "src/data/BCDataManager";
-import type { CommandMeta, KeybindingMeta, PluginMeta } from "src/types";
-import type { BCPluginsView } from "src/views/BCPluginsView";
-import { CommandTable } from "./CommandTable";
-import { Keeb } from "./Keeb";
-import { KeybindingTable } from "./KeybindingTable";
-import { PluginTable } from "./PluginTable";
-import { PropertyWatcher } from "src/propertyWatcher";
+import type { TailorCutsDataManager } from "@/data/TailorCutsDataManager";
+import type { CommandData, KeybindingDatum, KeybindingMeta, PluginData, PluginMeta } from "@/types";
+import type { PluginsView } from "./PluginsView";
+import { PluginTable } from "./PluginsTable";
+import { PropertyWatcher } from "@/utils/PropertyWatcher";
 
-interface UseBCDashboardDataReturn {
-	commandData: CommandMeta[];
-	pluginData: PluginMeta[];
-	keybindingData: KeybindingMeta[];
+interface UsePluginsDashboardDataReturn {
+	commandData: CommandData[];
+	pluginData: PluginData[];
+	keybindingData: KeybindingDatum[];
 	refresh: () => void;
 }
 
-interface UseBCDashboardDataProps {
-	view: BCPluginsView;
-	dataManager: BCDataManager;
+interface UsePluginsDashboardDataProps {
+	view: PluginsView;
+	dataManager: TailorCutsDataManager;
 }
 
-const useDashboardData = ({
+const usePluginsDashboardData = ({
 	view,
 	dataManager,
-}: UseBCDashboardDataProps): UseBCDashboardDataReturn => {
-	const [commandData, setCommandData] = useState<CommandMeta[]>([]);
-	const [pluginData, setPluginData] = useState<PluginMeta[]>([]);
-	const [keybindingData, setKeybindingData] = useState<KeybindingMeta[]>([]);
+}: UsePluginsDashboardDataProps): UsePluginsDashboardDataReturn => {
+	const [commandData, setCommandData] = useState<CommandData[]>([]);
+	const [pluginData, setPluginData] = useState<PluginData[]>([]);
+	const [keybindingData, setKeybindingData] = useState<KeybindingDatum[]>([]);
 
 	const refresh = useCallback(async () => {
 		dataManager.onDataLoaded(async (dataManager) => {
@@ -64,17 +61,23 @@ const useDashboardData = ({
 			},
 			100
 		);
-        // note - the plugins object is mutated on enable/disable, so this is a bit of a hack
+		// note - the plugins object is mutated on enable/disable, so this is a bit of a hack
 		const watcher2 = new PropertyWatcher(
-			() => Object.values(dataManager.app.plugins.plugins).map((p) => p.manifest.id).join(','),
+			() =>
+				Object.values(dataManager.app.plugins.plugins)
+					.map((p) => p.manifest.id)
+					.join(","),
 			(prev, curr) => {
-				console.log("plugins changed - PropertyWatcher 2", { prev, curr });    
+				console.log("plugins changed - PropertyWatcher 2", {
+					prev,
+					curr,
+				});
 				refresh();
 			},
 			250
 		);
-        watcher.start();
-        watcher2.start();
+		watcher.start();
+		watcher2.start();
 		refresh();
 		return () => {
 			watcher.stop();
@@ -85,17 +88,17 @@ const useDashboardData = ({
 	return { commandData, pluginData, keybindingData, refresh };
 };
 
-export interface BCDashboardProps {
-	view: BCPluginsView;
-	dataManager: BCDataManager;
+export interface PluginsDashboardProps {
+	view: PluginsView;
+	dataManager: TailorCutsDataManager;
 }
-export const BCPluginsDashboard = ({
+export const PluginsDashboard = ({
 	view,
 	dataManager,
-}: BCDashboardProps): ReactNode => {
+}: PluginsDashboardProps): ReactNode => {
 	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
 	const { commandData, pluginData, keybindingData, refresh } =
-		useDashboardData({ view, dataManager });
+		usePluginsDashboardData({ view, dataManager });
 	const [commandSorting, setCommandSorting] = useState<SortingState>([]);
 	const [pluginSorting, setPluginSorting] = useState<SortingState>([]);
 	const [keybindingSorting, setKeybindingSorting] = useState<SortingState>(

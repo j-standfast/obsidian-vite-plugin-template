@@ -2,16 +2,16 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 import React, { StrictMode } from "react";
 import { Root, createRoot } from "react-dom/client";
 
-import { BCPluginsDashboard } from "src/components/BCPluginsDashboard";
-import { VIEW_TYPE_BC_PLUGINS } from "src/constants/plugin";
-import type { BCShortcutsPlugin } from "src/main";
+import { PluginsDashboard } from "@/views/plugins/PluginsDashboard";
+import { VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS } from "@/constants/plugin";
+import type { TailorCutsPlugin } from "@/main";
 
-export class BCPluginsView extends ItemView {
-	plugin: BCShortcutsPlugin;
+export class PluginsView extends ItemView {
+	plugin: TailorCutsPlugin;
 	navigation = true;
 	root: Root | null = null;
 
-	constructor(leaf: WorkspaceLeaf, plugin: BCShortcutsPlugin) {
+	constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
 		super(leaf);
 		this.plugin = plugin;
 	}
@@ -21,18 +21,18 @@ export class BCPluginsView extends ItemView {
 	}
 
 	getViewType(): string {
-		return VIEW_TYPE_BC_PLUGINS;
+		return VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS;
 	}
 
 	getDisplayText(): string {
-		return "BC Plugins";
+		return "Plugins View";
 	}
 
 	async onOpen() {
 		this.root = createRoot(this.contentEl);
 		this.root.render(
 			<StrictMode>
-				<BCPluginsDashboard
+				<PluginsDashboard
 					dataManager={this.plugin.dataManager}
 					view={this}
 				/>

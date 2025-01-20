@@ -3,7 +3,7 @@ import {
 	CODES_CHROME_CAMEL,
 	MODIFIER_CODES_CHROME_CAMEL,
 	MODIFIER_KEYS,
-} from "./constants/constants";
+} from "@/constants/constants";
 import type {
 	Expect,
 	CoExtends,
@@ -13,7 +13,7 @@ import type {
 	ChordKeyModifiers,
 	ModifierKey,
 	ValidChord,
-} from "./types";
+} from "@/types";
 
 export const modifierCodeSchema = z.enum(MODIFIER_CODES_CHROME_CAMEL);
 export const modifierKeySchema = z.enum(MODIFIER_KEYS);
