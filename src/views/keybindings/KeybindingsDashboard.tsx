@@ -1,3 +1,4 @@
+import type { SortingState } from "@tanstack/react-table";
 import React, {
 	ReactNode,
 	useCallback,
@@ -8,24 +9,24 @@ import React, {
 import { RotateCcw } from "lucide-react";
 
 import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
-import type { PluginMeta } from "@/types";
-import { PluginsTable } from "./PluginsTable";
+import { KeybindingsTable } from "./KeybindingsTable";
+import type { KeybindingMeta } from "@/types";
 
-export interface PluginsDashboardProps {
+export interface KeybindingsDashboardProps {
 	dataManager: TailorCutsDataManager;
 }
-export const PluginsDashboard = ({
+
+export const KeybindingsDashboard = ({
 	dataManager,
-}: PluginsDashboardProps): ReactNode => {
-	console.log("PluginsDashboard rerender");
-
-	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
-	const [data, setData] = useState<PluginMeta[]>([]);
-
+}: KeybindingsDashboardProps): ReactNode => {
+	const [sorting, setSorting] = useState<SortingState>([]);
+	const [data, setData] = useState<KeybindingMeta[]>([]);
 	useEffect(() => {
-		const unsubscribe = dataManager.subscribePluginChange((plugins) => {
-			setData(plugins);
-		});
+		const unsubscribe = dataManager.subscribeKeybindingChange(
+			(keybindingsData) => {
+				setData(keybindingsData);
+			}
+		);
 		return () => {
 			unsubscribe();
 		};
@@ -37,15 +38,15 @@ export const PluginsDashboard = ({
 				display: "flex",
 				flexDirection: "column",
 				alignItems: "center",
-				justifyContent: "center",
+				justifyContent: "start",
 				gap: "10px",
 			}}
 		>
-			<h1>Plugins Dashboard</h1>
+			<h1>Keybindings Dashboard</h1>
 			<button
 				onClick={() => {
-					console.log("PluginsDashboard refresh button onClick", {
-						pluginData: data,
+					console.log("KeybindingsDashboard refresh button onClick", {
+						data,
 						dataManager,
 						app: dataManager.plugin.app,
 						plugins: dataManager.plugin.app.plugins.plugins,
@@ -60,9 +61,9 @@ export const PluginsDashboard = ({
 			>
 				<RotateCcw />
 			</button>
-			<PluginsTable
+			<KeybindingsTable
 				data={data}
-				className="barraclough-tailor-cuts-plugins-table"
+				className="barraclough-tailor-cuts-keybindings-table"
 			/>
 		</div>
 	);

@@ -2,9 +2,9 @@ import type {
 	SerializedSettings,
 	TailorCutsSettings,
 	CodeCamel,
-} from "../types";
+} from "../types/types";
 import { Modifier } from "obsidian";
-import { ModifierKey } from "../types";
+import { ModifierKey } from "../types/types";
 
 export const DEFAULT_SETTINGS: SerializedSettings = {
 	keybindings: [],

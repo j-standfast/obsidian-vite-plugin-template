@@ -14,7 +14,7 @@ export interface KeybindingTableProps {
 	// setData: (data: KeybindingMeta[]) => void;
 	sorting: SortingState;
 	setSorting: (value: SetStateAction<SortingState>) => void;
-    className: string;
+	className: string;
 }
 
 export const KeybindingTable = ({
@@ -40,20 +40,20 @@ export const KeybindingTable = ({
 				cell: (info) => info.getValue(),
 				sortUndefined: "last",
 			},
-            {
+			{
 				id: "isListed",
 				header: "Listed",
 				accessorKey: "isListed",
-				cell: (info) => info.getValue() ? 'T' : '',
+				cell: (info) => (info.getValue() ? "T" : ""),
 				sortUndefined: "last",
 			},
-            {
-                id: "isDefault",
-                header: "Default",
-                accessorKey: "isDefault",
-                cell: (info) => info.getValue() ? 'T' : '',
-                sortUndefined: "last",
-            },
+			{
+				id: "isDefault",
+				header: "Default",
+				accessorKey: "isDefault",
+				cell: (info) => (info.getValue() ? "T" : ""),
+				sortUndefined: "last",
+			},
 			{
 				id: "keysig",
 				header: "Keys",

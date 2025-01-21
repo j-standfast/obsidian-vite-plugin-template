@@ -1,145 +1,9 @@
-import type { Command, Hotkey, KeymapInfo, PluginManifest } from "obsidian";
+import type { Hotkey, KeymapInfo, PluginManifest } from "obsidian";
 
-import {
-	CODES_CHROME_CAMEL,
-	MODIFIER_CODES_CHROME_CAMEL,
-	MODIFIER_KEYS,
-} from "@/constants/constants";
-import { isCodeCamel } from "@/utils/serialize";
+import { CommandData, CommandId } from "./commands";
+import type { Keysig } from "./keybindings";
 
-// utility / test types
-export type Expect<T extends true> = T;
-export type CoExtends<T, U> = [T] extends [U]
-	? [U] extends [T]
-		? true
-		: false
-	: false;
-
-// keycodes, chords, sequences
-export type ModifierCodeCamel = (typeof MODIFIER_CODES_CHROME_CAMEL)[number];
-export type ModifierKey = (typeof MODIFIER_KEYS)[number];
-export type CodeCamel = (typeof CODES_CHROME_CAMEL)[number];
-export type ChordKeyModifiers = Map<ModifierKey, true>;
-export type ValidChord = {
-	modifiers: ChordKeyModifiers;
-	base: CodeCamel;
-	type: "valid";
-};
-export type InvalidChord = {
-	modifiers: ChordKeyModifiers;
-	base: undefined;
-	type: "invalid base" | "modifier event" | "keyup event";
-};
-export type Chord = ValidChord | InvalidChord;
-
-export interface SerializedKeybinding {
-	id: string;
-	key: string;
-}
-
-// shared
-export interface Keybinding {
-	id: string; // TODO kick this out no - because can be more than one
-	key: Chord[];
-}
-
-export type SerializedHotkeys = Record<string, Hotkey[]>;
-
-export interface SerializedSettings {
-	keybindings: SerializedKeybinding[];
-	obsidianHotkeys: SerializedHotkeys;
-}
-
-export interface TailorCutsSettings {
-	keybindings: Keybinding[];
-	obsidianHotkeys: SerializedHotkeys;
-}
-
-export interface CommandData extends Command {
-	id: string;
-	name: string;
-	pluginId?: PluginId;
-	pluginType?: "core" | "community";
-	pluginEnabled?: boolean;
-	idContext: string[] | undefined; // computed
-	nameContext: string[] | undefined; // computed
-
-	// computed
-	// context
-	// context/plugin match
-	// isInternal
-	// isCommunity
-	// hasCallback: boolean;
-	// hasCheckCallback: boolean;
-	// hasEditorCallback: boolean;
-	// hasEditorCheckCallback: boolean;
-
-	isIn: {
-		appCommand: boolean;
-		appEditorCommand: boolean;
-		internalPluginCommand: boolean;
-		foundCommand: boolean;
-		listedCommand: boolean;
-	};
-	appCommandEqualityChecks: {
-		appEditorCommand: boolean | undefined;
-		internalPluginCommand: boolean | undefined;
-		foundCommand: boolean | undefined;
-		listedCommand: boolean | undefined;
-	};
-}
-
-export interface EqualityChecks {
-	default: boolean | undefined;
-	custom: boolean | undefined;
-}
-interface HotkeysAlternates {
-	default: Hotkey[] | undefined;
-	custom: Hotkey[] | undefined;
-}
-export interface CommandHotkeyData {
-	id: string;
-	getFn: HotkeysAlternates;
-	obj: HotkeysAlternates;
-	command: HotkeysAlternates & { custom: undefined };
-	equalityChecks: {
-		fnObj: EqualityChecks;
-		fnObjStrict: EqualityChecks;
-		fnCommand: EqualityChecks;
-	};
-}
-
-export interface CommandPluginData {
-	id: string;
-	isInPlugin: boolean; // only for internal plugins
-	isPluginEnabled: boolean | undefined;
-	pluginCommandEquality: boolean | undefined;
-}
-
-export interface FutureCommandMetaData {
-	id: string;
-	tags: string[];
-	context: string; // user picks, we check vs command checks; see scope in workspace and app? also recent commandds and keys
-	planes: string[];
-	hasConflicts: boolean;
-	conflicts: unknown[];
-	vsCodeAnalogs: string[];
-	vimAnalogs: string[];
-	emacsAnalogs: string[];
-}
-
-/**
- * future tests:
- * conforms to VSCode requirements
- * keyboard shit worked out
- *
- */
-
-export interface PluginMeta {}
-
-export type CommandId = string;
 export type PluginId = string;
-export type Keysig = string;
 
 export interface InternalPluginData {
 	type: "core";
@@ -228,28 +92,6 @@ type OptionalPluginData = {
 };
 export type LoosePluginData = Omit<PluginData & OptionalPluginData, never>;
 
-export interface KeybindingMeta {
-	commandId: string;
-	commandName: string;
-	keysig: string;
-	isDefault: boolean;
-	isListed: boolean;
-	defaultHotkeys: Hotkey[];
-	customHotkeys: Hotkey[];
-}
-
-// export interface Command {
-//     id: string;
-//     name: string;
-//     icon?: IconName;
-//     mobileOnly?: boolean;
-//     repeatable?: boolean;
-//     callback?: () => any;
-//     checkCallback?: (checking: boolean) => boolean | void;
-//     editorCallback?: (editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => any;
-//     editorCheckCallback?: (checking: boolean, editor: Editor, ctx: MarkdownView | MarkdownFileInfo) => boolean | void;
-//     hotkeys?: Hotkey[];
-// }
 
 export type PluginKeybindings = Map<Keysig, CommandId[]>;
 // export type PluginScancodebindings = Map<Scancodesig, CommandId>;
@@ -265,5 +107,8 @@ export interface KeybindingDatumWithoutConflicts {
 }
 
 export interface KeybindingDatum extends KeybindingDatumWithoutConflicts {
-	conflictsWith: Keysig[];
+    conflictsWith: Keysig[];
+    commandData: CommandData;
 }
+
+export interface PluginMeta { }

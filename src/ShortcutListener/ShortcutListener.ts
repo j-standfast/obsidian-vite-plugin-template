@@ -1,6 +1,6 @@
 import { App } from "obsidian";
 import { MODIFIER_CODES_CHROME_CAMEL } from "../constants/constants";
-import { Chord, Keybinding } from "../types";
+import { Chord, Keybinding } from "../types/types";
 import {
 	isModifierCodeCamel,
 	keyEventToChord,

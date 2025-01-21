@@ -8,9 +8,9 @@ import React, {
 } from "react";
 import { RotateCcw } from "lucide-react";
 
-import type { PluginMeta } from "@/types";
+import type { CommandData } from "@/types";
 import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
-import { PluginsTable } from "@/views/plugins/PluginsTable";
+import { CommandsTable } from "./CommandsTable";
 
 export interface CommandsDashboardProps {
 	dataManager: TailorCutsDataManager;
@@ -20,11 +20,13 @@ export const CommandsDashboard = ({
 	dataManager,
 }: CommandsDashboardProps): ReactNode => {
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const [data, setData] = useState<PluginMeta[]>([]);
+	const [data, setData] = useState<CommandData[]>([]);
 	useEffect(() => {
-		const unsubscribe = dataManager.subscribePluginChange((plugins) => {
-			setData(plugins);
-		});
+		const unsubscribe = dataManager.subscribeCommandChange(
+			(commandsData) => {
+				setData(commandsData);
+			}
+		);
 		return () => {
 			unsubscribe();
 		};
@@ -59,26 +61,10 @@ export const CommandsDashboard = ({
 			>
 				<RotateCcw />
 			</button>
-			{/* <Keeb /> */}
-			{/* <CommandTable
-				data={commandData}
-				// setData={setCmdData}
-				sorting={commandSorting}
-				setSorting={setCommandSorting}
-				className="bc-command-table"
-			/> */}
-			<PluginsTable
+			<CommandsTable
 				data={data}
-				// setData={setPluginData}
 				className="barraclough-tailor-cuts-commands-table"
 			/>
-			{/* <KeybindingTable
-				data={keybindingData}
-				// setData={setKeybindingData}
-				sorting={keybindingSorting}
-				setSorting={setKeybindingSorting}
-				className="bc-keybinding-table"
-			/> */}
 		</div>
 	);
 };

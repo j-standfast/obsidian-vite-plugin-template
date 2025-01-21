@@ -10,8 +10,8 @@ export class PluginsWatcher {
 	plugin: TailorCutsPlugin;
 	enabledPluginsWatcher: WatchedProxy<Record<string, Plugin>> | null;
 	communityPluginsWatcher: WatchedProxy<Plugins> | null;
-	subscribers: ((plugins: Record<string, Plugin>) => void)[] = [];
-	#_isLoaded: Promise<void> | null = null;
+    subscribers: ((plugins: Record<string, Plugin>) => void)[] = [];
+    isLoaded: boolean = false;
 	#_logHeader = "PluginsWatcher";
 
 	constructor(app: App, plugin: TailorCutsPlugin) {
@@ -19,21 +19,24 @@ export class PluginsWatcher {
 		this.plugin = plugin;
 		this.enabledPluginsWatcher = null;
 		this.communityPluginsWatcher = null;
+        this.isLoaded = false;
 
 		this.subscribe = this.subscribe.bind(this);
 		this.unsubscribe = this.unsubscribe.bind(this);
 		this.onChange = this.onChange.bind(this);
 		this.unload = this.unload.bind(this);
-		this._load = this._load.bind(this);
-
+		
+        this._load = this._load.bind(this);
 		this._load();
 	}
 
 	async _load() {
-		this.#_isLoaded = new Promise((resolve) => {
+        this.isLoaded = false;
+        new Promise((resolve: (value: null) => void) => {
 			this.app.workspace.onLayoutReady(async () => {
 				await this._loadWatchers();
-				resolve();
+				this.isLoaded = true;
+				resolve(null);
 			});
         });
 	}
@@ -48,7 +51,8 @@ export class PluginsWatcher {
 
 		this.communityPluginsWatcher = new WatchedProxy(
 			this.app.plugins,
-			"app.plugins",
+            "app.plugins",
+            ["app", "app.plugins.app"],
 			3
 		);
 		this.communityPluginsWatcher.onChange(
@@ -71,22 +75,18 @@ export class PluginsWatcher {
 	}
 
 	async unload() {
+        this.isLoaded = false;
 		this.communityPluginsWatcher?.unload();
 		// this.enabledPluginsWatcher?.unload();
 	}
 
-	async reload() {
-		await this.unload();
-		await this._load();
-	}
-
 	subscribe(callback: (plugins: Record<string, Plugin>) => void) {
 		this.subscribers.push(callback);
-		const msg = "Subscribed to plugins change";
+		const msg = "Subscribed to app.plugins.plugins changes via WatchedProxy";
 		console.log(`${this.#_logHeader} / subscribe: ${msg}`, {
 			subscribers: this.subscribers,
         });
-        if (this.#_isLoaded) {
+        if (this.isLoaded) {
             callback(this.app.plugins.plugins);
         }
 	}

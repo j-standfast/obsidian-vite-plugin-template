@@ -9,7 +9,7 @@ import type {
 import {
 	getCommandData,
 	getCommandHotkeyData,
-	getKeybindings,
+	// getKeybindings,
 	getPluginData,
 } from "@/DataManager/commands";
 import type { TailorCutsPlugin } from "@/main";
@@ -82,9 +82,9 @@ export class DebugUtils {
 	getPluginData() {
 		return getPluginData(this.app);
 	}
-	getKeybindings() {
-		return getKeybindings(this.app);
-	}
+	// getKeybindings() {
+	// 	return getKeybindings(this.app);
+	// }
 	testShow(id: string) {
 		const hotkey: Hotkey | undefined = (this.app.hotkeyManager.getHotkeys(
 			id

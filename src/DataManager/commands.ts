@@ -1,33 +1,17 @@
-import * as z from "zod";
 import { App, Command, Hotkey, KeymapInfo } from "obsidian";
-import { useState, Dispatch, SetStateAction } from "react";
 
 import type {
 	CommandData,
 	CommandHotkeyData,
 	CommandId,
-	CommandMeta,
 	CommunityPluginData,
 	InternalPluginData,
-	KeybindingData,
 	KeybindingDatum,
 	KeybindingDatumWithoutConflicts,
 	Keysig,
 	PluginData,
 	PluginId,
 } from "@/types";
-import { getCommunityPluginMetaData } from "./plugin";
-
-export const getCommandMetaData = (app: App): CommandMeta[] => {
-	const listedCommandIds = app.commands
-		.listCommands()
-		.map((command) => command.id);
-	return Object.values(app.commands.commands).map((command) => ({
-		id: command.id,
-		name: command.name,
-		isListed: listedCommandIds.includes(command.id) ? true : false,
-	}));
-};
 
 // -----------------------------------------------------------------------------
 const getInternalPluginCommandsById = (app: App) => {
@@ -44,7 +28,6 @@ const getInternalPluginCommandsById = (app: App) => {
 			});
 		}
 	);
-	console.log(disabledInternalPluginCommandIds);
 	return {
 		internalPluginCommandsById,
 		disabledInternalPluginCommandIds,
@@ -163,6 +146,12 @@ export const getCommandData = (app: App): CommandData[] => {
 			},
 			{} as Record<keyof typeof otherCommands, boolean | undefined>
 		);
+		const callbacks = {
+			callback: !!cmd.callback,
+			checkCallback: !!cmd.checkCallback,
+			editorCallback: !!cmd.editorCallback,
+			editorCheckCallback: !!cmd.editorCheckCallback,
+		};
 
 		res.push({
 			...cmd,
@@ -171,6 +160,7 @@ export const getCommandData = (app: App): CommandData[] => {
 			nameContext,
 			isIn,
 			appCommandEqualityChecks,
+			callbacks,
 		});
 	}
 	return res;
@@ -672,74 +662,74 @@ const keymapInfoToString = (v: KeymapInfo) => {
 	return v.modifiers + " + " + v.key;
 };
 
-export const getKeybindings = (app: App): KeybindingData => {
-	app.hotkeyManager.bake();
-	const commandData = getCommandData(app).filter(
-		(cmd) => !(cmd.pluginId && !cmd.pluginEnabled)
-	);
-	const commandHotkeyData = getCommandHotkeyData(app, commandData);
-	const tmp = new Map<Keysig, KeybindingDatumWithoutConflicts[]>();
-	for (const cmd of Object.values(commandHotkeyData)) {
-		const isCustom = !!cmd.getFn.custom;
-		for (const hk of cmd.getFn.custom ?? cmd.getFn.default ?? []) {
-			const d = getKeybindingDatumWithoutConflicts(cmd.id, hk, !isCustom);
-			tmp.set(d.keysig, [...(tmp.get(d.keysig) ?? []), d]);
-		}
-	}
-	const keybindingsData = new Map<Keysig, KeybindingDatum[]>();
-	for (const [keysig, data] of tmp) {
-		keybindingsData.set(
-			keysig,
-			data.map((d) => ({
-				...d,
-				conflictsWith: data
-					.filter((d2) => d2.keysig !== d.keysig)
-					.map((d) => d.keysig),
-				matchesBaked: app.hotkeyManager.bakedHotkeys.some((hk) =>
-					keymapInfoEquals(hk, d.keymapInfo)
-				),
-			}))
-		);
-	}
+// export const getKeybindings = (app: App): KeybindingDatum[] => {
+// 	app.hotkeyManager.bake();
+// 	const commandData = getCommandData(app).filter(
+// 		(cmd) => !(cmd.pluginId && !cmd.pluginEnabled)
+// 	);
+// 	const commandHotkeyData = getCommandHotkeyData(app, commandData);
+// 	const tmp = new Map<Keysig, KeybindingDatumWithoutConflicts[]>();
+// 	for (const cmd of Object.values(commandHotkeyData)) {
+// 		const isCustom = !!cmd.getFn.custom;
+// 		for (const hk of cmd.getFn.custom ?? cmd.getFn.default ?? []) {
+// 			const d = getKeybindingDatumWithoutConflicts(cmd.id, hk, !isCustom);
+// 			tmp.set(d.keysig, [...(tmp.get(d.keysig) ?? []), d]);
+// 		}
+// 	}
+// 	const keybindingsData = new Map<Keysig, KeybindingDatum[]>();
+// 	for (const [keysig, data] of tmp) {
+// 		keybindingsData.set(
+// 			keysig,
+// 			data.map((d) => ({
+// 				...d,
+// 				conflictsWith: data
+// 					.filter((d2) => d2.keysig !== d.keysig)
+// 					.map((d) => d.keysig),
+// 				matchesBaked: app.hotkeyManager.bakedHotkeys.some((hk) =>
+// 					keymapInfoEquals(hk, d.keymapInfo)
+// 				),
+// 			}))
+// 		);
+// 	}
 
-	const matchedHotkeyIdxs = Array.from(keybindingsData.values())
-		.flat()
-		.filter((d) => d.bakedHotkeyIdx !== -1)
-		.map((d) => d.bakedHotkeyIdx);
-	const missingHotkeyIdxs = Array(app.hotkeyManager.bakedHotkeys.length)
-		.fill(0)
-		.map((_, i) => i)
-		.filter(
-			(idx) =>
-				!matchedHotkeyIdxs.includes(idx) &&
-				app.commands.findCommand(app.hotkeyManager.bakedIds[idx])
-		);
-	const extraHotkeys = Array.from(keybindingsData.values())
-		.flat()
-		.filter((d) => d.bakedHotkeyIdx === -1)
-		.map((d) => keymapInfoToString(d.keymapInfo) + " -> " + d.commandId);
-	const missingHotkeys = missingHotkeyIdxs.map(
-		(idx) =>
-			keymapInfoToString(app.hotkeyManager.bakedHotkeys[idx]) +
-			" -> " +
-			app.hotkeyManager.bakedIds[idx]
-	);
-	const matchedHotkeys = matchedHotkeyIdxs.map(
-		(idx) =>
-			keymapInfoToString(app.hotkeyManager.bakedHotkeys[idx]) +
-			" -> " +
-			app.hotkeyManager.bakedIds[idx]
-	);
+// 	const matchedHotkeyIdxs = Array.from(keybindingsData.values())
+// 		.flat()
+// 		.filter((d) => d.bakedHotkeyIdx !== -1)
+// 		.map((d) => d.bakedHotkeyIdx);
+// 	const missingHotkeyIdxs = Array(app.hotkeyManager.bakedHotkeys.length)
+// 		.fill(0)
+// 		.map((_, i) => i)
+// 		.filter(
+// 			(idx) =>
+// 				!matchedHotkeyIdxs.includes(idx) &&
+// 				app.commands.findCommand(app.hotkeyManager.bakedIds[idx])
+// 		);
+// 	const extraHotkeys = Array.from(keybindingsData.values())
+// 		.flat()
+// 		.filter((d) => d.bakedHotkeyIdx === -1)
+// 		.map((d) => keymapInfoToString(d.keymapInfo) + " -> " + d.commandId);
+// 	const missingHotkeys = missingHotkeyIdxs.map(
+// 		(idx) =>
+// 			keymapInfoToString(app.hotkeyManager.bakedHotkeys[idx]) +
+// 			" -> " +
+// 			app.hotkeyManager.bakedIds[idx]
+// 	);
+// 	const matchedHotkeys = matchedHotkeyIdxs.map(
+// 		(idx) =>
+// 			keymapInfoToString(app.hotkeyManager.bakedHotkeys[idx]) +
+// 			" -> " +
+// 			app.hotkeyManager.bakedIds[idx]
+// 	);
 
-	return {
-		commandData,
-		commandHotkeyData,
-		nCommands: Object.keys(commandHotkeyData).length,
-		keybindingsData,
-		extraHotkeys,
-		missingHotkeys,
-		matchedHotkeys,
-		bakedHotkeys: app.hotkeyManager.bakedHotkeys,
-		bakedIds: app.hotkeyManager.bakedIds,
-	};
-};
+// 	return {
+// 		commandData,
+// 		commandHotkeyData,
+// 		nCommands: Object.keys(commandHotkeyData).length,
+// 		keybindingsData,
+// 		extraHotkeys,
+// 		missingHotkeys,
+// 		matchedHotkeys,
+// 		bakedHotkeys: app.hotkeyManager.bakedHotkeys,
+// 		bakedIds: app.hotkeyManager.bakedIds,
+// 	};
+// };

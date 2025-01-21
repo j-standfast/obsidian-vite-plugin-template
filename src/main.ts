@@ -3,6 +3,7 @@ import { App, Plugin, PluginManifest, WorkspaceLeaf } from "obsidian";
 import { ShortcutListener } from "@/ShortcutListener/ShortcutListener";
 import {
 	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS,
+	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS,
 	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS,
 } from "@/constants/plugin";
 import { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
@@ -16,6 +17,7 @@ import {
 } from "@/utils/serialize";
 import { CommandsView } from "@/views/commands/CommandsView";
 import { PluginsView } from "@/views/plugins/PluginsView";
+import { KeybindingsView } from "@/views/keybindings/KeybindingsView";
 
 export default class TailorCutsPlugin extends Plugin {
 	settings: TailorCutsSettings;
@@ -52,6 +54,11 @@ export default class TailorCutsPlugin extends Plugin {
 			name: "Show commands dashboard",
 			callback: () => this.addCommandsView(),
 		});
+		this.addCommand({
+			id: "show-keybindings-dashboard",
+			name: "Show keybindings dashboard",
+			callback: () => this.addKeybindingsView(),
+		});
 		this.util.onload();
 
 		this.registerView(
@@ -61,6 +68,10 @@ export default class TailorCutsPlugin extends Plugin {
 		this.registerView(
 			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS,
 			(leaf: WorkspaceLeaf) => new CommandsView(leaf, this)
+		);
+		this.registerView(
+			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS,
+			(leaf: WorkspaceLeaf) => new KeybindingsView(leaf, this)
 		);
 		this.app.workspace.onLayoutReady(() => {
 			try {
@@ -79,6 +90,9 @@ export default class TailorCutsPlugin extends Plugin {
 		);
 		this.app.workspace.detachLeavesOfType(
 			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS
+		);
+		this.app.workspace.detachLeavesOfType(
+			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS
 		);
 	}
 
@@ -128,6 +142,16 @@ export default class TailorCutsPlugin extends Plugin {
 		this.app.workspace
 			.getLeaf()
 			.setViewState({ type: VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS });
+	}
+
+	async addKeybindingsView() {
+		const isViewOpen = this.app.workspace.getLeavesOfType(
+			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS
+		);
+		if (isViewOpen.length > 0) return;
+		this.app.workspace.getLeaf().setViewState({
+			type: VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS,
+		});
 	}
 }
 

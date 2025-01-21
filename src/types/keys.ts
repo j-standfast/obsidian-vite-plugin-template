@@ -1,0 +1,1 @@
+import type { Command, Hotkey, KeymapInfo, PluginManifest } from "obsidian";

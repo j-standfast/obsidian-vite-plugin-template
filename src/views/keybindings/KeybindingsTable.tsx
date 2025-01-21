@@ -13,17 +13,20 @@ import {
 } from "@tanstack/react-table";
 import { SetStateAction, useMemo, useReducer, useState } from "react";
 
-import { CommandData } from "@/types";
+import { KeybindingMeta } from "@/types";
 
-export interface CommandTableProps {
-	data: CommandData[];
+export interface KeybindingsTableProps {
+	data: KeybindingMeta[];
 	// setData: (data: CommandMeta[]) => void;
 	className: string;
 }
 
 import { boolCellOption, ColumnFilter } from "@/components/shared-table";
 
-export const CommandsTable = ({ data, className }: CommandTableProps) => {
+export const KeybindingsTable = ({
+	data,
+	className,
+}: KeybindingsTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([
 		{
 			id: "name",
@@ -36,7 +39,7 @@ export const CommandsTable = ({ data, className }: CommandTableProps) => {
 	]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-	const columns = useMemo<ColumnDef<CommandData>[]>(
+	const columns = useMemo<ColumnDef<KeybindingMeta>[]>(
 		() => [
 			{
 				id: "id",
@@ -50,114 +53,6 @@ export const CommandsTable = ({ data, className }: CommandTableProps) => {
 				header: "Name",
 				accessorKey: "name",
 				cell: (info) => info.getValue(),
-				sortUndefined: "last",
-			},
-			{
-				id: "pluginType",
-				header: "pluginType",
-				accessorFn: (row) => row.pluginType ?? "-",
-				cell: (info) => info.getValue(),
-				sortUndefined: "last",
-			},
-			{
-				id: "pluginId",
-				header: "pluginId",
-				accessorFn: (row) => row.pluginId ?? "-",
-				cell: (info) => info.getValue(),
-				sortUndefined: "last",
-			},
-			{
-				id: "pluginEnabled",
-				header: "pluginEnabled",
-				accessorFn: (row) => row.pluginEnabled,
-				cell: (info) => boolCellOption(info),
-				filterFn: "includesString",
-				sortUndefined: "last",
-			},
-			{
-				id: "idContext",
-				header: "idContext",
-				accessorFn: (row) => row.idContext?.join(", ") ?? "-",
-				cell: (info) => info.getValue(),
-				sortUndefined: "last",
-			},
-			{
-				id: "nameContext",
-				header: "nameContext",
-				accessorFn: (row) => row.nameContext?.join(", ") ?? "-",
-				cell: (info) => info.getValue(),
-				sortUndefined: "last",
-			},
-			{
-				id: "isListed",
-				header: "isListed",
-				accessorFn: (row) => row.isIn.listedCommand,
-				cell: (info) => boolCellOption(info),
-				filterFn: "includesString",
-				sortUndefined: "last",
-			},
-			{
-				id: "isFound",
-				header: "isFound",
-				accessorFn: (row) => row.isIn.foundCommand,
-				cell: (info) => boolCellOption(info),
-				filterFn: "includesString",
-				sortUndefined: "last",
-			},
-			{
-				id: "isCorePluginCommand",
-				header: "isCorePluginCommand",
-				accessorFn: (row) => row.isIn.internalPluginCommand,
-				cell: (info) => boolCellOption(info),
-				filterFn: "includesString",
-				sortUndefined: "last",
-			},
-			{
-				id: "isCommandCommand",
-				header: "isCommandCommand",
-				accessorFn: (row) => row.isIn.appCommand,
-				filterFn: "includesString",
-				cell: (info) => boolCellOption(info),
-				sortUndefined: "last",
-			},
-			{
-				id: "hasCallback",
-				header: "hasCallback",
-				accessorFn: (row) => row.callbacks.callback,
-				filterFn: "includesString",
-				cell: (info) => boolCellOption(info),
-				sortUndefined: "last",
-			},
-			{
-				id: "hasCheckCallback",
-				header: "hasCheckCallback",
-				accessorFn: (row) => row.callbacks.checkCallback,
-				filterFn: "includesString",
-				cell: (info) => boolCellOption(info),
-				sortUndefined: "last",
-			},
-			{
-				id: "isEditorCommand",
-				header: "isEditorCommand",
-				accessorFn: (row) => row.isIn.appEditorCommand,
-				filterFn: "includesString",
-				cell: (info) => boolCellOption(info),
-				sortUndefined: "last",
-			},
-			{
-				id: "hasEditorCallback",
-				header: "hasEditorCallback",
-				accessorFn: (row) => row.callbacks.editorCallback,
-				filterFn: "includesString",
-				cell: (info) => boolCellOption(info),
-				sortUndefined: "last",
-			},
-			{
-				id: "hasEditorCheckCallback",
-				header: "hasEditorCheckCallback",
-				accessorFn: (row) => row.callbacks.editorCheckCallback,
-				filterFn: "includesString",
-				cell: (info) => boolCellOption(info),
 				sortUndefined: "last",
 			},
 		],

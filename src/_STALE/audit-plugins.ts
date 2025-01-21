@@ -1,4 +1,10 @@
-import type { App, Command, Hotkey, KeymapInfo, PluginManifest } from "obsidian";
+import type {
+	App,
+	Command,
+	Hotkey,
+	KeymapInfo,
+	PluginManifest,
+} from "obsidian";
 import type { CommandData, TailorCutsSettings } from "@/types";
 
 interface HotkeyRecord {
@@ -45,7 +51,7 @@ const getCustomKeymapInfoFromManager = (app: App): HotkeyRecord => {
 const getBakedKeymapInfoFromManager = (app: App): HotkeyRecord => {
 	const bakedHotkeys = app.hotkeyManager.bakedIds.reduce((acc, id, i) => {
 		if (acc[id] === undefined) acc[id] = [];
-		acc[id].push(app.hotkeyManager.bakedHotkeys[i] as any);  // TODO
+		acc[id].push(app.hotkeyManager.bakedHotkeys[i] as any); // TODO
 		return acc;
 	}, {} as HotkeyRecord);
 	return bakedHotkeys;
@@ -73,7 +79,11 @@ const getCmdProps = (c: Command | undefined, prefix: string) => {
 	};
 };
 
-const getKeymapProps = <T extends string>(id: string, kmir: HotkeyRecord, prefix: T): {} => {
+const getKeymapProps = <T extends string>(
+	id: string,
+	kmir: HotkeyRecord,
+	prefix: T
+): {} => {
 	return id in kmir
 		? {
 				[`${prefix}`]: true,

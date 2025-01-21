@@ -1,4 +1,4 @@
-import { Chord, TailorCutsSettings } from "../types";
+import { Chord, TailorCutsSettings } from "../types/types";
 import {
 	Command,
 	Modifier,
@@ -17,7 +17,7 @@ import {
 	ModifierKey,
 	CodeCamel,
 	ChordKeyModifiers,
-} from "../types";
+} from "../types/types";
 // @ts-ignore
 import type { CommandsCommandsRecord } from "obsidian-typings";
 

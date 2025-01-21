@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 import React, { SetStateAction, useMemo, useReducer, useState } from "react";
 
+import { boolCellOption } from "@/components/shared-table";
 import type { PluginMeta } from "@/types";
 
 export interface PluginTableProps {
@@ -18,78 +19,27 @@ export interface PluginTableProps {
 	className: string;
 }
 
-const BoolCircle = ({ value }: { value: boolean | null | undefined }) => {
-	const fill =
-		value === undefined
-			? undefined
-			: value === null
-			? "gray"
-			: value
-			? "green"
-			: "red";
-	return (
-		<div
-			style={{
-				backgroundColor: fill,
-				border: "1px solid black",
-				width: "5px",
-				height: "5px",
-				borderRadius: "9999px",
-			}}
-		/>
-	);
-};
-
-const BoolCell = ({ value }: { value: boolean | null | undefined }) => {
-	return (
-		<div
-			style={{
-				display: "flex",
-				alignItems: "center",
-				justifyContent: "center",
-			}}
-		>
-			<BoolCircle value={value} />
-		</div>
-	);
-};
-
-type Booleanish = boolean | null | undefined;
-type BooleanishOptions = { null?: Booleanish; undefined?: Booleanish };
-const boolCellOption = (
-	info: CellContext<PluginMeta, unknown>,
-	options?: BooleanishOptions
-) => {
-	let value = info.getValue() as Booleanish;
-	if (value === null && options?.null !== undefined) {
-		value = options.null;
-	} else if (value === undefined && options?.undefined !== undefined) {
-		value = options.undefined;
-	}
-	return <BoolCell value={value} />;
-};
-
 export const PluginsTable = ({ data, className }: PluginTableProps) => {
 	// initial sorting state; see:
-    // https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
-    const [sorting, setSorting] = useState<SortingState>([
-        {
-            id: 'isEnabled',
-            desc: true,
-        },
-        {
-            id: 'isCore',
-            desc: true,
-        },
-        {
-            id: 'name',
-            desc: false,
-        }
-    ]);
+	// https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
+	const [sorting, setSorting] = useState<SortingState>([
+		{
+			id: "isEnabled",
+			desc: true,
+		},
+		{
+			id: "isCore",
+			desc: true,
+		},
+		{
+			id: "name",
+			desc: false,
+		},
+	]);
 
 	const columns = useMemo<ColumnDef<PluginMeta>[]>(
 		() => [
-            {
+			{
 				id: "name",
 				header: "Name",
 				accessorKey: "name",
@@ -127,7 +77,7 @@ export const PluginsTable = ({ data, className }: PluginTableProps) => {
 				sortUndefined: "last",
 			},
 			{
-				id: "isUserDisabled",  // should never be true (2025-01-20) because data refresh waits for plugin to be removed (transition state lasting <10ms)
+				id: "isUserDisabled", // should never be true (2025-01-20) because data refresh waits for plugin to be removed (transition state lasting <10ms)
 				header: "User Disabled",
 				accessorKey: "isUserDisabled",
 				cell: boolCellOption,
@@ -167,19 +117,19 @@ export const PluginsTable = ({ data, className }: PluginTableProps) => {
 		state: {
 			sorting,
 		},
-        initialState: {
-            columnVisibility: {
-                name: true,
-                id: true,
-                isCore: true,
-                isInstantiated: false,
-                isLoaded: false,
-                isEnabled: true,
-                isUserDisabled: false,
-                lastDataModifiedTime: true,
-            },
-            // initial sorting state in useState call; see https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
-        }
+		initialState: {
+			columnVisibility: {
+				name: true,
+				id: true,
+				isCore: true,
+				isInstantiated: false,
+				isLoaded: false,
+				isEnabled: true,
+				isUserDisabled: false,
+				lastDataModifiedTime: true,
+			},
+			// initial sorting state in useState call; see https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
+		},
 	});
 
 	return (
