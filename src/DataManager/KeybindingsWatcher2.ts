@@ -75,7 +75,7 @@ export class KeybindingsWatcher2 {
         basePath: "app.hotkeyManager",
         excludedPaths: ["app.hotkeyManager.app"],
         maxDepth: 3,
-        verbose: true,
+        verbose: false,
       }
     );
 

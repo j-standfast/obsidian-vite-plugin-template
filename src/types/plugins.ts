@@ -1,7 +1,7 @@
 import type { Hotkey, KeymapInfo, PluginManifest } from "obsidian";
 
 import { CommandData, CommandId } from "./commands";
-import type { Keysig } from "./keybindings";
+import type { Keysig } from "./keybindings-STALE";
 
 export type PluginId = string;
 
@@ -92,7 +92,6 @@ type OptionalPluginData = {
 };
 export type LoosePluginData = Omit<PluginData & OptionalPluginData, never>;
 
-
 export type PluginKeybindings = Map<Keysig, CommandId[]>;
 // export type PluginScancodebindings = Map<Scancodesig, CommandId>;
 
@@ -107,8 +106,8 @@ export interface KeybindingDatumWithoutConflicts {
 }
 
 export interface KeybindingDatum extends KeybindingDatumWithoutConflicts {
-    conflictsWith: Keysig[];
-    commandData: CommandData;
+	conflictsWith: Keysig[];
+	commandData: CommandData;
 }
 
-export interface PluginMeta { }
+export interface PluginMeta {}

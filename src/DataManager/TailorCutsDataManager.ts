@@ -1,22 +1,24 @@
 import type { App, Plugin } from "obsidian";
 
 import { getCommandData } from "@/DataManager/commands";
-import { getKeybindingMetaData } from "@/DataManager/keybindings";
+import { getKeybindingMetaData } from "@/DataManager/keybindings-STALE";
 import { getPluginMetaData } from "@/DataManager/plugin";
 import { PluginsWatcher } from "@/DataManager/PluginsWatcher";
 import type { TailorCutsPlugin } from "@/main";
 import type { CommandData, KeybindingMeta, PluginMeta } from "@/types";
 import { CommandsWatcher } from "./CommandsWatcher";
 import { KeybindingsWatcher2 } from "./KeybindingsWatcher2";
+import { HotkeyTableDatum } from "@/types/keybindings";
+import { getHotkeyTableData } from "./keybindings";
 
 export class TailorCutsDataManager {
 	app: App;
 	plugin: TailorCutsPlugin;
 	#pluginData: PluginMeta[];
 	#commandData: CommandData[];
-	#keybindingData: any; 
+	#keybindingData: HotkeyTableDatum[]; 
 	#keybindingWatcher: KeybindingsWatcher2 | null;
-	#keybindingWatcherSubscribers: ((data: KeybindingMeta[]) => void)[] = [];
+	#keybindingWatcherSubscribers: ((data: HotkeyTableDatum[]) => void)[] = [];
 	#pluginsWatcher: PluginsWatcher | null;
 	#pluginsWatcherSubscribers: ((data: PluginMeta[]) => void)[] = [];
 	#commandsWatcher: CommandsWatcher | null;
@@ -28,7 +30,7 @@ export class TailorCutsDataManager {
 		this.plugin = plugin;
 		this.#commandData = [];
 		this.#pluginData = [];
-		this.#keybindingData = null;
+		this.#keybindingData = [];
 		this.#pluginsWatcher = null;
 		this.#commandsWatcher = null;
 		this.#keybindingWatcher = null;
@@ -81,7 +83,7 @@ export class TailorCutsDataManager {
 
 	async _refreshKeybindingData() {
 		// console.log('refreshKeybindingData');
-    this.#keybindingData = this.app.hotkeyManager;
+    this.#keybindingData = getHotkeyTableData(this.app.hotkeyManager);
     console.log(`${this.#logHeader} / _refreshKeybindingData`, {
       this: this,
       keybindingData: this.#keybindingData,
@@ -106,13 +108,21 @@ export class TailorCutsDataManager {
 	}
 
 	subscribePluginChange(callback: (data: PluginMeta[]) => void) {
-		this.#pluginsWatcherSubscribers.push(callback);
+		console.log(`${this.#logHeader} / subscribePluginChange`);
+    this.#pluginsWatcherSubscribers.push(callback);
+    if (this.isLoaded) callback(this.#pluginData);
 		return () => this.unsubscribePluginChange(callback);
 	}
 
 	unsubscribePluginChange(callback: (data: PluginMeta[]) => void) {
 		this.#pluginsWatcherSubscribers =
-			this.#pluginsWatcherSubscribers.filter((c) => c !== callback);
+      this.#pluginsWatcherSubscribers.filter((c) => {
+        if (c === callback) {
+          console.log(`${this.#logHeader} / unsubscribePluginChange`);
+          return false;
+        }
+        return true;
+      });
 	}
 
 	async onChangePlugins() {
@@ -122,14 +132,14 @@ export class TailorCutsDataManager {
 		);
 	}
 
-	subscribeKeybindingChange(callback: (data: KeybindingMeta[]) => void) {
+	subscribeKeybindingChange(callback: (data: HotkeyTableDatum[]) => void) {
 		this.#keybindingWatcherSubscribers.push(callback);
 		return () => this.unsubscribeKeybindingChange(callback);
 	}
 
-	unsubscribeKeybindingChange(callback: (data: KeybindingMeta[]) => void) {
+	unsubscribeKeybindingChange(callback: (data: HotkeyTableDatum[]) => void) {
 		this.#keybindingWatcherSubscribers =
-			this.#keybindingWatcherSubscribers.filter((c) => c !== callback);
+		this.#keybindingWatcherSubscribers.filter((c) => c !== callback);
 	}
 
 	async onChangeKeybindings() {
@@ -137,8 +147,8 @@ export class TailorCutsDataManager {
 		console.log(`${this.#logHeader} / onChangeKeybindings`, {
 			this: this,
 		});
-		this.#commandsWatcherSubscribers.forEach((callback) => {
-			callback(this.#commandData);
+		this.#keybindingWatcherSubscribers.forEach((callback) => {
+			callback(this.#keybindingData);
 		});
 	}
 

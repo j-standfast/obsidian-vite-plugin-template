@@ -13,15 +13,14 @@ import {
 } from "@tanstack/react-table";
 import { SetStateAction, useMemo, useReducer, useState } from "react";
 
-import { KeybindingMeta } from "@/types";
+import { HotkeyTableDatum } from "@/types";
+import { boolCellOption, ColumnFilter } from "@/components/shared-table"; 
 
 export interface KeybindingsTableProps {
-	data: KeybindingMeta[];
+	data: HotkeyTableDatum[];
 	// setData: (data: CommandMeta[]) => void;
 	className: string;
 }
-
-import { boolCellOption, ColumnFilter } from "@/components/shared-table";
 
 export const KeybindingsTable = ({
 	data,
@@ -29,30 +28,41 @@ export const KeybindingsTable = ({
 }: KeybindingsTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([
 		{
-			id: "name",
+			id: "commandId",
 			desc: false,
-		},
-		{
-			id: "isListed",
-			desc: true,
 		},
 	]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-	const columns = useMemo<ColumnDef<KeybindingMeta>[]>(
+	const columns = useMemo<ColumnDef<HotkeyTableDatum>[]>(
 		() => [
 			{
-				id: "id",
-				header: "ID",
-				accessorKey: "id",
+				id: "commandId",
+				header: "Command ID",
+				accessorKey: "commandId",
 				cell: (info) => info.getValue(),
 				sortUndefined: "last",
 			},
 			{
-				id: "name",
-				header: "Name",
-				accessorKey: "name",
+				id: "obsidianModifiers",
+				header: "Obsidian Modifiers",
+				accessorKey: "obsidianModifiers",
 				cell: (info) => info.getValue(),
+				sortUndefined: "last",
+			},
+			{
+				id: "obsidianKey",
+				header: "Obsidian Key",
+				accessorKey: "obsidianKey",
+				cell: (info) => info.getValue(),
+				sortUndefined: "last",
+			},
+			{
+				id: "isDefault",
+				header: "Is Default",
+				accessorFn: (row) => row.isDefault,
+				cell: (info) => boolCellOption(info),   
+				filterFn: "includesString",
 				sortUndefined: "last",
 			},
 		],

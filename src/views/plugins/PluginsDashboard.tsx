@@ -19,7 +19,7 @@ export const PluginsDashboard = ({
 }: PluginsDashboardProps): ReactNode => {
 	console.log("PluginsDashboard rerender");
 
-	const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
+	// const [todoWhatIsThis, rerender] = useReducer(() => ({}), {});
 	const [data, setData] = useState<PluginMeta[]>([]);
 
 	useEffect(() => {
@@ -27,8 +27,9 @@ export const PluginsDashboard = ({
 			setData(plugins);
 		});
 		return () => {
-			unsubscribe();
-		};
+      console.log("PluginsDashboard unsubscribe from dataManager plugins change");
+      unsubscribe()
+    };
 	}, [dataManager]);
 
 	return (

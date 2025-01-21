@@ -11,7 +11,7 @@ import {
 import {
 	OBSIDIAN_KEY_TO_CHROME_CODE,
 	OBSIDIAN_MODIFIER_KEYS_MAP,
-} from "../constants/constants";
+} from "../constants/defaults";
 import {
 	Keybinding,
 	ModifierKey,

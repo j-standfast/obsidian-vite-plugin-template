@@ -10,7 +10,7 @@ import { RotateCcw } from "lucide-react";
 
 import type { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
 import { KeybindingsTable } from "./KeybindingsTable";
-import type { KeybindingMeta } from "@/types";
+import type { HotkeyTableDatum, KeybindingMeta } from "@/types";
 
 export interface KeybindingsDashboardProps {
 	dataManager: TailorCutsDataManager;
@@ -20,7 +20,7 @@ export const KeybindingsDashboard = ({
 	dataManager,
 }: KeybindingsDashboardProps): ReactNode => {
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const [data, setData] = useState<KeybindingMeta[]>([]);
+	const [data, setData] = useState<HotkeyTableDatum[]>([]);
 	useEffect(() => {
 		const unsubscribe = dataManager.subscribeKeybindingChange(
 			(keybindingsData) => {

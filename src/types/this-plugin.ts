@@ -1,4 +1,4 @@
-import { SerializedHotkeys } from "./keybindings";
+import { SerializedHotkeys } from "./keybindings-STALE";
 
 export interface TailorCutsSettings {
 	keybindings: Keybinding[];
