@@ -12,7 +12,7 @@ import {
 	// getKeybindings,
 	getPluginData,
 } from "@/DataManager/commands";
-import type { TailorCutsPlugin } from "@/main";
+import type { TailorCutsPlugin } from "@/types";
 
 interface TodoNavigator {
 	keyboard: {

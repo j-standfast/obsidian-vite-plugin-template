@@ -1,28 +1,29 @@
 import type { App, HotkeyManager } from "obsidian";
-import type { CustomKeysSymbol, HotkeyManagerCustomKeysRecord } from "@/tailor-cuts-obsidian";
+import type {
+	CustomKeysSymbol,
+	HotkeyManagerCustomKeysRecord,
+} from "@/tailor-cuts-obsidian";
 import { WatchedProxy, WatchedProxyEvent } from "@/utils/WatchedProxy";
-import type { TailorCutsPlugin } from "@/main";
+import type { TailorCutsPluginType } from "@/types";
 
 export class KeybindingsWatcher {
 	app: App;
-	plugin: TailorCutsPlugin;
-	customHotkeysWatcher: WatchedProxy<HotkeyManagerCustomKeysRecord> | null;
-	customHotkeysSubscribers: ((
-		customHotkeys: HotkeyManagerCustomKeysRecord
-	) => void)[];
+	plugin: TailorCutsPluginType;
+	hotkeyManagerWatcher: WatchedProxy<HotkeyManager> | null;
+	hotkeyManagerSubscribers: ((hotkeyManager: HotkeyManager) => void)[];
 	isLoaded: boolean;
 	_obsidianInternalCustomKeysSymbol: CustomKeysSymbol | null;
 	#_logHeader = "KeybindingsWatcher";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailorCutsPluginType) {
 		this.app = app;
 		this.plugin = plugin;
-		this.customHotkeysWatcher = null;
-		this.customHotkeysSubscribers = [];
+		this.hotkeyManagerWatcher = null;
+		this.hotkeyManagerSubscribers = [];
 		this.isLoaded = false;
 		this._obsidianInternalCustomKeysSymbol = null;
 
-		this.onChangeCustomHotkeys = this.onChangeCustomHotkeys.bind(this);
+		this.onChange = this.onChange.bind(this);
 		this.unload = this.unload.bind(this);
 
 		this._load = this._load.bind(this);
@@ -48,7 +49,7 @@ export class KeybindingsWatcher {
 
 	_getObsidianInternalCustomKeys() {
 		const sym = this._getObsidianInternalCustomKeysSymbol();
-    return this.app.hotkeyManager[sym as CustomKeysSymbol];
+		return this.app.hotkeyManager[sym as CustomKeysSymbol];
 	}
 
 	_setObsidianInternalCustomKeys(customKeys: HotkeyManagerCustomKeysRecord) {
@@ -68,18 +69,21 @@ export class KeybindingsWatcher {
 		this.isLoaded = true;
 	}
 
-  async _loadWatchers() {
-    const customKeys = this._getObsidianInternalCustomKeys();
-		this.customHotkeysWatcher = new WatchedProxy(
-			customKeys,
-			"app.hotkeyManager.customKeys",
-			[],
-			3
+	async _loadWatchers() {
+		this.hotkeyManagerWatcher = WatchedProxy.create(
+			this.app.hotkeyManager,
+			{
+				basePath: "app.hotkeyManager",
+				excludedPaths: ["app.hotkeyManager.app"],
+				maxDepth: 3,
+				verbose: false,
+			}
 		);
-		this.customHotkeysWatcher.onChange(
-			(e: WatchedProxyEvent<HotkeyManagerCustomKeysRecord>) => {
-				const header = "customHotkeysWatcher onChange callback";
-				let msg = "app.hotkeyManager.customKeys changed";
+
+		this.hotkeyManagerWatcher.onChange(
+			(e: WatchedProxyEvent<HotkeyManager>) => {
+				const header = "hotkeyManagerWatcher onChange callback";
+				let msg = "app.hotkeyManager changed";
 				let onChange = false;
 				if (false) {
 					msg += "\nUNREACHABLE";
@@ -89,50 +93,44 @@ export class KeybindingsWatcher {
 				}
 				console.log(`${this.#_logHeader} / ${header}:\n${msg}`, { e });
 				if (onChange) {
-					this.onChangeCustomHotkeys(
-						this.app.hotkeyManager.customKeys
-					);
+					this.onChange(this.app.hotkeyManager);
 				}
 			}
 		);
 
-		this._setObsidianInternalCustomKeys(
-			this.customHotkeysWatcher.proxy
-		);
-		this.onChangeCustomHotkeys(
-			this._getObsidianInternalCustomKeys()
-		);
+		this.app.hotkeyManager = this.hotkeyManagerWatcher.proxy;
+		let tmp: any;
+		tmp = this.app.hotkeyManager.customKeys;
+		tmp = this.app.hotkeyManager.defaultKeys;
+		tmp = this.app.hotkeyManager.bakedIds;
+		tmp = this.app.hotkeyManager.bakedHotkeys;
+		this.onChange(this.app.hotkeyManager);
 	}
 
 	async unload() {
 		this.isLoaded = false;
-		this.customHotkeysWatcher?.unload();
+		this.hotkeyManagerWatcher?.unload();
 	}
 
-	subscribeKeybindings(
-		callback: (hotkeyManager: HotkeyManagerCustomKeysRecord) => void
-	) {
-		this.customHotkeysSubscribers.push(callback);
-		const msg =
-			"Subscribed to app.hotkeyManager.customKeys changes via WatchedProxy";
+	subscribe(callback: (hotkeyManager: HotkeyManager) => void) {
+		this.hotkeyManagerSubscribers.push(callback);
+		const msg = "Subscribed to app.hotkeyManager changes via WatchedProxy";
 		console.log(`${this.#_logHeader} / subscribe: ${msg}`, {
-			subscribers: this.customHotkeysSubscribers,
+			subscribers: this.hotkeyManagerSubscribers,
 		});
 		if (this.isLoaded) {
-			callback(this.app.hotkeyManager.customKeys);
+			callback(this.app.hotkeyManager);
 		}
 	}
 
-	onChangeCustomHotkeys(customHotkeys: HotkeyManagerCustomKeysRecord) {
-		this.customHotkeysSubscribers.forEach((callback) =>
-			callback(customHotkeys)
+	onChange(hotkeyManager: HotkeyManager) {
+		this.hotkeyManagerSubscribers.forEach((callback) =>
+			callback(hotkeyManager)
 		);
 	}
 
-	unsubscribeCustomHotkeys(
-		callback: (hotkeyManager: HotkeyManagerCustomKeysRecord) => void
-	) {
-		this.customHotkeysSubscribers = this.customHotkeysSubscribers.filter(
+	unsubscribe(callback: (hotkeyManager: HotkeyManager) => void) {
+		this.hotkeyManagerSubscribers = this.hotkeyManagerSubscribers.filter(
 			(c) => c !== callback
 		);
 	}

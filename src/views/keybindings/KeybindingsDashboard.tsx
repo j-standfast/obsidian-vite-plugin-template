@@ -1,9 +1,7 @@
 import type { SortingState } from "@tanstack/react-table";
 import React, {
 	ReactNode,
-	useCallback,
 	useEffect,
-	useReducer,
 	useState,
 } from "react";
 import { RotateCcw } from "lucide-react";
@@ -22,11 +20,13 @@ export const KeybindingsDashboard = ({
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [data, setData] = useState<HotkeyTableDatum[]>([]);
 	useEffect(() => {
-		const unsubscribe = dataManager.subscribeKeybindingChange(
-			(keybindingsData) => {
-				setData(keybindingsData);
-			}
-		);
+		const unsubscribe = dataManager.subscribe({
+			callback: ({ keybindings: data }) => {
+				setData(data);
+			},
+			name: "keybindings-dashboard",
+			interestedIn: { keybindings: true },
+		});
 		return () => {
 			unsubscribe();
 		};

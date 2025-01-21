@@ -4,14 +4,14 @@ import { Root, createRoot } from "react-dom/client";
 
 import { PluginsDashboard } from "@/views/plugins/PluginsDashboard";
 import { VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS } from "@/constants/plugin";
-import type { TailorCutsPlugin } from "@/main";
+import type { TailorCutsPlugin } from "@/types";
 
 export class PluginsView extends ItemView {
 	plugin: TailorCutsPlugin;
 	navigation = true;
 	root: Root | null = null;
-    _viewType = VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS;
-    _displayText = "Plugins Dashboard";
+	_viewType = VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS;
+	_displayText = "Plugins Dashboard";
 
 	constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
 		super(leaf);
@@ -23,7 +23,7 @@ export class PluginsView extends ItemView {
 	}
 
 	getViewType(): string {
-        return this._viewType;
+		return this._viewType;
 	}
 
 	getDisplayText(): string {
@@ -34,9 +34,7 @@ export class PluginsView extends ItemView {
 		this.root = createRoot(this.contentEl);
 		this.root.render(
 			<StrictMode>
-				<PluginsDashboard
-					dataManager={this.plugin.dataManager}
-				/>
+				<PluginsDashboard dataManager={this.plugin.dataManager} />
 			</StrictMode>
 		);
 	}

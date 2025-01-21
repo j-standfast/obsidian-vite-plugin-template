@@ -1,11 +1,5 @@
 import type { SortingState } from "@tanstack/react-table";
-import React, {
-	ReactNode,
-	useCallback,
-	useEffect,
-	useReducer,
-	useState,
-} from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
 
 import type { CommandData } from "@/types";
@@ -22,11 +16,13 @@ export const CommandsDashboard = ({
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [data, setData] = useState<CommandData[]>([]);
 	useEffect(() => {
-		const unsubscribe = dataManager.subscribeCommandChange(
-			(commandsData) => {
-				setData(commandsData);
-			}
-		);
+		const unsubscribe = dataManager.subscribe({
+			callback: ({ commands: data }) => {
+				setData(data);
+			},
+			name: "commands-dashboard",
+			interestedIn: { commands: true },
+		});
 		return () => {
 			unsubscribe();
 		};

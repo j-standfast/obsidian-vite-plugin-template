@@ -2,20 +2,20 @@ import { createRoot, Root } from 'react-dom/client';
 import React, { StrictMode } from 'react';
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 
-import { TailorCutsPlugin } from '@/main';
+import type { TailorCutsPluginType } from '@/types';
 import { VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS } from '@/constants/plugin';
 import { CommandsDashboard } from '@/views/commands/CommandsDashboard';
 
 // https://docs.obsidian.md/Plugins/User+interface/Views
 
 export class CommandsView extends ItemView {
-    plugin: TailorCutsPlugin;
+    plugin: TailorCutsPluginType;
     navigation = false;
     root: Root | null = null;
     _viewType = VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS;
     _displayText = "Commands Dashboard";
 
-    constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
+    constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPluginType) {
         super(leaf);
         this.plugin = plugin;
     }

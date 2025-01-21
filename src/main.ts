@@ -180,4 +180,4 @@ export default class TailorCutsPlugin extends Plugin {
   }
 }
 
-export type { TailorCutsPlugin };
+export type { TailorCutsPlugin as TailorCutsPluginType };

@@ -1,33 +1,39 @@
-import type { App, Plugin } from "obsidian";
+import type { App } from "obsidian";
 
-import { getCommandData } from "@/DataManager/commands";
-import { getKeybindingMetaData } from "@/DataManager/keybindings-STALE";
-import { getPluginMetaData } from "@/DataManager/plugin";
-import { PluginsWatcher } from "@/DataManager/PluginsWatcher";
-import type { TailorCutsPlugin } from "@/main";
-import type { CommandData, KeybindingMeta, PluginMeta } from "@/types";
+import type { CommandData, HotkeyTableDatum, PluginMeta, TailorCutsData, TailorCutsPluginType } from "@/types";
+import { getCommandData } from "./commands";
 import { CommandsWatcher } from "./CommandsWatcher";
-import { KeybindingsWatcher2 } from "./KeybindingsWatcher2";
-import { HotkeyTableDatum } from "@/types/keybindings";
 import { getHotkeyTableData } from "./keybindings";
+import { KeybindingsWatcher } from "./KeybindingsWatcher";
+import { getPluginMetaData } from "./plugins";
+import { PluginsWatcher } from "./PluginsWatcher";
+
+
+
+interface TailorCutsDataSubscriber {
+	callback: (data: TailorCutsData) => void;
+	interestedIn: { [P in keyof TailorCutsData]?: true };
+	name: string;
+}
 
 export class TailorCutsDataManager {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailorCutsPluginType;
+	isLoaded: boolean;
 	#pluginData: PluginMeta[];
 	#commandData: CommandData[];
-	#keybindingData: HotkeyTableDatum[]; 
-	#keybindingWatcher: KeybindingsWatcher2 | null;
-	#keybindingWatcherSubscribers: ((data: HotkeyTableDatum[]) => void)[] = [];
+	#keybindingData: HotkeyTableDatum[];
+	#keybindingWatcher: KeybindingsWatcher | null;
 	#pluginsWatcher: PluginsWatcher | null;
-	#pluginsWatcherSubscribers: ((data: PluginMeta[]) => void)[] = [];
 	#commandsWatcher: CommandsWatcher | null;
-	#commandsWatcherSubscribers: ((data: CommandData[]) => void)[] = [];
+	#subscribers: TailorCutsDataSubscriber[] = [];
 	#logHeader = "TailorCutsDataManager";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailorCutsPluginType) {
 		this.app = app;
 		this.plugin = plugin;
+		this.isLoaded = false;
+		this.#subscribers = [];
 		this.#commandData = [];
 		this.#pluginData = [];
 		this.#keybindingData = [];
@@ -46,7 +52,7 @@ export class TailorCutsDataManager {
 		this.plugin.addCommand.bind({
 			id: "refresh-commands",
 			name: "Refresh commands",
-			callback: () => this.onChangeCommands(),
+			callback: () => this.onChange(),
 		});
 		this.#pluginsWatcher = new PluginsWatcher(this.app, this.plugin);
 		if (!this.#pluginsWatcher) {
@@ -56,16 +62,13 @@ export class TailorCutsDataManager {
 		if (!this.#commandsWatcher) {
 			throw new Error("Failed to create commandsWatcher");
 		}
-		this.#keybindingWatcher = new KeybindingsWatcher2(this.app, this.plugin);
+		this.#keybindingWatcher = new KeybindingsWatcher(this.app, this.plugin);
 		if (!this.#keybindingWatcher) {
 			throw new Error("Failed to create keybindingWatcher");
 		}
-
-		this.#pluginsWatcher.subscribe(() => this.onChangePlugins());
-		this.#commandsWatcher.subscribe(() => this.onChangeCommands());
-		this.#keybindingWatcher.subscribeKeybindings(() =>
-			this.onChangeKeybindings()
-		);
+		this.#pluginsWatcher.subscribe(() => this.onChange());
+		this.#commandsWatcher.subscribe(() => this.onChange());
+		this.#keybindingWatcher.subscribe(() => this.onChange());
 	}
 
 	async _refreshCommandData() {
@@ -83,92 +86,75 @@ export class TailorCutsDataManager {
 
 	async _refreshKeybindingData() {
 		// console.log('refreshKeybindingData');
-    this.#keybindingData = getHotkeyTableData(this.app.hotkeyManager);
-    console.log(`${this.#logHeader} / _refreshKeybindingData`, {
-      this: this,
-      keybindingData: this.#keybindingData,
-    });
+		this.#keybindingData = getHotkeyTableData(this.app.hotkeyManager);
+		console.log(`${this.#logHeader} / _refreshKeybindingData`, {
+			this: this,
+			keybindingData: this.#keybindingData,
+		});
 	}
 
-	get isLoaded() {
-		if (
-			!this.#pluginsWatcher ||
-			!this.#commandsWatcher ||
-			!this.#keybindingWatcher
-		) {
-			console.log(`${this.#logHeader} / get isLoaded, false`, {
-				this: this,
-				pluginsWatcher: this.#pluginsWatcher,
-				commandsWatcher: this.#commandsWatcher,
-				keybindingWatcher: this.#keybindingWatcher,
-			});
-			return false;
-		}
-		return this.#pluginsWatcher.isLoaded && this.#commandsWatcher.isLoaded;
-	}
-
-	subscribePluginChange(callback: (data: PluginMeta[]) => void) {
-		console.log(`${this.#logHeader} / subscribePluginChange`);
-    this.#pluginsWatcherSubscribers.push(callback);
-    if (this.isLoaded) callback(this.#pluginData);
-		return () => this.unsubscribePluginChange(callback);
-	}
-
-	unsubscribePluginChange(callback: (data: PluginMeta[]) => void) {
-		this.#pluginsWatcherSubscribers =
-      this.#pluginsWatcherSubscribers.filter((c) => {
-        if (c === callback) {
-          console.log(`${this.#logHeader} / unsubscribePluginChange`);
-          return false;
-        }
-        return true;
-      });
-	}
-
-	async onChangePlugins() {
+	async _refreshData() {
+		await this._refreshCommandData();
 		await this._refreshPluginData();
-		this.#pluginsWatcherSubscribers.forEach((callback) =>
-			callback(this.#pluginData)
+		await this._refreshKeybindingData();
+	}
+
+	get _data() {
+		return {
+			plugins: this.#pluginData,
+			commands: this.#commandData,
+			keybindings: this.#keybindingData,
+		};
+	}
+
+  subscribe(subscriber: TailorCutsDataSubscriber) {
+		console.log(`${this.#logHeader} / subscribe`, {
+			subscriber,
+			time: Intl.DateTimeFormat("en-US", {
+				hour: "2-digit",
+				minute: "2-digit",
+				second: "2-digit",
+				fractionalSecondDigits: 3,
+			}).format(new Date()),
+			this: this,
+		});
+    this.#subscribers.push(subscriber);
+    subscriber.callback(this._data);
+		return () => this.unsubscribe(subscriber);
+	}
+
+	unsubscribe(subscriber: TailorCutsDataSubscriber) {
+		console.log(`${this.#logHeader} / unsubscribe`, {
+			subscriber,
+			time: Intl.DateTimeFormat("en-US", {
+				hour: "2-digit",
+				minute: "2-digit",
+				second: "2-digit",
+				fractionalSecondDigits: 3,
+			}).format(new Date()),
+			this: this,
+		});
+		this.#subscribers = this.#subscribers.filter(
+			(c) => c.callback !== subscriber.callback
 		);
 	}
 
-	subscribeKeybindingChange(callback: (data: HotkeyTableDatum[]) => void) {
-		this.#keybindingWatcherSubscribers.push(callback);
-		return () => this.unsubscribeKeybindingChange(callback);
-	}
-
-	unsubscribeKeybindingChange(callback: (data: HotkeyTableDatum[]) => void) {
-		this.#keybindingWatcherSubscribers =
-		this.#keybindingWatcherSubscribers.filter((c) => c !== callback);
-	}
-
-	async onChangeKeybindings() {
-		await this._refreshKeybindingData();
-		console.log(`${this.#logHeader} / onChangeKeybindings`, {
+	async onChange() {
+		console.log(`${this.#logHeader} / onChange`, {
 			this: this,
-		});
-		this.#keybindingWatcherSubscribers.forEach((callback) => {
-			callback(this.#keybindingData);
-		});
-	}
-
-	subscribeCommandChange(callback: (data: CommandData[]) => void) {
-		this.#commandsWatcherSubscribers.push(callback);
-		return () => this.unsubscribeCommandChange(callback);
-	}
-
-	unsubscribeCommandChange(callback: (data: CommandData[]) => void) {
-		this.#commandsWatcherSubscribers =
-			this.#commandsWatcherSubscribers.filter((c) => c !== callback);
-	}
-
-	async onChangeCommands() {
-		await this._refreshCommandData();
-		console.log(`${this.#logHeader} / onChangeCommands`, {
-			this: this,
-		});
-		this.#commandsWatcherSubscribers.forEach((callback) => {
-			callback(this.#commandData);
+    });
+    await this._refreshData();
+    this.#subscribers.forEach((subscriber) => {
+			console.log(`${this.#logHeader} / onChange / subscriber`, {
+				subscriber,
+				time: Intl.DateTimeFormat("en-US", {  
+					hour: "2-digit",
+					minute: "2-digit",
+					second: "2-digit",
+					fractionalSecondDigits: 3,
+				}).format(new Date()),
+			});
+			subscriber.callback(this._data);
 		});
 	}
 }

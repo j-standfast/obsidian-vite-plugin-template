@@ -1,8 +1,6 @@
 import React, {
 	ReactNode,
-	useCallback,
 	useEffect,
-	useReducer,
 	useState,
 } from "react";
 import { RotateCcw } from "lucide-react";
@@ -23,13 +21,16 @@ export const PluginsDashboard = ({
 	const [data, setData] = useState<PluginMeta[]>([]);
 
 	useEffect(() => {
-		const unsubscribe = dataManager.subscribePluginChange((plugins) => {
-			setData(plugins);
+		const unsubscribe = dataManager.subscribe({
+			callback: ({ plugins: data }) => {  
+				setData(data);
+			},
+			name: "plugins-dashboard",
+			interestedIn: { plugins: true },
 		});
 		return () => {
-      console.log("PluginsDashboard unsubscribe from dataManager plugins change");
-      unsubscribe()
-    };
+			unsubscribe();
+		};
 	}, [dataManager]);
 
 	return (
