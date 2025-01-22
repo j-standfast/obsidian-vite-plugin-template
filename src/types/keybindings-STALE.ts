@@ -1,5 +1,5 @@
 import type {
-	ChromeCodePascal,
+	ChromeCode,
 	ChromeModifierCodeLower,
 	ObsidianHotkey,
 } from "./keys";
@@ -11,7 +11,7 @@ export type TailorKeysig = string;
 export type ChordKeyModifiers = Map<ChromeModifierCodeLower, true>;
 export type ValidChord = {
 	modifiers: ChordKeyModifiers;
-	base: ChromeCodePascal;
+	base: ChromeCode;
 	type: "valid";
 };
 export type InvalidChord = {

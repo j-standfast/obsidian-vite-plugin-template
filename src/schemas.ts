@@ -1,26 +1,23 @@
 import * as z from "zod";
-import {
-	CHROME_CODES_PASCAL,
-	CHROME_MODIFIER_CODES_PASCAL,
-} from "@/constants/keys";
+import { CHROME_CODES, CHROME_MODIFIER_CODES } from "@/constants/keys";
 import type {
 	Expect,
 	CoExtends,
 	ModifierCodePascal,
-	ChromeCodePascal,
+	ChromeCode,
 	Chord,
 	ChordKeyModifiers,
 	ModifierKey,
 	ValidChord,
 } from "@/types";
 
-export const modifierCodeSchema = z.enum(CHROME_MODIFIER_CODES_PASCAL);
-export const modifierKeySchema = z.enum(CHROME_MODIFIER_CODES_PASCAL);
+export const modifierCodeSchema = z.enum(CHROME_MODIFIER_CODES);
+export const modifierKeySchema = z.enum(CHROME_MODIFIER_CODES);
 export const chordKeyModifiersSchema = z.map(
 	modifierKeySchema,
 	z.literal(true)
 );
-export const codeCamelSchema = z.enum(CHROME_CODES_PASCAL);
+export const codeCamelSchema = z.enum(CHROME_CODES);
 export const validChordSchema = z.object({
 	modifiers: chordKeyModifiersSchema,
 	base: codeCamelSchema,
@@ -69,7 +66,7 @@ type ValidChordSchemaType = z.infer<typeof validChordSchema>;
 type TypeTests = [
 	Expect<CoExtends<ModifierCodeSchemaType, ModifierCodePascal>>,
 	Expect<CoExtends<ModifierKeySchemaType, ModifierKey>>,
-	Expect<CoExtends<CodeSchemaType, ChromeCodePascal>>,
+	Expect<CoExtends<CodeSchemaType, ChromeCode>>,
 	Expect<CoExtends<ChordKeyModifiersSchemaType, ChordKeyModifiers>>,
 	Expect<CoExtends<ValidChordSchemaType, ValidChord>>
 ];

@@ -620,43 +620,32 @@ const keysigToHotkey = (keysig: Keysig) => {
 	};
 };
 
-const hotkeyToKeymapInfo = (hotkey: Hotkey) => {
-	const mods = hotkey.modifiers
-		.map((m) => KEYBINDING_MODIFIER_HOTKEY_TO_KEYMAP_INFO.get(m) ?? m)
-		.sort((a, b) => a.localeCompare(b));
-	return {
-		modifiers: mods.join(","),
-		key: hotkey.key,
-	};
-};
 
-const getKeybindingDatumWithoutConflicts = (
-	commandId: CommandId,
-	hotkey: Hotkey,
-	isDefault: boolean
-) => {
-	const keysig = hotkeyToKeysig(hotkey);
-	const keymapInfo = hotkeyToKeymapInfo(hotkey);
-	const bakedHotkeyIdx = app.hotkeyManager.bakedHotkeys.findIndex((hk) =>
-		keymapInfoEquals(hk, keymapInfo)
-	);
-	return {
-		keysig,
-		commandId,
-		hotkey,
-		keymapInfo,
-		bakedHotkeyIdx,
-		bakedHotkeyId:
-			bakedHotkeyIdx !== -1
-				? app.hotkeyManager.bakedIds[bakedHotkeyIdx]
-				: undefined,
-		isDefault,
-	};
-};
+// const getKeybindingDatumWithoutConflicts = (
+// 	commandId: CommandId,
+// 	hotkey: Hotkey,
+// 	isDefault: boolean
+// ) => {
+// 	const keysig = hotkeyToKeysig(hotkey);
+// 	const keymapInfo = hotkeyToKeymapInfo(hotkey);
+// 	const bakedHotkeyIdx = app.hotkeyManager.bakedHotkeys.findIndex((hk) =>
+// 		keymapInfoEquals(hk, keymapInfo)
+// 	);
+// 	return {
+// 		keysig,
+// 		commandId,
+// 		hotkey,
+// 		keymapInfo,
+// 		bakedHotkeyIdx,
+// 		bakedHotkeyId:
+// 			bakedHotkeyIdx !== -1
+// 				? app.hotkeyManager.bakedIds[bakedHotkeyIdx]
+// 				: undefined,
+// 		isDefault,
+// 	};
+// };
 
-const keymapInfoEquals = (a: KeymapInfo, b: KeymapInfo) => {
-	return a.modifiers === b.modifiers && a.key === b.key;
-};
+
 
 const keymapInfoToString = (v: KeymapInfo) => {
 	return v.modifiers + " + " + v.key;

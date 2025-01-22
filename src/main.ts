@@ -1,12 +1,7 @@
 import { App, Plugin, PluginManifest, WorkspaceLeaf } from "obsidian";
 
 // import { ShortcutListener } from "@/ShortcutListener/ShortcutListener";
-import {
-	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS,
-	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS,
-	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS,
-	VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_ANY,
-} from "@/constants/plugin";
+import { TAILOR_CUTS_VIEW_TYPE } from "@/constants/plugin";
 import { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
 import { serializedSettingsSchema } from "@/schemas";
 import "@/styles.css";
@@ -16,9 +11,6 @@ import { DebugUtils } from "@/utils/DebugUtils/DebugUtils";
 // 	deserializeKeybindings,
 // 	serializeKeybindings,
 // } from "@/utils/serialize";
-import { CommandsView } from "@/views/commands/CommandsView";
-import { PluginsView } from "@/views/plugins/PluginsView";
-import { KeybindingsView } from "@/views/keybindings/KeybindingsView";
 import { TailorView } from "./views/TailorView";
 
 export default class TailorCutsPlugin extends Plugin {
@@ -47,43 +39,16 @@ export default class TailorCutsPlugin extends Plugin {
 		// this.addSettingTab(new SequenceHotkeysSettingTab(this.app, this));
 		// this.shortcutListener.onLoad(this.settings.keybindings);
 		this.addCommand({
-			id: "show-plugins-dashboard",
-			name: "Show plugins dashboard",
-			callback: () => this.addPluginsView(),
+			id: "show-dashboard",
+			name: "Show dashboard",
+			callback: () => this.addTailorCutsView(),
 		});
-		this.addCommand({
-			id: "show-commands-dashboard",
-			name: "Show commands dashboard",
-			callback: () => this.addCommandsView(),
-		});
-		this.addCommand({
-			id: "show-keybindings-dashboard",
-			name: "Show keybindings dashboard",
-			callback: () => this.addKeybindingsView(),
-    });
-    this.addCommand({
-      id: "show-dashboard",
-      name: "Show dashboard",
-      callback: () => this.addAnyDashboardView(),
-    });
 		this.util.onload();
 
 		this.registerView(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS,
-			(leaf: WorkspaceLeaf) => new PluginsView(leaf, this)
+			TAILOR_CUTS_VIEW_TYPE,
+			(leaf: WorkspaceLeaf) => new TailorView(leaf, this)
 		);
-		this.registerView(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS,
-			(leaf: WorkspaceLeaf) => new CommandsView(leaf, this)
-		);
-		this.registerView(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS,
-			(leaf: WorkspaceLeaf) => new KeybindingsView(leaf, this)
-		);
-    this.registerView(
-      VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_ANY,  
-      (leaf: WorkspaceLeaf) => new TailorView(leaf, this)
-    );
 		this.app.workspace.onLayoutReady(() => {
 			try {
 			} catch (err) {
@@ -96,18 +61,7 @@ export default class TailorCutsPlugin extends Plugin {
 	onunload() {
 		// this.shortcutListener.unload();
 		this.util.unload();
-		this.app.workspace.detachLeavesOfType(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS
-		);
-		this.app.workspace.detachLeavesOfType(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS
-		);
-		this.app.workspace.detachLeavesOfType(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS
-		);
-    this.app.workspace.detachLeavesOfType(
-      VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_ANY
-    );
+		this.app.workspace.detachLeavesOfType(TAILOR_CUTS_VIEW_TYPE);
 	}
 
 	async loadSettings() {
@@ -119,8 +73,8 @@ export default class TailorCutsPlugin extends Plugin {
 		} else {
 			const { keybindings, obsidianHotkeys } = settingsParse.data;
 			this.settings = {
-        // keybindings: deserializeKeybindings(keybindings),
-        keybindings: [],
+				// keybindings: deserializeKeybindings(keybindings),
+				keybindings: [],
 				obsidianHotkeys: obsidianHotkeys as SerializedHotkeys, // TODO
 			};
 		}
@@ -139,45 +93,15 @@ export default class TailorCutsPlugin extends Plugin {
 		}
 	}
 
-	async addPluginsView() {
+	async addTailorCutsView() {
 		const isViewOpen = this.app.workspace.getLeavesOfType(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS
-		);
-		if (isViewOpen.length > 0) return;
-		this.app.workspace
-			.getLeaf()
-			.setViewState({ type: VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_PLUGINS });
-	}
-
-	async addCommandsView() {
-		const isViewOpen = this.app.workspace.getLeavesOfType(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS
-		);
-		if (isViewOpen.length > 0) return;
-		this.app.workspace
-			.getLeaf()
-			.setViewState({ type: VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_COMMANDS });
-	}
-
-	async addKeybindingsView() {
-		const isViewOpen = this.app.workspace.getLeavesOfType(
-			VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS
+			TAILOR_CUTS_VIEW_TYPE
 		);
 		if (isViewOpen.length > 0) return;
 		this.app.workspace.getLeaf().setViewState({
-			type: VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_KEYBINDINGS,
+			type: TAILOR_CUTS_VIEW_TYPE,
 		});
 	}
-
-  async addAnyDashboardView() {
-    const isViewOpen = this.app.workspace.getLeavesOfType(
-      VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_ANY
-    );
-    if (isViewOpen.length > 0) return;
-    this.app.workspace.getLeaf().setViewState({
-      type: VIEW_TYPE_BARRACLOUGH_TAILOR_CUTS_ANY,
-    });
-  }
 }
 
 export type { TailorCutsPlugin as TailorCutsPluginType };

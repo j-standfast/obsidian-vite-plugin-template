@@ -1,9 +1,21 @@
-import type { ObsidianModifier } from "./keys";
+import type { Keysig, ObsidianModifierInternal } from "./keys";
+import type { CommandId } from "./commands";
+export type { HotkeyMeta } from "@/DataManager/keybindings";
 
 export type HotkeyTableDatum = {
   // keysig: string;
-  commandId: string;
+  commandId: CommandId;
+  bakedCommandIdsForKeysig: CommandId[];
   obsidianModifiers: string;
   obsidianKey: string;
-  isDefault: boolean;
+  isDefaultHotkey: boolean;
+  isEffectiveHotkey: boolean;
+  isOverriding: boolean;
+  keysigsOverriding: string;
+  isOverridden: boolean;
+  keysigsOverriddenBy: string;
+  conflictingCommandIds: CommandId[];
+  probablyShouldBeBaked: boolean;
+  isBaked: boolean;
+  keysig: Keysig;
 }

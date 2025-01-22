@@ -1,6 +1,19 @@
-import type { ChromeCodePascal, ChromeModifierCodeLower } from "@/types/keys";
+import { HotkeyManager } from "obsidian";
+import type {
+	ChromeCode,
+	ObsidianModifierInternal,
+	ObsidianModifierInternalWindows,
+} from "@/types/keys";
+import { OBSIDIAN_MODIFIERS_INTERNAL } from "@/constants/keys";
 
-export const OBSIDIAN_KEY_TO_CHROME_CODE: Record<string, ChromeCodePascal> =
+export const isObsidianInternalModifier = (
+	k: string
+): k is ObsidianModifierInternal => {
+	return (OBSIDIAN_MODIFIERS_INTERNAL as readonly string[]).includes(k);
+};
+
+// TODO: define/use OBSIDIAN_KEYS
+export const OBSIDIAN_KEY_TO_CHROME_CODE: Record<string, ChromeCode> =
 	Object.entries({
 		ArrowDown: "ArrowDown",
 		ArrowLeft: "ArrowLeft",
@@ -102,17 +115,39 @@ export const OBSIDIAN_KEY_TO_CHROME_CODE: Record<string, ChromeCodePascal> =
 		"'": "Quote",
 		Enter: "Enter",
 	}).reduce((acc, [key, value]) => {
-		acc[key.toLowerCase()] = value as ChromeCodePascal;
+		acc[key.toLowerCase()] = value as ChromeCode;
 		return acc;
-	}, {} as Record<string, ChromeCodePascal>);
+	}, {} as Record<string, ChromeCode>);
 
-export const OBSIDIAN_MODIFIER_KEYS_MAP: Record<string, string> = {
-	ctrl: "ctrl",
-	mod: "alt",
-	shift: "shift",
-	meta: "meta",
-	alt: "alt",
+export const obsidianInternalModifierToWindowsDict: {
+	[P in ObsidianModifierInternal]: ObsidianModifierInternalWindows;
+} = {
+	Ctrl: "Ctrl",
+	Mod: "Ctrl",
+	Shift: "Shift",
+	Meta: "Meta",
+	Alt: "Alt",
 };
+
+export const obsidianInternalModifierToWindows = (
+	k: ObsidianModifierInternal
+) => {
+	if (!isObsidianInternalModifier(k)) {
+		throw new Error(`Unknown obsidian modifier key: ${k}`);
+	}
+	return obsidianInternalModifierToWindowsDict[k];
+};
+
+// export const OBSIDIAN_MODIFIER_KEYS_MAP: Record<
+// 	ObsidianModifierInternal,
+// 	ObsidianModifierInternalWindows
+// > = {
+// 	ctrl: "ctrl",
+// 	mod: "alt",
+// 	shift: "shift",
+// 	meta: "meta",
+// 	alt: "alt",
+// };
 
 // const mappedKeyCodes = new Set(Object.values(OBSIDIAN_KEY_TO_CHROME_CODE));
 // const keyCodes = new Set(CODES_CHROME_CAMEL);

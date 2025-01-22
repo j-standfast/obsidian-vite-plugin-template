@@ -1,6 +1,6 @@
 import type { App } from "obsidian";
 
-import type { CommandData, HotkeyTableDatum, PluginMeta, TailorCutsData, TailorCutsPluginType } from "@/types";
+import type { CommandData, HotkeyMeta, HotkeyTableDatum, PluginMeta, TailorCutsData, TailorCutsPluginType } from "@/types";
 import { getCommandData } from "./commands";
 import { CommandsWatcher } from "./CommandsWatcher";
 import { getHotkeyTableData } from "./keybindings";
@@ -22,7 +22,7 @@ export class TailorCutsDataManager {
 	isLoaded: boolean;
 	#pluginData: PluginMeta[];
 	#commandData: CommandData[];
-	#keybindingData: HotkeyTableDatum[];
+	#keybindingData: { hotkeyTableData: HotkeyTableDatum[], hotkeyMetaById: Map<string, HotkeyMeta> };
 	#keybindingWatcher: KeybindingsWatcher | null;
 	#pluginsWatcher: PluginsWatcher | null;
 	#commandsWatcher: CommandsWatcher | null;
@@ -36,7 +36,7 @@ export class TailorCutsDataManager {
 		this.#subscribers = [];
 		this.#commandData = [];
 		this.#pluginData = [];
-		this.#keybindingData = [];
+		this.#keybindingData = { hotkeyTableData: [], hotkeyMetaById: new Map() };
 		this.#pluginsWatcher = null;
 		this.#commandsWatcher = null;
 		this.#keybindingWatcher = null;
@@ -86,7 +86,7 @@ export class TailorCutsDataManager {
 
 	async _refreshKeybindingData() {
 		// console.log('refreshKeybindingData');
-		this.#keybindingData = getHotkeyTableData(this.app.hotkeyManager);
+		this.#keybindingData = getHotkeyTableData(this.app);
 		console.log(`${this.#logHeader} / _refreshKeybindingData`, {
 			this: this,
 			keybindingData: this.#keybindingData,

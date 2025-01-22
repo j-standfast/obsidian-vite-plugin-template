@@ -1,7 +1,12 @@
-import type { CommandData } from "./commands";
-import type { HotkeyTableDatum } from "./keybindings";
-import type { PluginMeta } from "./plugins";
+import { DASHBOARD_KINDS } from "@/constants/plugin";
 import type { TailorCutsPluginType } from "@/main";
+
+import type { CommandData } from "./commands";
+import type { HotkeyMeta, HotkeyTableDatum } from "./keybindings";
+import type { PluginMeta } from "./plugins";
+
+
+export type { TailorCutsPluginType };
 
 export interface TailorCutsSettings {
 	keybindings: Keybinding[];
@@ -11,7 +16,12 @@ export interface TailorCutsSettings {
 export interface TailorCutsData {
 	plugins: PluginMeta[];
 	commands: CommandData[];
-	keybindings: HotkeyTableDatum[];
+  keybindings: {
+    hotkeyTableData: HotkeyTableDatum[];
+    hotkeyMeta: HotkeyMeta[];
+  };
 }
 
-export type { TailorCutsPluginType };
+export type DashboardKind = (typeof DASHBOARD_KINDS)[number];
+
+

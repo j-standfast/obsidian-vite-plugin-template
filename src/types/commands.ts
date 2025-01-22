@@ -3,7 +3,6 @@ import { PluginId } from "./plugins";
 
 export type CommandId = string;
 
-
 export interface CommandData extends Command {
 	id: string;
 	name: string;

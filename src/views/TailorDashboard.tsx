@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
 import { RotateCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { KeybindingsTable } from "./keybindings/KeybindingsTable";
-import { PluginsTable } from "./plugins/PluginsTable";
-import { CommandsTable } from "./commands/CommandsTable";
+import { DASHBOARD_KINDS } from "@/constants/plugin";
 import { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
-import type { TailorCutsData } from "@/types";
+import type { DashboardKind, TailorCutsData } from "@/types";
+import { CommandsTable } from "./CommandsTable";
+import { KeybindingsTable } from "./KeybindingsTable2";
+import { PluginsTable } from "./PluginsTable";
 
-interface DashboardSelectorProps {
+interface TailorCutsDashboardProps {
 	dataManager: TailorCutsDataManager;
 }
-
-const DASHBOARD_KINDS = ["plugins", "commands", "keybindings"] as const;
-type DashboardKind = (typeof DASHBOARD_KINDS)[number];
 
 const DashboardKindButton = ({
 	kind,
@@ -24,7 +22,7 @@ const DashboardKindButton = ({
 	setSelectedDashboard: (kind: DashboardKind) => void;
 }) => {
 	const isSelected = selectedDashboard === kind;
-	const bgColor = isSelected ? "hsl(0, 0%, 90%)" : "transparent";
+	const bgColor = isSelected ? "hsl(0, 0%, 25%)" : "transparent";
 	return (
 		<button
 			onClick={() => setSelectedDashboard(kind)}
@@ -35,15 +33,20 @@ const DashboardKindButton = ({
 	);
 };
 
-export const DashboardSelector = ({ dataManager }: DashboardSelectorProps) => {
+export const TailorCutsDashboard = ({
+	dataManager,
+}: TailorCutsDashboardProps) => {
 	const componentId = "tailor-cuts-dashboard"; // TODO? dynamic?
 
-	const [dashKind, setDashKind] = useState<DashboardKind>("plugins");
+	const [dashKind, setDashKind] = useState<DashboardKind>("keybindings");
 	const [data, setData] = useState<TailorCutsData>({
-    plugins: [],
-    commands: [],
-    keybindings: [],
-  });
+		plugins: [],
+		commands: [],
+		keybindings: {
+      hotkeyTableData: [],
+      hotkeyMeta: [],
+    },
+	});
 	useEffect(() => {
 		const unsubscribe = dataManager.subscribe({
 			callback: (data) => {
@@ -97,16 +100,24 @@ export const DashboardSelector = ({ dataManager }: DashboardSelectorProps) => {
 					gap: "10px",
 				}}
 			>
-				<h1>Keybindings Dashboard</h1>
-        {dashKind === "keybindings" && (
-            <KeybindingsTable data={data.keybindings} className="barraclough-tailor-cuts-keybindings-table" />
-          )
-        }
+				<h1>{dashKind.charAt(0).toUpperCase() + dashKind.slice(1)}</h1>
+				{dashKind === "keybindings" && (
+					<KeybindingsTable
+						data={data.keybindings.hotkeyMeta}
+						className="barraclough-tailor-cuts-keybindings-table"
+					/>
+				)}
 				{dashKind === "plugins" && (
-					<PluginsTable data={data.plugins} className="barraclough-tailor-cuts-plugins-table" />
+					<PluginsTable
+						data={data.plugins}
+						className="barraclough-tailor-cuts-plugins-table"
+					/>
 				)}
 				{dashKind === "commands" && (
-					<CommandsTable data={data.commands} className="barraclough-tailor-cuts-commands-table" />
+					<CommandsTable
+						data={data.commands}
+						className="barraclough-tailor-cuts-commands-table"
+					/>
 				)}
 			</div>
 		</div>
