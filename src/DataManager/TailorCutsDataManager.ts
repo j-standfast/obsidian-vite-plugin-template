@@ -1,14 +1,19 @@
 import type { App } from "obsidian";
 
-import type { CommandData, HotkeyMeta, HotkeyTableDatum, PluginMeta, TailorCutsData, TailorCutsPluginType } from "@/types";
+import type {
+	CommandData,
+	HotkeyMeta,
+	HotkeyTableDatum,
+	PluginMeta,
+	TailorCutsData,
+	TailorCutsPlugin,
+} from "@/types";
 import { getCommandData } from "./commands";
 import { CommandsWatcher } from "./CommandsWatcher";
 import { getHotkeyTableData } from "./keybindings";
 import { KeybindingsWatcher } from "./KeybindingsWatcher";
 import { getPluginMetaData } from "./plugins";
 import { PluginsWatcher } from "./PluginsWatcher";
-
-
 
 interface TailorCutsDataSubscriber {
 	callback: (data: TailorCutsData) => void;
@@ -18,25 +23,31 @@ interface TailorCutsDataSubscriber {
 
 export class TailorCutsDataManager {
 	app: App;
-	plugin: TailorCutsPluginType;
+	plugin: TailorCutsPlugin;
 	isLoaded: boolean;
 	#pluginData: PluginMeta[];
 	#commandData: CommandData[];
-	#keybindingData: { hotkeyTableData: HotkeyTableDatum[], hotkeyMetaById: Map<string, HotkeyMeta> };
+	#keybindingData: {
+		hotkeyTableData: HotkeyTableDatum[];
+		hotkeyMetaById: Map<string, HotkeyMeta>;
+	};
 	#keybindingWatcher: KeybindingsWatcher | null;
 	#pluginsWatcher: PluginsWatcher | null;
 	#commandsWatcher: CommandsWatcher | null;
 	#subscribers: TailorCutsDataSubscriber[] = [];
 	#logHeader = "TailorCutsDataManager";
 
-	constructor(app: App, plugin: TailorCutsPluginType) {
+	constructor(app: App, plugin: TailorCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.isLoaded = false;
 		this.#subscribers = [];
 		this.#commandData = [];
 		this.#pluginData = [];
-		this.#keybindingData = { hotkeyTableData: [], hotkeyMetaById: new Map() };
+		this.#keybindingData = {
+			hotkeyTableData: [],
+			hotkeyMetaById: new Map(),
+		};
 		this.#pluginsWatcher = null;
 		this.#commandsWatcher = null;
 		this.#keybindingWatcher = null;
@@ -107,7 +118,7 @@ export class TailorCutsDataManager {
 		};
 	}
 
-  subscribe(subscriber: TailorCutsDataSubscriber) {
+	subscribe(subscriber: TailorCutsDataSubscriber) {
 		console.log(`${this.#logHeader} / subscribe`, {
 			subscriber,
 			time: Intl.DateTimeFormat("en-US", {
@@ -118,8 +129,8 @@ export class TailorCutsDataManager {
 			}).format(new Date()),
 			this: this,
 		});
-    this.#subscribers.push(subscriber);
-    subscriber.callback(this._data);
+		this.#subscribers.push(subscriber);
+		subscriber.callback(this._data);
 		return () => this.unsubscribe(subscriber);
 	}
 
@@ -142,12 +153,12 @@ export class TailorCutsDataManager {
 	async onChange() {
 		console.log(`${this.#logHeader} / onChange`, {
 			this: this,
-    });
-    await this._refreshData();
-    this.#subscribers.forEach((subscriber) => {
+		});
+		await this._refreshData();
+		this.#subscribers.forEach((subscriber) => {
 			console.log(`${this.#logHeader} / onChange / subscriber`, {
 				subscriber,
-				time: Intl.DateTimeFormat("en-US", {  
+				time: Intl.DateTimeFormat("en-US", {
 					hour: "2-digit",
 					minute: "2-digit",
 					second: "2-digit",

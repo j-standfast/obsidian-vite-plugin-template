@@ -4,18 +4,18 @@ import type {
 	HotkeyManagerCustomKeysRecord,
 } from "@/tailor-cuts-obsidian";
 import { WatchedProxy, WatchedProxyEvent } from "@/utils/WatchedProxy";
-import type { TailorCutsPluginType } from "@/types";
+import type { TailorCutsPlugin } from "@/types";
 
 export class KeybindingsWatcher {
 	app: App;
-	plugin: TailorCutsPluginType;
+	plugin: TailorCutsPlugin;
 	hotkeyManagerWatcher: WatchedProxy<HotkeyManager> | null;
 	hotkeyManagerSubscribers: ((hotkeyManager: HotkeyManager) => void)[];
 	isLoaded: boolean;
 	_obsidianInternalCustomKeysSymbol: CustomKeysSymbol | null;
 	#_logHeader = "KeybindingsWatcher";
 
-	constructor(app: App, plugin: TailorCutsPluginType) {
+	constructor(app: App, plugin: TailorCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.hotkeyManagerWatcher = null;

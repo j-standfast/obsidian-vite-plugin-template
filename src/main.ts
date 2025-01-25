@@ -6,17 +6,17 @@ import { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
 import { serializedSettingsSchema } from "@/schemas";
 import "@/styles.css";
 import type { CommandId, SerializedHotkeys, TailorCutsSettings } from "@/types";
-import { DebugUtils } from "@/utils/DebugUtils/DebugUtils";
-// import {
-// 	deserializeKeybindings,
-// 	serializeKeybindings,
-// } from "@/utils/serialize";
+import { DebugUtils } from "@/utils/DebugUtils/DebugUtils2";
 import { TailorView } from "./views/TailorView";
+import { TailorCutsKeymap } from "@/ShortcutListener/TailorsKeymap";
+import { TailorCutsManager } from "@/ShortcutListener/TailorCutsManager";
 
 export default class TailorCutsPlugin extends Plugin {
 	settings: TailorCutsSettings;
 	// shortcutListener: ShortcutListener;
-	dataManager: TailorCutsDataManager;
+  dataManager: TailorCutsDataManager;
+  keymap: TailorCutsKeymap;
+  hotkeyManager: TailorCutsManager;
 	util: DebugUtils;
 
 	constructor(app: App, manifest: PluginManifest) {
@@ -30,7 +30,9 @@ export default class TailorCutsPlugin extends Plugin {
 		// 	app,
 		// 	this.settings.keybindings
 		// );
-		this.dataManager = new TailorCutsDataManager(app, this);
+    this.dataManager = new TailorCutsDataManager(app, this);
+    this.keymap = new TailorCutsKeymap(app, this);
+    this.hotkeyManager = new TailorCutsManager(app, this);
 		this.util = new DebugUtils(this.app, this);
 	}
 
@@ -104,4 +106,4 @@ export default class TailorCutsPlugin extends Plugin {
 	}
 }
 
-export type { TailorCutsPlugin as TailorCutsPluginType };
+export type { TailorCutsPlugin };

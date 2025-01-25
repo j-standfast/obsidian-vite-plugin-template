@@ -1,0 +1,1 @@
+[{"key":"ctrl+shift+e","command":"-workbench.action.quickOpenNavigatePreviousInFilePicker","when":"inFilesPicker && inQuickOpen"},{"key":"ctrl+alt+shift+v","command":"pasteAndIndent.action","when":"editorTextFocus && !editorReadonly"},{"key":"ctrl+shift+e","command":"fakety-test-command","when":"fake && alsoFake"}]
