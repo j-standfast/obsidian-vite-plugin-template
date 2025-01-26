@@ -1,666 +1,666 @@
-import type {
-	App,
-	Command,
-	Hotkey,
-	KeymapInfo,
-	PluginManifest,
-} from "obsidian";
-import type { CommandData, TailorCutsSettings } from "@/types";
+// import type {
+// 	App,
+// 	Command,
+// 	Hotkey,
+// 	KeymapInfo,
+// 	PluginManifest,
+// } from "obsidian";
+// import type { CommandData, TailorCutsSettings } from "@/types";
 
-interface HotkeyRecord {
-	[commandId: string]: Hotkey[];
-}
+// interface HotkeyRecord {
+// 	[commandId: string]: Hotkey[];
+// }
 
-const getCommandsHotkeysFromManager = (
-	app: App,
-	cmds: Command[]
-): {
-	managerGottenKeymapInfo: HotkeyRecord;
-	managerGottenDefaultKeymapInfo: HotkeyRecord;
-} => {
-	let managerGottenKeymapInfo: HotkeyRecord = {};
-	let managerGottenDefaultKeymapInfo: HotkeyRecord = {};
-	for (const c of cmds) {
-		try {
-			const hotkeys = app.hotkeyManager.getHotkeys(c.id);
-			if (hotkeys !== undefined) {
-				managerGottenKeymapInfo[c.id] = hotkeys;
-			}
+// const getCommandsHotkeysFromManager = (
+// 	app: App,
+// 	cmds: Command[]
+// ): {
+// 	managerGottenKeymapInfo: HotkeyRecord;
+// 	managerGottenDefaultKeymapInfo: HotkeyRecord;
+// } => {
+// 	let managerGottenKeymapInfo: HotkeyRecord = {};
+// 	let managerGottenDefaultKeymapInfo: HotkeyRecord = {};
+// 	for (const c of cmds) {
+// 		try {
+// 			const hotkeys = app.hotkeyManager.getHotkeys(c.id);
+// 			if (hotkeys !== undefined) {
+// 				managerGottenKeymapInfo[c.id] = hotkeys;
+// 			}
 
-			const defaultHotkeys = app.hotkeyManager.getDefaultHotkeys(c.id);
-			if (defaultHotkeys !== undefined) {
-				managerGottenDefaultKeymapInfo[c.id] = defaultHotkeys;
-			}
-		} catch (error) {
-			console.log("auditCommands / error:", { error });
-		}
-	}
-	return { managerGottenKeymapInfo, managerGottenDefaultKeymapInfo };
-};
+// 			const defaultHotkeys = app.hotkeyManager.getDefaultHotkeys(c.id);
+// 			if (defaultHotkeys !== undefined) {
+// 				managerGottenDefaultKeymapInfo[c.id] = defaultHotkeys;
+// 			}
+// 		} catch (error) {
+// 			console.log("auditCommands / error:", { error });
+// 		}
+// 	}
+// 	return { managerGottenKeymapInfo, managerGottenDefaultKeymapInfo };
+// };
 
-const getCustomKeymapInfoFromManager = (app: App): HotkeyRecord => {
-	const customSym = Object.getOwnPropertySymbols(
-		app.hotkeyManager
-	)[0] as unknown as keyof typeof app.hotkeyManager;
-	return app.hotkeyManager[customSym] as {
-		[commandId: string]: Hotkey[];
-	};
-};
+// const getCustomKeymapInfoFromManager = (app: App): HotkeyRecord => {
+// 	const customSym = Object.getOwnPropertySymbols(
+// 		app.hotkeyManager
+// 	)[0] as unknown as keyof typeof app.hotkeyManager;
+// 	return app.hotkeyManager[customSym] as {
+// 		[commandId: string]: Hotkey[];
+// 	};
+// };
 
-// TODO fix
-const getBakedKeymapInfoFromManager = (app: App): HotkeyRecord => {
-	const bakedHotkeys = app.hotkeyManager.bakedIds.reduce((acc, id, i) => {
-		if (acc[id] === undefined) acc[id] = [];
-		acc[id].push(app.hotkeyManager.bakedHotkeys[i] as any); // TODO
-		return acc;
-	}, {} as HotkeyRecord);
-	return bakedHotkeys;
-};
+// // TODO fix
+// const getBakedKeymapInfoFromManager = (app: App): HotkeyRecord => {
+// 	const bakedHotkeys = app.hotkeyManager.bakedIds.reduce((acc, id, i) => {
+// 		if (acc[id] === undefined) acc[id] = [];
+// 		acc[id].push(app.hotkeyManager.bakedHotkeys[i] as any); // TODO
+// 		return acc;
+// 	}, {} as HotkeyRecord);
+// 	return bakedHotkeys;
+// };
 
-const getCmdProps = (c: Command | undefined, prefix: string) => {
-	if (!c)
-		return {
-			[`${prefix}`]: false,
-			[`${prefix}Hotkeys`]: undefined,
-			[`${prefix}Name`]: undefined,
-			[`${prefix}HasCallback`]: undefined,
-			[`${prefix}HasCheck`]: undefined,
-			[`${prefix}HasEditorCheck`]: undefined,
-			[`${prefix}HasEditorCallback`]: undefined,
-		};
-	return {
-		[`${prefix}`]: true,
-		[`${prefix}Hotkeys`]: c.hotkeys,
-		[`${prefix}Name`]: c.name,
-		[`${prefix}HasCallback`]: !!c.callback,
-		[`${prefix}HasCheck`]: !!c.checkCallback,
-		[`${prefix}HasEditorCheck`]: !!c.editorCheckCallback,
-		[`${prefix}HasEditorCallback`]: !!c.editorCallback,
-	};
-};
+// const getCmdProps = (c: Command | undefined, prefix: string) => {
+// 	if (!c)
+// 		return {
+// 			[`${prefix}`]: false,
+// 			[`${prefix}Hotkeys`]: undefined,
+// 			[`${prefix}Name`]: undefined,
+// 			[`${prefix}HasCallback`]: undefined,
+// 			[`${prefix}HasCheck`]: undefined,
+// 			[`${prefix}HasEditorCheck`]: undefined,
+// 			[`${prefix}HasEditorCallback`]: undefined,
+// 		};
+// 	return {
+// 		[`${prefix}`]: true,
+// 		[`${prefix}Hotkeys`]: c.hotkeys,
+// 		[`${prefix}Name`]: c.name,
+// 		[`${prefix}HasCallback`]: !!c.callback,
+// 		[`${prefix}HasCheck`]: !!c.checkCallback,
+// 		[`${prefix}HasEditorCheck`]: !!c.editorCheckCallback,
+// 		[`${prefix}HasEditorCallback`]: !!c.editorCallback,
+// 	};
+// };
 
-const getKeymapProps = <T extends string>(
-	id: string,
-	kmir: HotkeyRecord,
-	prefix: T
-): {} => {
-	return id in kmir
-		? {
-				[`${prefix}`]: true,
-				[`${prefix}Hotkeys`]: kmir[id],
-		  }
-		: {
-				[`${prefix}`]: false,
-				[`${prefix}Hotkeys`]: undefined,
-		  };
-};
+// const getKeymapProps = <T extends string>(
+// 	id: string,
+// 	kmir: HotkeyRecord,
+// 	prefix: T
+// ): {} => {
+// 	return id in kmir
+// 		? {
+// 				[`${prefix}`]: true,
+// 				[`${prefix}Hotkeys`]: kmir[id],
+// 		  }
+// 		: {
+// 				[`${prefix}`]: false,
+// 				[`${prefix}Hotkeys`]: undefined,
+// 		  };
+// };
 
-function auditCommands(app: App, settings: TailorCutsSettings) {
-	// app.commands
-	if (!app.hotkeyManager.baked) {
-		console.error(" not baked");
-		return;
-	}
-	const commandsRecord = app.commands.commands;
-	const cmds = Object.values(commandsRecord);
-	const edCmds = Object.values(app.commands.editorCommands);
-	const listCmds = app.commands.listCommands();
+// function auditCommands(app: App, settings: TailorCutsSettings) {
+// 	// app.commands
+// 	if (!app.hotkeyManager.baked) {
+// 		console.error(" not baked");
+// 		return;
+// 	}
+// 	const commandsRecord = app.commands.commands;
+// 	const cmds = Object.values(commandsRecord);
+// 	const edCmds = Object.values(app.commands.editorCommands);
+// 	const listCmds = app.commands.listCommands();
 
-	try {
-		auditCommandIdCheck(commandsRecord);
-	} catch (error) {
-		console.log("auditCommands / commandId check: failed", { error });
-	}
+// 	try {
+// 		auditCommandIdCheck(commandsRecord);
+// 	} catch (error) {
+// 		console.log("auditCommands / commandId check: failed", { error });
+// 	}
 
-	// app.hotkeyManager
-	const { managerGottenKeymapInfo, managerGottenDefaultKeymapInfo } =
-		getCommandsHotkeysFromManager(app, cmds);
-	const bakedKeymapInfo = getBakedKeymapInfoFromManager(app);
-	const customKeymapInfo = getCustomKeymapInfoFromManager(app);
-	const defaultKeymapInfo = app.hotkeyManager.defaultKeys; // { [commandId: string]: hotkey[] }
+// 	// app.hotkeyManager
+// 	const { managerGottenKeymapInfo, managerGottenDefaultKeymapInfo } =
+// 		getCommandsHotkeysFromManager(app, cmds);
+// 	const bakedKeymapInfo = getBakedKeymapInfoFromManager(app);
+// 	const customKeymapInfo = getCustomKeymapInfoFromManager(app);
+// 	const defaultKeymapInfo = app.hotkeyManager.defaultKeys; // { [commandId: string]: hotkey[] }
 
-	// hotkeys.json (copied over)
-	const settingsSerializedHotkeys = settings.obsidianHotkeys; // { [commandId: string]: hotkey[] }
+// 	// hotkeys.json (copied over)
+// 	const settingsSerializedHotkeys = settings.obsidianHotkeys; // { [commandId: string]: hotkey[] }
 
-	// plugins
-	const pluginManifestsById = app.plugins.manifests;
-	const enabledPluginIds = [...app.plugins.enabledPlugins];
-	const nestedPluginManifestsById = Object.values(app.plugins.plugins).reduce(
-		(acc, p) => {
-			acc[p.manifest.id] = p.manifest;
-			return acc;
-		},
-		{} as { [id: string]: PluginManifest }
-	);
-	const allPluginIds = [
-		...new Set([
-			...Object.keys(pluginManifestsById),
-			...Object.keys(nestedPluginManifestsById),
-			...enabledPluginIds,
-		]),
-	];
+// 	// plugins
+// 	const pluginManifestsById = app.plugins.manifests;
+// 	const enabledPluginIds = [...app.plugins.enabledPlugins];
+// 	const nestedPluginManifestsById = Object.values(app.plugins.plugins).reduce(
+// 		(acc, p) => {
+// 			acc[p.manifest.id] = p.manifest;
+// 			return acc;
+// 		},
+// 		{} as { [id: string]: PluginManifest }
+// 	);
+// 	const allPluginIds = [
+// 		...new Set([
+// 			...Object.keys(pluginManifestsById),
+// 			...Object.keys(nestedPluginManifestsById),
+// 			...enabledPluginIds,
+// 		]),
+// 	];
 
-	const pluginAudit = [];
-	for (const id of allPluginIds) {
-		const isEnabled = enabledPluginIds.includes(id);
-		const isOuter = id in pluginManifestsById;
-		const isNested = id in nestedPluginManifestsById;
-		const manifest = isOuter
-			? pluginManifestsById[id]
-			: nestedPluginManifestsById[id];
-		if (!manifest)
-			throw new Error(`auditCommands / plugin manifest not found: ${id}`);
-		pluginAudit.push({
-			id,
-			name: manifest.name,
-			isEnabled,
-			isNested,
-			isOuter,
-			manifest,
-		});
-	}
-	const allPluginNames = pluginAudit.map((p) => p.name);
+// 	const pluginAudit = [];
+// 	for (const id of allPluginIds) {
+// 		const isEnabled = enabledPluginIds.includes(id);
+// 		const isOuter = id in pluginManifestsById;
+// 		const isNested = id in nestedPluginManifestsById;
+// 		const manifest = isOuter
+// 			? pluginManifestsById[id]
+// 			: nestedPluginManifestsById[id];
+// 		if (!manifest)
+// 			throw new Error(`auditCommands / plugin manifest not found: ${id}`);
+// 		pluginAudit.push({
+// 			id,
+// 			name: manifest.name,
+// 			isEnabled,
+// 			isNested,
+// 			isOuter,
+// 			manifest,
+// 		});
+// 	}
+// 	const allPluginNames = pluginAudit.map((p) => p.name);
 
-	const pluginEntities = {
-		pluginManifestsById,
-		enabledPluginIds,
-		nestedPluginManifestsById,
-		allPluginIds,
-		nPlugins: allPluginIds.length,
-		allPluginNames,
-	};
+// 	const pluginEntities = {
+// 		pluginManifestsById,
+// 		enabledPluginIds,
+// 		nestedPluginManifestsById,
+// 		allPluginIds,
+// 		nPlugins: allPluginIds.length,
+// 		allPluginNames,
+// 	};
 
-	const pluginAuditSummary = {
-		nPlugins: allPluginIds.length,
-		nEnabled: enabledPluginIds.length,
-		nOuter: pluginAudit.filter((p) => p.isOuter).length,
-		nNested: pluginAudit.filter((p) => p.isNested).length,
-		outerVsNested: {
-			nOuterXORNested: pluginAudit.filter((p) => p.isOuter !== p.isNested)
-				.length,
-			nOuterANDNested: pluginAudit.filter((p) => p.isOuter && p.isNested)
-				.length,
-			nOuterORNested: pluginAudit.filter((p) => p.isOuter || p.isNested)
-				.length,
-			nOuterNOTNested: pluginAudit.filter((p) => p.isOuter && !p.isNested)
-				.length,
-			nNestedNOTOuter: pluginAudit.filter((p) => !p.isOuter && p.isNested)
-				.length,
-		},
-		outerVsEnabled: {
-			nOuterXOREnabled: pluginAudit.filter(
-				(p) => p.isOuter !== p.isEnabled
-			).length,
-			nOuterANDEnabled: pluginAudit.filter(
-				(p) => p.isOuter && p.isEnabled
-			).length,
-			nOuterOREnabled: pluginAudit.filter((p) => p.isOuter || p.isEnabled)
-				.length,
-			nOuterNOTEnabled: pluginAudit.filter(
-				(p) => p.isOuter && !p.isEnabled
-			).length,
-			nEnabledNOTOuter: pluginAudit.filter(
-				(p) => !p.isOuter && p.isEnabled
-			).length,
-		},
-		nestedVsEnabled: {
-			nNestedXOREnabled: pluginAudit.filter(
-				(p) => p.isNested !== p.isEnabled
-			).length,
-			nNestedANDEnabled: pluginAudit.filter(
-				(p) => p.isNested && p.isEnabled
-			).length,
-			nNestedOREnabled: pluginAudit.filter(
-				(p) => p.isNested || p.isEnabled
-			).length,
-			nNestedNOTEnabled: pluginAudit.filter(
-				(p) => p.isNested && !p.isEnabled
-			).length,
-			nEnabledNOTNested: pluginAudit.filter(
-				(p) => !p.isNested && p.isEnabled
-			).length,
-		},
-	};
+// 	const pluginAuditSummary = {
+// 		nPlugins: allPluginIds.length,
+// 		nEnabled: enabledPluginIds.length,
+// 		nOuter: pluginAudit.filter((p) => p.isOuter).length,
+// 		nNested: pluginAudit.filter((p) => p.isNested).length,
+// 		outerVsNested: {
+// 			nOuterXORNested: pluginAudit.filter((p) => p.isOuter !== p.isNested)
+// 				.length,
+// 			nOuterANDNested: pluginAudit.filter((p) => p.isOuter && p.isNested)
+// 				.length,
+// 			nOuterORNested: pluginAudit.filter((p) => p.isOuter || p.isNested)
+// 				.length,
+// 			nOuterNOTNested: pluginAudit.filter((p) => p.isOuter && !p.isNested)
+// 				.length,
+// 			nNestedNOTOuter: pluginAudit.filter((p) => !p.isOuter && p.isNested)
+// 				.length,
+// 		},
+// 		outerVsEnabled: {
+// 			nOuterXOREnabled: pluginAudit.filter(
+// 				(p) => p.isOuter !== p.isEnabled
+// 			).length,
+// 			nOuterANDEnabled: pluginAudit.filter(
+// 				(p) => p.isOuter && p.isEnabled
+// 			).length,
+// 			nOuterOREnabled: pluginAudit.filter((p) => p.isOuter || p.isEnabled)
+// 				.length,
+// 			nOuterNOTEnabled: pluginAudit.filter(
+// 				(p) => p.isOuter && !p.isEnabled
+// 			).length,
+// 			nEnabledNOTOuter: pluginAudit.filter(
+// 				(p) => !p.isOuter && p.isEnabled
+// 			).length,
+// 		},
+// 		nestedVsEnabled: {
+// 			nNestedXOREnabled: pluginAudit.filter(
+// 				(p) => p.isNested !== p.isEnabled
+// 			).length,
+// 			nNestedANDEnabled: pluginAudit.filter(
+// 				(p) => p.isNested && p.isEnabled
+// 			).length,
+// 			nNestedOREnabled: pluginAudit.filter(
+// 				(p) => p.isNested || p.isEnabled
+// 			).length,
+// 			nNestedNOTEnabled: pluginAudit.filter(
+// 				(p) => p.isNested && !p.isEnabled
+// 			).length,
+// 			nEnabledNOTNested: pluginAudit.filter(
+// 				(p) => !p.isNested && p.isEnabled
+// 			).length,
+// 		},
+// 	};
 
-	const cmdAudit: CommandData[] = [];
-	for (const c of cmds) {
-		const idContext =
-			c.id.split(":").length > 1 ? c.id.split(":")[0] : undefined;
-		const nameContext =
-			c.name && c.name.split(":").length > 1
-				? c.name.split(":")[0]
-				: undefined;
-		const anyContext = idContext || nameContext;
-		const contextType = idContext ? "id" : anyContext ? "name" : "none";
-		const isPluginContext = idContext && allPluginIds.includes(idContext);
-		const isPluginContextName =
-			nameContext && allPluginNames.includes(nameContext);
-		const pluginId = isPluginContext
-			? idContext
-			: isPluginContextName
-			? nameContext
-			: undefined;
-		const pluginName = isPluginContextName
-			? nameContext
-			: isPluginContext
-			? allPluginIds.find((n) => n.startsWith(idContext))
-			: undefined;
-		const most = {
-			id: c.id,
-			idContext,
-			name: c.name,
-			nameContext,
-			contextType,
-			pluginId,
-			pluginName,
-			...getCmdProps(c, "cmd"),
-			...getCmdProps(
-				edCmds.find((ec) => ec.id === c.id),
-				"edCmd"
-			),
-			...getKeymapProps(c.id, bakedKeymapInfo, "mgrBaked"),
-			...getKeymapProps(c.id, customKeymapInfo, "mgrCustom"),
-			...getKeymapProps(c.id, managerGottenKeymapInfo, "mgrCustomGet"),
-			...getKeymapProps(
-				c.id,
-				managerGottenDefaultKeymapInfo,
-				"mgrDefaultGet"
-			),
-			...getKeymapProps(c.id, defaultKeymapInfo, "mgrDefault"),
-			...getKeymapProps(
-				c.id,
-				settingsSerializedHotkeys as unknown as HotkeyRecord,
-				"settingCustom"
-			),
-		};
+// 	const cmdAudit: CommandData[] = [];
+// 	for (const c of cmds) {
+// 		const idContext =
+// 			c.id.split(":").length > 1 ? c.id.split(":")[0] : undefined;
+// 		const nameContext =
+// 			c.name && c.name.split(":").length > 1
+// 				? c.name.split(":")[0]
+// 				: undefined;
+// 		const anyContext = idContext || nameContext;
+// 		const contextType = idContext ? "id" : anyContext ? "name" : "none";
+// 		const isPluginContext = idContext && allPluginIds.includes(idContext);
+// 		const isPluginContextName =
+// 			nameContext && allPluginNames.includes(nameContext);
+// 		const pluginId = isPluginContext
+// 			? idContext
+// 			: isPluginContextName
+// 			? nameContext
+// 			: undefined;
+// 		const pluginName = isPluginContextName
+// 			? nameContext
+// 			: isPluginContext
+// 			? allPluginIds.find((n) => n.startsWith(idContext))
+// 			: undefined;
+// 		const most = {
+// 			id: c.id,
+// 			idContext,
+// 			name: c.name,
+// 			nameContext,
+// 			contextType,
+// 			pluginId,
+// 			pluginName,
+// 			...getCmdProps(c, "cmd"),
+// 			...getCmdProps(
+// 				edCmds.find((ec) => ec.id === c.id),
+// 				"edCmd"
+// 			),
+// 			...getKeymapProps(c.id, bakedKeymapInfo, "mgrBaked"),
+// 			...getKeymapProps(c.id, customKeymapInfo, "mgrCustom"),
+// 			...getKeymapProps(c.id, managerGottenKeymapInfo, "mgrCustomGet"),
+// 			...getKeymapProps(
+// 				c.id,
+// 				managerGottenDefaultKeymapInfo,
+// 				"mgrDefaultGet"
+// 			),
+// 			...getKeymapProps(c.id, defaultKeymapInfo, "mgrDefault"),
+// 			...getKeymapProps(
+// 				c.id,
+// 				settingsSerializedHotkeys as unknown as HotkeyRecord,
+// 				"settingCustom"
+// 			),
+// 		};
 
-		const res = {
-			...most,
-			isMismatchedCustom: most.mgrCustom != most.mgrCustomGet,
-			isMismatchedDefault: most.mgrDefault != most.mgrDefaultGet,
-			isOverriddenAndUnbaked: most.mgrCustom && most.mgrDefault,
-			isBakedCheck: most.baked === (most.mgrCustom !== most.mgrDefault),
-		};
-		cmdAudit.push(res);
-	}
+// 		const res = {
+// 			...most,
+// 			isMismatchedCustom: most.mgrCustom != most.mgrCustomGet,
+// 			isMismatchedDefault: most.mgrDefault != most.mgrDefaultGet,
+// 			isOverriddenAndUnbaked: most.mgrCustom && most.mgrDefault,
+// 			isBakedCheck: most.baked === (most.mgrCustom !== most.mgrDefault),
+// 		};
+// 		cmdAudit.push(res);
+// 	}
 
-	const cmdAuditEntities = {
-		editorCommands: edCmds,
-		commandList: listCmds,
-		managerGottenKeymapInfo,
-		managerGottenDefaultKeymapInfo,
-		commands: commandsRecord,
-		bakedKeymapInfo,
-		customKeymapInfo,
-		defaultKeymapInfo,
-		settingsSerializedHotkeys,
-	};
+// 	const cmdAuditEntities = {
+// 		editorCommands: edCmds,
+// 		commandList: listCmds,
+// 		managerGottenKeymapInfo,
+// 		managerGottenDefaultKeymapInfo,
+// 		commands: commandsRecord,
+// 		bakedKeymapInfo,
+// 		customKeymapInfo,
+// 		defaultKeymapInfo,
+// 		settingsSerializedHotkeys,
+// 	};
 
-	const cmdAuditSummary = {
-		nCmds: cmds.length,
-		nNamed: cmds.filter((c) => c.name).length,
-		nUnnamed: cmds.filter((c) => !c.name).length,
-		plugin: {
-			nPluginContexts: cmdAudit.filter((c) => c.pluginId).length,
-			nPluginContextsName: cmdAudit.filter((c) => c.pluginName).length,
-			nPluginContextsId: cmdAudit.filter((c) => c.pluginId).length,
-			nPluginContextsNameId: cmdAudit.filter(
-				(c) => c.pluginName && c.pluginId
-			).length,
-		},
-		context: {
-			nContexts: [
-				...new Set(
-					cmdAudit
-						.map((c) => c.idContext || c.nameContext)
-						.filter(Boolean)
-				),
-			].length,
-			nIdContexts: [
-				...new Set(cmdAudit.map((c) => c.idContext).filter(Boolean)),
-			].length,
-			nNameContexts: [
-				...new Set(cmdAudit.map((c) => c.nameContext).filter(Boolean)),
-			].length,
-			nNoneContexts: [
-				...new Set(
-					cmdAudit
-						.map((c) => !c.idContext && !c.nameContext)
-						.filter(Boolean)
-				),
-			].length,
-			nNameContextsCheckType: [
-				...new Set(
-					cmdAudit
-						.map((c) => c.contextType === "name")
-						.filter(Boolean)
-				),
-			].length,
-			nIdContextsCheckType: [
-				...new Set(
-					cmdAudit.map((c) => c.contextType === "id").filter(Boolean)
-				),
-			].length,
-			nNoneContextsCheckType: [
-				...new Set(
-					cmdAudit
-						.map((c) => c.contextType === "none")
-						.filter(Boolean)
-				),
-			].length,
-		},
-		cmds: {
-			nCmds: cmdAudit.filter((c) => c.cmd).length,
-			nEdCmds: cmdAudit.filter((c) => c.edCmd).length,
-			nCmdANDEdCmd: cmdAudit.filter((c) => c.edCmd && c.cmd).length,
-			nCmdXOREdCmd: cmdAudit.filter((c) => c.edCmd ^ c.cmd).length,
-			nCmdOREdCmd: cmdAudit.filter((c) => c.edCmd || c.cmd).length,
-			nCmdNOTEdCmd: cmdAudit.filter((c) => !c.edCmd && c.cmd).length,
-			nEdCmdNOTCmd: cmdAudit.filter((c) => c.edCmd && !c.cmd).length,
-		},
-		mgrGot: {
-			nGotBase: cmdAudit.filter((c) => c.mgrCustomGet).length,
-			nGotDef: cmdAudit.filter((c) => c.mgrDefaultGet).length,
-			nGotBaseNOTDef: cmdAudit.filter(
-				(c) => c.mgrCustomGet && !c.mgrDefaultGet
-			).length,
-			nGotDefNOTBase: cmdAudit.filter(
-				(c) => !c.mgrCustomGet && c.mgrDefaultGet
-			).length,
-			nGotDefANDBase: cmdAudit.filter(
-				(c) => c.mgrCustomGet && c.mgrDefaultGet
-			).length,
-			nGotDefXORBase: cmdAudit.filter(
-				(c) => c.mgrCustomGet ^ c.mgrDefaultGet
-			).length,
-			nGotDefORBase: cmdAudit.filter(
-				(c) => c.mgrCustomGet || c.mgrDefaultGet
-			).length,
-		},
-		settingsEntity: {
-			nCmds: Object.keys(settingsSerializedHotkeys).length,
-			nEmpty: Object.keys(settingsSerializedHotkeys).filter(
-				(id) => settingsSerializedHotkeys[id].length === 0
-			).length,
-			nSingle: Object.keys(settingsSerializedHotkeys).filter(
-				(id) => settingsSerializedHotkeys[id].length === 1
-			).length,
-			nMulti: Object.keys(settingsSerializedHotkeys).filter(
-				(id) => settingsSerializedHotkeys[id].length > 1
-			).length,
-		},
-		nBaked: cmdAudit.filter((c) => c.mgrBaked).length,
-		nCustom: cmdAudit.filter((c) => c.mgrCustom).length,
-		nDefault: cmdAudit.filter((c) => c.mgrDefault).length,
-		nSettings: cmdAudit.filter((c) => c.settingCustom).length,
-	};
+// 	const cmdAuditSummary = {
+// 		nCmds: cmds.length,
+// 		nNamed: cmds.filter((c) => c.name).length,
+// 		nUnnamed: cmds.filter((c) => !c.name).length,
+// 		plugin: {
+// 			nPluginContexts: cmdAudit.filter((c) => c.pluginId).length,
+// 			nPluginContextsName: cmdAudit.filter((c) => c.pluginName).length,
+// 			nPluginContextsId: cmdAudit.filter((c) => c.pluginId).length,
+// 			nPluginContextsNameId: cmdAudit.filter(
+// 				(c) => c.pluginName && c.pluginId
+// 			).length,
+// 		},
+// 		context: {
+// 			nContexts: [
+// 				...new Set(
+// 					cmdAudit
+// 						.map((c) => c.idContext || c.nameContext)
+// 						.filter(Boolean)
+// 				),
+// 			].length,
+// 			nIdContexts: [
+// 				...new Set(cmdAudit.map((c) => c.idContext).filter(Boolean)),
+// 			].length,
+// 			nNameContexts: [
+// 				...new Set(cmdAudit.map((c) => c.nameContext).filter(Boolean)),
+// 			].length,
+// 			nNoneContexts: [
+// 				...new Set(
+// 					cmdAudit
+// 						.map((c) => !c.idContext && !c.nameContext)
+// 						.filter(Boolean)
+// 				),
+// 			].length,
+// 			nNameContextsCheckType: [
+// 				...new Set(
+// 					cmdAudit
+// 						.map((c) => c.contextType === "name")
+// 						.filter(Boolean)
+// 				),
+// 			].length,
+// 			nIdContextsCheckType: [
+// 				...new Set(
+// 					cmdAudit.map((c) => c.contextType === "id").filter(Boolean)
+// 				),
+// 			].length,
+// 			nNoneContextsCheckType: [
+// 				...new Set(
+// 					cmdAudit
+// 						.map((c) => c.contextType === "none")
+// 						.filter(Boolean)
+// 				),
+// 			].length,
+// 		},
+// 		cmds: {
+// 			nCmds: cmdAudit.filter((c) => c.cmd).length,
+// 			nEdCmds: cmdAudit.filter((c) => c.edCmd).length,
+// 			nCmdANDEdCmd: cmdAudit.filter((c) => c.edCmd && c.cmd).length,
+// 			nCmdXOREdCmd: cmdAudit.filter((c) => c.edCmd ^ c.cmd).length,
+// 			nCmdOREdCmd: cmdAudit.filter((c) => c.edCmd || c.cmd).length,
+// 			nCmdNOTEdCmd: cmdAudit.filter((c) => !c.edCmd && c.cmd).length,
+// 			nEdCmdNOTCmd: cmdAudit.filter((c) => c.edCmd && !c.cmd).length,
+// 		},
+// 		mgrGot: {
+// 			nGotBase: cmdAudit.filter((c) => c.mgrCustomGet).length,
+// 			nGotDef: cmdAudit.filter((c) => c.mgrDefaultGet).length,
+// 			nGotBaseNOTDef: cmdAudit.filter(
+// 				(c) => c.mgrCustomGet && !c.mgrDefaultGet
+// 			).length,
+// 			nGotDefNOTBase: cmdAudit.filter(
+// 				(c) => !c.mgrCustomGet && c.mgrDefaultGet
+// 			).length,
+// 			nGotDefANDBase: cmdAudit.filter(
+// 				(c) => c.mgrCustomGet && c.mgrDefaultGet
+// 			).length,
+// 			nGotDefXORBase: cmdAudit.filter(
+// 				(c) => c.mgrCustomGet ^ c.mgrDefaultGet
+// 			).length,
+// 			nGotDefORBase: cmdAudit.filter(
+// 				(c) => c.mgrCustomGet || c.mgrDefaultGet
+// 			).length,
+// 		},
+// 		settingsEntity: {
+// 			nCmds: Object.keys(settingsSerializedHotkeys).length,
+// 			nEmpty: Object.keys(settingsSerializedHotkeys).filter(
+// 				(id) => settingsSerializedHotkeys[id].length === 0
+// 			).length,
+// 			nSingle: Object.keys(settingsSerializedHotkeys).filter(
+// 				(id) => settingsSerializedHotkeys[id].length === 1
+// 			).length,
+// 			nMulti: Object.keys(settingsSerializedHotkeys).filter(
+// 				(id) => settingsSerializedHotkeys[id].length > 1
+// 			).length,
+// 		},
+// 		nBaked: cmdAudit.filter((c) => c.mgrBaked).length,
+// 		nCustom: cmdAudit.filter((c) => c.mgrCustom).length,
+// 		nDefault: cmdAudit.filter((c) => c.mgrDefault).length,
+// 		nSettings: cmdAudit.filter((c) => c.settingCustom).length,
+// 	};
 
-	const defaultButNotGottenDefault = cmdAudit.filter(
-		(c) => c.mgrDefault && !c.mgrDefaultGet
-	);
-	const missingSettingsHotkeys = Object.keys(
-		settingsSerializedHotkeys
-	).filter((id) => !cmdAudit.find((c) => c.id === id && c.settingCustom));
+// 	const defaultButNotGottenDefault = cmdAudit.filter(
+// 		(c) => c.mgrDefault && !c.mgrDefaultGet
+// 	);
+// 	const missingSettingsHotkeys = Object.keys(
+// 		settingsSerializedHotkeys
+// 	).filter((id) => !cmdAudit.find((c) => c.id === id && c.settingCustom));
 
-	console.log("auditCommands / pluginAudit", pluginAudit);
-	console.log("auditCommands / pluginEntities", pluginEntities);
-	console.log("auditCommands / pluginAuditSummary", pluginAuditSummary);
-	console.log("auditCommands / auditEntities", cmdAuditEntities);
-	console.log("auditCommands / cmdAudit", cmdAudit);
-	console.log("auditCommands / auditSummary", cmdAuditSummary);
+// 	console.log("auditCommands / pluginAudit", pluginAudit);
+// 	console.log("auditCommands / pluginEntities", pluginEntities);
+// 	console.log("auditCommands / pluginAuditSummary", pluginAuditSummary);
+// 	console.log("auditCommands / auditEntities", cmdAuditEntities);
+// 	console.log("auditCommands / cmdAudit", cmdAudit);
+// 	console.log("auditCommands / auditSummary", cmdAuditSummary);
 
-	console.log(
-		"auditCommands / defaultButNotGottenDefault",
-		defaultButNotGottenDefault
-	);
-	console.log(
-		"auditCommands / missingSettingsHotkeys",
-		missingSettingsHotkeys
-	);
+// 	console.log(
+// 		"auditCommands / defaultButNotGottenDefault",
+// 		defaultButNotGottenDefault
+// 	);
+// 	console.log(
+// 		"auditCommands / missingSettingsHotkeys",
+// 		missingSettingsHotkeys
+// 	);
 
-	try {
-		const pluginIdContexts = [
-			...new Set(cmdAudit.map((c) => c.pluginId).filter(Boolean)),
-		];
-		pluginIdContexts.sort();
-		const pluginNameContexts = [
-			...new Set(cmdAudit.map((c) => c.pluginName).filter(Boolean)),
-		];
-		pluginNameContexts.sort();
-		const pluginIdNameContexts = [
-			...new Set(
-				cmdAudit
-					.map((c) =>
-						c.pluginId && c.pluginName
-							? `${c.pluginId} | ${c.pluginName}`
-							: false
-					)
-					.filter(Boolean)
-			),
-		];
-		pluginIdNameContexts.sort();
+// 	try {
+// 		const pluginIdContexts = [
+// 			...new Set(cmdAudit.map((c) => c.pluginId).filter(Boolean)),
+// 		];
+// 		pluginIdContexts.sort();
+// 		const pluginNameContexts = [
+// 			...new Set(cmdAudit.map((c) => c.pluginName).filter(Boolean)),
+// 		];
+// 		pluginNameContexts.sort();
+// 		const pluginIdNameContexts = [
+// 			...new Set(
+// 				cmdAudit
+// 					.map((c) =>
+// 						c.pluginId && c.pluginName
+// 							? `${c.pluginId} | ${c.pluginName}`
+// 							: false
+// 					)
+// 					.filter(Boolean)
+// 			),
+// 		];
+// 		pluginIdNameContexts.sort();
 
-		const nonPluginIdContexts = [
-			...new Set(
-				cmdAudit
-					.map((c) =>
-						!c.pluginId && !c.pluginName ? c.idContext : false
-					)
-					.filter(Boolean)
-			),
-		];
-		nonPluginIdContexts.sort();
-		const nonPluginNameContexts = [
-			...new Set(
-				cmdAudit
-					.map((c) =>
-						!c.pluginId && !c.pluginName ? c.nameContext : false
-					)
-					.filter(Boolean)
-			),
-		];
-		nonPluginNameContexts.sort();
-		const nonPluginIdNameContexts = [
-			...new Set(
-				cmdAudit
-					.map((c) =>
-						!c.pluginId && !c.pluginName
-							? `${c.idContext} | ${c.nameContext}`
-							: false
-					)
-					.filter(Boolean)
-			),
-		];
-		nonPluginIdNameContexts.sort();
-		const idContexts = [
-			...new Set(cmdAudit.map((c) => c.idContext).filter(Boolean)),
-		];
-		idContexts.sort();
-		const nameContexts = [
-			...new Set(cmdAudit.map((c) => c.nameContext).filter(Boolean)),
-		];
-		nameContexts.sort();
-		const idNameContexts = [
-			...new Set(
-				cmdAudit
-					.map((c) =>
-						c.contextType !== "none"
-							? `${c.idContext || "none"} | ${
-									c.nameContext || "none"
-							  }`
-							: false
-					)
-					.filter(Boolean)
-			),
-		];
-		idNameContexts.sort();
-		const noContext = cmdAudit
-			.filter((c) => !c.idContext && !c.nameContext)
-			.map((c) => `${c.id} | ${c.name}`);
-		const idNameContextsSummary = {
-			noContext,
-			plugin: {
-				pluginIdContexts,
-				pluginNameContexts,
-				pluginIdNameContexts,
-			},
-			nonPlugin: {
-				nonPluginIdContexts,
-				nonPluginNameContexts,
-				nonPluginIdNameContexts,
-			},
-			all: {
-				idContexts,
-				nameContexts,
-				idNameContexts,
-			},
-		};
+// 		const nonPluginIdContexts = [
+// 			...new Set(
+// 				cmdAudit
+// 					.map((c) =>
+// 						!c.pluginId && !c.pluginName ? c.idContext : false
+// 					)
+// 					.filter(Boolean)
+// 			),
+// 		];
+// 		nonPluginIdContexts.sort();
+// 		const nonPluginNameContexts = [
+// 			...new Set(
+// 				cmdAudit
+// 					.map((c) =>
+// 						!c.pluginId && !c.pluginName ? c.nameContext : false
+// 					)
+// 					.filter(Boolean)
+// 			),
+// 		];
+// 		nonPluginNameContexts.sort();
+// 		const nonPluginIdNameContexts = [
+// 			...new Set(
+// 				cmdAudit
+// 					.map((c) =>
+// 						!c.pluginId && !c.pluginName
+// 							? `${c.idContext} | ${c.nameContext}`
+// 							: false
+// 					)
+// 					.filter(Boolean)
+// 			),
+// 		];
+// 		nonPluginIdNameContexts.sort();
+// 		const idContexts = [
+// 			...new Set(cmdAudit.map((c) => c.idContext).filter(Boolean)),
+// 		];
+// 		idContexts.sort();
+// 		const nameContexts = [
+// 			...new Set(cmdAudit.map((c) => c.nameContext).filter(Boolean)),
+// 		];
+// 		nameContexts.sort();
+// 		const idNameContexts = [
+// 			...new Set(
+// 				cmdAudit
+// 					.map((c) =>
+// 						c.contextType !== "none"
+// 							? `${c.idContext || "none"} | ${
+// 									c.nameContext || "none"
+// 							  }`
+// 							: false
+// 					)
+// 					.filter(Boolean)
+// 			),
+// 		];
+// 		idNameContexts.sort();
+// 		const noContext = cmdAudit
+// 			.filter((c) => !c.idContext && !c.nameContext)
+// 			.map((c) => `${c.id} | ${c.name}`);
+// 		const idNameContextsSummary = {
+// 			noContext,
+// 			plugin: {
+// 				pluginIdContexts,
+// 				pluginNameContexts,
+// 				pluginIdNameContexts,
+// 			},
+// 			nonPlugin: {
+// 				nonPluginIdContexts,
+// 				nonPluginNameContexts,
+// 				nonPluginIdNameContexts,
+// 			},
+// 			all: {
+// 				idContexts,
+// 				nameContexts,
+// 				idNameContexts,
+// 			},
+// 		};
 
-		console.log(
-			"auditCommands / idNameContextsSummary",
-			idNameContextsSummary
-		);
-	} catch (error) {
-		console.log("auditCommands / idNameContextsSummary error", { error });
-		throw new Error(
-			`auditCommands / idNameContextsSummary error: ${error}`
-		);
-	}
+// 		console.log(
+// 			"auditCommands / idNameContextsSummary",
+// 			idNameContextsSummary
+// 		);
+// 	} catch (error) {
+// 		console.log("auditCommands / idNameContextsSummary error", { error });
+// 		throw new Error(
+// 			`auditCommands / idNameContextsSummary error: ${error}`
+// 		);
+// 	}
 
-	// // commands
-	// const cc = [];
-	// for (const c of Object.values(commands)) {
-	// 	const cProps = getCmdProps(c, "c");
-	// 	const edProps = getCmdProps(edCmds[c.id], "ed");
+// 	// // commands
+// 	// const cc = [];
+// 	// for (const c of Object.values(commands)) {
+// 	// 	const cProps = getCmdProps(c, "c");
+// 	// 	const edProps = getCmdProps(edCmds[c.id], "ed");
 
-	// 	const bakedIdx = bakedIds.indexOf(c.id);
-	// 	const bakedProps =
-	// 		bakedIdx !== -1
-	// 			? {
-	// 					baked: true,
-	// 					bakedHotkeys: bakedHotkeys[bakedIdx],
-	// 			  }
-	// 			: {
-	// 					baked: false,
-	// 					bakedHotkeys: undefined,
-	// 			  };
+// 	// 	const bakedIdx = bakedIds.indexOf(c.id);
+// 	// 	const bakedProps =
+// 	// 		bakedIdx !== -1
+// 	// 			? {
+// 	// 					baked: true,
+// 	// 					bakedHotkeys: bakedHotkeys[bakedIdx],
+// 	// 			  }
+// 	// 			: {
+// 	// 					baked: false,
+// 	// 					bakedHotkeys: undefined,
+// 	// 			  };
 
-	// 	const customCmd =
-	// 		c.id in customHotkeys ? customHotkeys[c.id] : undefined;
-	// 	const customProps = customCmd
-	// 		? {
-	// 				custom: true,
-	// 				customHotkeys: customCmd.hotkeys,
-	// 		  }
-	// 		: {
-	// 				custom: false,
-	// 				customHotkeys: undefined,
-	// 		  };
+// 	// 	const customCmd =
+// 	// 		c.id in customHotkeys ? customHotkeys[c.id] : undefined;
+// 	// 	const customProps = customCmd
+// 	// 		? {
+// 	// 				custom: true,
+// 	// 				customHotkeys: customCmd.hotkeys,
+// 	// 		  }
+// 	// 		: {
+// 	// 				custom: false,
+// 	// 				customHotkeys: undefined,
+// 	// 		  };
 
-	// 	const getted = managerGottenKeymapInfo.find((hk) => hk.command === c.id);
-	// 	const gettedProps =
-	// 		getted !== undefined
-	// 			? {
-	// 					getted: true,
-	// 					managerGottenKeymapInfo: getted.hotkeys,
-	// 			  }
-	// 			: {
-	// 					getted: false,
-	// 					managerGottenKeymapInfo: undefined,
-	// 			  };
+// 	// 	const getted = managerGottenKeymapInfo.find((hk) => hk.command === c.id);
+// 	// 	const gettedProps =
+// 	// 		getted !== undefined
+// 	// 			? {
+// 	// 					getted: true,
+// 	// 					managerGottenKeymapInfo: getted.hotkeys,
+// 	// 			  }
+// 	// 			: {
+// 	// 					getted: false,
+// 	// 					managerGottenKeymapInfo: undefined,
+// 	// 			  };
 
-	// 	const gettedDefault = managerGottenDefaultKeymapInfo.find(
-	// 		(hk) => hk.command === c.id
-	// 	);
-	// 	const gettedDefaultProps =
-	// 		gettedDefault !== undefined
-	// 			? {
-	// 					gettedDefault: true,
-	// 					managerGottenDefaultKeymapInfo: gettedDefault.hotkeys,
-	// 			  }
-	// 			: {
-	// 					gettedDefault: false,
-	// 					managerGottenDefaultKeymapInfo: undefined,
-	// 			  };
+// 	// 	const gettedDefault = managerGottenDefaultKeymapInfo.find(
+// 	// 		(hk) => hk.command === c.id
+// 	// 	);
+// 	// 	const gettedDefaultProps =
+// 	// 		gettedDefault !== undefined
+// 	// 			? {
+// 	// 					gettedDefault: true,
+// 	// 					managerGottenDefaultKeymapInfo: gettedDefault.hotkeys,
+// 	// 			  }
+// 	// 			: {
+// 	// 					gettedDefault: false,
+// 	// 					managerGottenDefaultKeymapInfo: undefined,
+// 	// 			  };
 
-	// 	const defaultHotkeys = defaultKeys[c.id];
-	// 	const defaultProps =
-	// 		defaultHotkeys !== undefined
-	// 			? {
-	// 					default: true,
-	// 					defaultHotkeys,
-	// 			  }
-	// 			: {
-	// 					default: false,
-	// 					defaultHotkeys: undefined,
-	// 			  };
+// 	// 	const defaultHotkeys = defaultKeys[c.id];
+// 	// 	const defaultProps =
+// 	// 		defaultHotkeys !== undefined
+// 	// 			? {
+// 	// 					default: true,
+// 	// 					defaultHotkeys,
+// 	// 			  }
+// 	// 			: {
+// 	// 					default: false,
+// 	// 					defaultHotkeys: undefined,
+// 	// 			  };
 
-	// 	const settingsHotkeys = settings.obsidianHotkeys[c.id];
-	// 	const settingsProps =
-	// 		settingsHotkeys !== undefined
-	// 			? {
-	// 					settings: true,
-	// 					settingsHotkeys,
-	// 			  }
-	// 			: {
-	// 					settings: false,
-	// 					settingsHotkeys: undefined,
-	// 			  };
+// 	// 	const settingsHotkeys = settings.obsidianHotkeys[c.id];
+// 	// 	const settingsProps =
+// 	// 		settingsHotkeys !== undefined
+// 	// 			? {
+// 	// 					settings: true,
+// 	// 					settingsHotkeys,
+// 	// 			  }
+// 	// 			: {
+// 	// 					settings: false,
+// 	// 					settingsHotkeys: undefined,
+// 	// 			  };
 
-	// 	cc.push({
-	// 		...cProps,
-	// 		...edProps,
-	// 		...bakedProps,
-	// 		...customProps,
-	// 		...gettedProps,
-	// 		...gettedDefaultProps,
-	// 		...defaultProps,
-	// 		...settingsProps,
-	// 	});
-	// }
+// 	// 	cc.push({
+// 	// 		...cProps,
+// 	// 		...edProps,
+// 	// 		...bakedProps,
+// 	// 		...customProps,
+// 	// 		...gettedProps,
+// 	// 		...gettedDefaultProps,
+// 	// 		...defaultProps,
+// 	// 		...settingsProps,
+// 	// 	});
+// 	// }
 
-	// const commandIds = new Set(Object.keys(commands));
-	// const missingSettingsHotkeys = Object.keys(settings.obsidianHotkeys).filter(
-	// 	(commandId) => !(commandId in commands)
-	// );
-	// const missingCustomHotkeys = Object.keys(customHotkeys).filter(
-	// 	(commandId) => !(commandId in commands)
-	// );
-	// const missingDefaultHotkeys = Object.keys(defaultKeys).filter(
-	// 	(commandId) => !(commandId in commands)
-	// );
-	// const missingmanagerGottenKeymapInfo = Object.keys(managerGottenKeymapInfo).filter(
-	// 	(commandId) => !(commandId in commands)
-	// );
-	// const missingmanagerGottenDefaultKeymapInfo = Object.keys(
-	// 	managerGottenDefaultKeymapInfo
-	// ).filter((commandId) => !commandIds.has(commandId));
-	// const missingBakedIds = bakedIds.filter(
-	// 	(commandId) => !commandIds.has(commandId)
-	// );
-	// const missingListedHotkeys = commandList.filter(
-	// 	({ id }) => !commandIds.has(id)
-	// );
-	// const missingEditorCommands = Object.keys(edCmds).filter(
-	// 	(commandId) => !(commandId in commands)
-	// );
-}
+// 	// const commandIds = new Set(Object.keys(commands));
+// 	// const missingSettingsHotkeys = Object.keys(settings.obsidianHotkeys).filter(
+// 	// 	(commandId) => !(commandId in commands)
+// 	// );
+// 	// const missingCustomHotkeys = Object.keys(customHotkeys).filter(
+// 	// 	(commandId) => !(commandId in commands)
+// 	// );
+// 	// const missingDefaultHotkeys = Object.keys(defaultKeys).filter(
+// 	// 	(commandId) => !(commandId in commands)
+// 	// );
+// 	// const missingmanagerGottenKeymapInfo = Object.keys(managerGottenKeymapInfo).filter(
+// 	// 	(commandId) => !(commandId in commands)
+// 	// );
+// 	// const missingmanagerGottenDefaultKeymapInfo = Object.keys(
+// 	// 	managerGottenDefaultKeymapInfo
+// 	// ).filter((commandId) => !commandIds.has(commandId));
+// 	// const missingBakedIds = bakedIds.filter(
+// 	// 	(commandId) => !commandIds.has(commandId)
+// 	// );
+// 	// const missingListedHotkeys = commandList.filter(
+// 	// 	({ id }) => !commandIds.has(id)
+// 	// );
+// 	// const missingEditorCommands = Object.keys(edCmds).filter(
+// 	// 	(commandId) => !(commandId in commands)
+// 	// );
+// }
 
-function auditCommandIdCheck(commandsRecord: CommandsCommandsRecord) {
-	console.log("checking commandId vs id");
-	let commandIdCheck = true;
-	for (const c of Object.keys(commandsRecord)) {
-		if (commandsRecord[c].id !== c) {
-			console.log("auditCommands / commandId mismatch:", {
-				commandId: c,
-				command: commandsRecord[c],
-			});
-			commandIdCheck = false;
-		}
-	}
+// function auditCommandIdCheck(commandsRecord: CommandsCommandsRecord) {
+// 	console.log("checking commandId vs id");
+// 	let commandIdCheck = true;
+// 	for (const c of Object.keys(commandsRecord)) {
+// 		if (commandsRecord[c].id !== c) {
+// 			console.log("auditCommands / commandId mismatch:", {
+// 				commandId: c,
+// 				command: commandsRecord[c],
+// 			});
+// 			commandIdCheck = false;
+// 		}
+// 	}
 
-	if (!commandIdCheck) {
-		throw new Error("auditCommands / commandId check: failed");
-	}
-	console.log("auditCommands / commandId check: success");
-}
+// 	if (!commandIdCheck) {
+// 		throw new Error("auditCommands / commandId check: failed");
+// 	}
+// 	console.log("auditCommands / commandId check: success");
+// }

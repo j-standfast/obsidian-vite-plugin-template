@@ -19,7 +19,11 @@ export interface HotkeyManagerDefaultKeysRecord
 	extends Record<string, Hotkey[]> {}
 
 declare module "obsidian" {
-	interface HotkeyManager {
+  interface KeymapEventHandler {
+    func: KeymapEventListener;
+  }
+
+  interface HotkeyManager {
 		/**
 		 * Reference to App
 		 */

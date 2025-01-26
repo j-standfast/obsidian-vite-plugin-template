@@ -17,5 +17,5 @@
 		"target": "ES2022",
 		"types": ["obsidian-typings", "react", "react-dom"]
 	},
-	"include": ["./src/**/*.ts", "./src/**/*.tsx"]
+	"include": ["./src/**/*.ts", "./src/**/*.tsx", "tanstack-table.d.ts", "tailor-cuts-obsidian.d.ts"]
 }

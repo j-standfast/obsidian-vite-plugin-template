@@ -8,32 +8,7 @@
 // 	serializeChords,
 // } from "../utils/serialize";
 
-// class TrieNode<T> extends Map<string, TrieNode<T>> {
-// 	value: T | undefined;
-// 	constructor(value?: T | undefined) {
-// 		super();
-// 		this.value = value;
-// 	}
-// }
 
-// class Trie<T> {
-// 	root: TrieNode<T>;
-
-// 	constructor() {
-// 		this.root = new TrieNode<T>();
-// 	}
-
-// 	insert(keys: string[], value: T) {
-// 		// console.log("Trie |insert", { this: this, keys, value });
-// 		let node = this.root;
-// 		for (const key of keys) {
-// 			const child = node.get(key) ?? new TrieNode<T>();
-// 			if (!node.has(key)) node.set(key, child);
-// 			node = child;
-// 		}
-// 		node.value = value;
-// 	}
-// }
 
 // export class ShortcutListener {
 // 	app: App;

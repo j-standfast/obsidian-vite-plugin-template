@@ -2,7 +2,7 @@ import { RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { DASHBOARD_KINDS } from "@/constants/plugin";
-import { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
+import { TailorCutsDataManager } from "@/_DataManager/TailorCutsDataManager";
 import type { DashboardKind, TailorCutsData } from "@/types";
 import { CommandsTable } from "./CommandsTable";
 import { KeybindingsTable } from "./KeybindingsTable2";
@@ -43,9 +43,9 @@ export const TailorCutsDashboard = ({
 		plugins: [],
 		commands: [],
 		keybindings: {
-      hotkeyTableData: [],
-      hotkeyMeta: [],
-    },
+			hotkeyTableData: [],
+			hotkeyMeta: [],
+		},
 	});
 	useEffect(() => {
 		const unsubscribe = dataManager.subscribe({

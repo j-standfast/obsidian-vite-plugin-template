@@ -3,12 +3,13 @@ import { DASHBOARD_KINDS } from "@/constants/plugin";
 import type { CommandData } from "./commands";
 import type { HotkeyMeta, HotkeyTableDatum } from "./keybindings";
 import type { PluginMeta } from "./plugins";
+import type { KeybindingStale, SerializedHotkeysStale } from "./keybindings-STALE";
 
 export type { TailorCutsPlugin } from "@/main";
 
 export interface TailorCutsSettings {
-	keybindings: Keybinding[];
-	obsidianHotkeys: SerializedHotkeys;
+	keybindings: KeybindingStale[];
+	obsidianHotkeys: SerializedHotkeysStale;
 }
 
 export interface TailorCutsData {

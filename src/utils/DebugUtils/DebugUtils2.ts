@@ -1,3 +1,4 @@
+import * as z from 'zod';
 import type { App } from "obsidian";
 import { normalizePath, Notice } from "obsidian";
 
@@ -17,7 +18,8 @@ export class DebugUtils {
 	constructor(app: App, plugin: TailorCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
-		this.normalizePath = normalizePath;
+    this.normalizePath = normalizePath;
+    globalThis.z = z;
 		// normalizePath = this.app.plugins.plugins['barraclough-tailor-cuts'].util.normalizePath;
 	}
 
@@ -212,15 +214,11 @@ export class DebugUtils {
 		this.plugin.addCommand({
 			id: "log-scope",
 			name: "Log scope",
-			checkCallback: (checking: boolean) => {
+      checkCallback: (checking: boolean) => {
+        console.log("log-scope / checking", { checking });
 				if (checking) {
 					return true;
 				} else {
-					console.log("log-scope / scope", {
-						scope: this.plugin.app.scope,
-						keymap: this.plugin.app.keymap,
-						keymapScopeModifiers: this.plugin.app.keymap.modifiers,
-					});
 					return true;
 				}
 			},

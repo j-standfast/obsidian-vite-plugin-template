@@ -11,7 +11,7 @@ import {
 	getCommandHotkeyData,
 	// getKeybindings,
 	getPluginData,
-} from "@/DataManager/commands";
+} from "@/_DataManager/commands";
 import type { TailorCutsPlugin } from "@/types";
 
 interface TodoNavigator {

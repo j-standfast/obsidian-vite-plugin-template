@@ -2,21 +2,18 @@ import { App, Plugin, PluginManifest, WorkspaceLeaf } from "obsidian";
 
 // import { ShortcutListener } from "@/ShortcutListener/ShortcutListener";
 import { TAILOR_CUTS_VIEW_TYPE } from "@/constants/plugin";
-import { TailorCutsDataManager } from "@/DataManager/TailorCutsDataManager";
-import { serializedSettingsSchema } from "@/schemas";
+import { TailorCutsDataManager } from "@/_DataManager/TailorCutsDataManager";
+import { serializedSettingsSchema } from "@/_STALE/schemas-STALE";
 import "@/styles.css";
-import type { CommandId, SerializedHotkeys, TailorCutsSettings } from "@/types";
+import type { SerializedHotkeysStale, TailorCutsSettings } from "@/types";
 import { DebugUtils } from "@/utils/DebugUtils/DebugUtils2";
 import { TailorView } from "./views/TailorView";
-import { TailorCutsKeymap } from "@/ShortcutListener/TailorsKeymap";
-import { TailorCutsManager } from "@/ShortcutListener/TailorCutsManager";
+import { KeybindingManager } from "@/KeybindingManager";
 
 export default class TailorCutsPlugin extends Plugin {
 	settings: TailorCutsSettings;
-	// shortcutListener: ShortcutListener;
-  dataManager: TailorCutsDataManager;
-  keymap: TailorCutsKeymap;
-  hotkeyManager: TailorCutsManager;
+	dataManager: TailorCutsDataManager;
+	keybindingManager: KeybindingManager;
 	util: DebugUtils;
 
 	constructor(app: App, manifest: PluginManifest) {
@@ -30,9 +27,8 @@ export default class TailorCutsPlugin extends Plugin {
 		// 	app,
 		// 	this.settings.keybindings
 		// );
-    this.dataManager = new TailorCutsDataManager(app, this);
-    this.keymap = new TailorCutsKeymap(app, this);
-    this.hotkeyManager = new TailorCutsManager(app, this);
+		this.dataManager = new TailorCutsDataManager(app, this);
+		this.keybindingManager = new KeybindingManager(app, this);
 		this.util = new DebugUtils(this.app, this);
 	}
 
@@ -53,6 +49,7 @@ export default class TailorCutsPlugin extends Plugin {
 		);
 		this.app.workspace.onLayoutReady(() => {
 			try {
+				this.keybindingManager.load();
 			} catch (err) {
 				console.error("Error watching plugins", err);
 				throw new Error("Error watching plugins");
@@ -77,7 +74,7 @@ export default class TailorCutsPlugin extends Plugin {
 			this.settings = {
 				// keybindings: deserializeKeybindings(keybindings),
 				keybindings: [],
-				obsidianHotkeys: obsidianHotkeys as SerializedHotkeys, // TODO
+				obsidianHotkeys: obsidianHotkeys as SerializedHotkeysStale, // TODO
 			};
 		}
 	}

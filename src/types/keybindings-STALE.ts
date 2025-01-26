@@ -26,16 +26,16 @@ export interface SerializedKeybinding {
 	key: string;
 }
 
-export interface Keybinding {
+export interface KeybindingStale {
 	id: string; // TODO kick this out no - because can be more than one
 	key: Chord[];
 }
 
-export type SerializedHotkeys = Record<string, ObsidianHotkey[]>;
+export type SerializedHotkeysStale = Record<string, ObsidianHotkey[]>;
 
 export interface SerializedSettings {
 	keybindings: SerializedKeybinding[];
-	obsidianHotkeys: SerializedHotkeys;
+	obsidianHotkeys: SerializedHotkeysStale;
 }
 export interface EqualityChecks {
 	default: boolean | undefined;
