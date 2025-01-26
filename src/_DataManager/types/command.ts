@@ -1,5 +1,5 @@
 import type { Command } from "obsidian";
-import { PluginId } from "./plugins";
+import type { PluginId } from './plugin';
 
 export type CommandId = string;
 
@@ -37,3 +37,22 @@ export interface CommandData extends Command {
 		listedCommand: boolean | undefined;
 	};
 };
+
+interface FutureCommandMetaData {
+	id: string;
+	tags: string[];
+	context: string; // user picks, we check vs command checks; see scope in workspace and app? also recent commandds and keys
+	planes: string[];
+	hasConflicts: boolean;
+	conflicts: unknown[];
+	vsCodeAnalogs: string[];
+	vimAnalogs: string[];
+	emacsAnalogs: string[];
+}
+
+interface CommandPluginData {
+	id: string;
+	isInPlugin: boolean; // only for internal plugins
+	isPluginEnabled: boolean | undefined;
+	pluginCommandEquality: boolean | undefined;
+}

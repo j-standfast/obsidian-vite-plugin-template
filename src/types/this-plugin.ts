@@ -1,9 +1,12 @@
 import { DASHBOARD_KINDS } from "@/constants/plugin";
 
-import type { CommandData } from "./commands";
-import type { HotkeyMeta, HotkeyTableDatum } from "./keybindings";
-import type { PluginMeta } from "./plugins";
-import type { KeybindingStale, SerializedHotkeysStale } from "./keybindings-STALE";
+import type { CommandData } from "./command";
+import type { HotkeyMeta, HotkeyTableDatum } from "./keybinding";
+import type { PluginMeta } from "./plugin";
+import type {
+	KeybindingStale,
+	SerializedHotkeysStale,
+} from "../_DataManager/types/keybinding";
 
 export type { TailorCutsPlugin } from "@/main";
 

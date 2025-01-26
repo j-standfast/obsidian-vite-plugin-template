@@ -1,7 +1,6 @@
 import type { Hotkey, KeymapInfo, PluginManifest } from "obsidian";
-
-import { CommandData, CommandId } from "./commands";
-import type { Keysig } from "./keybindings-STALE";
+import type { CommandData, CommandId } from "./command";
+import type { Keysig } from "./keybinding";
 
 export type PluginId = string;
 

@@ -4,7 +4,7 @@ import type {
 	KeymapContext as ObsidianKeymapContext,
 	Modifier as ObsidianModifierInternal,
 } from "obsidian";
-import type { CommandId } from "./commands";
+import type { CommandId } from './command';
 import {
 	CHROME_MODIFIER_CODES,
 	CHROME_CODES,
@@ -12,7 +12,7 @@ import {
 } from "@/constants/keys";
 
 import type { KeybindingScope } from "@/KeybindingScope";
-import type { Expect } from "./util";
+import type { Expect } from "../../types/util";
 
 export type { ObsidianModifierInternal, ObsidianHotkey, ObsidianKeymapInfo };
 export type ChromeModifierCode = (typeof CHROME_MODIFIER_CODES)[number];
@@ -70,3 +70,5 @@ export type KeyMatchResult =
 	| {
 			status: "none";
 	  };
+    
+export type ChromeModifierCodeLower = Lowercase<ChromeModifierCode>;

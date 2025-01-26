@@ -2,7 +2,9 @@ import type {
 	ChromeCode,
 	ChromeModifierCodeLower,
 	ObsidianHotkey,
-} from "./keys";
+} from "./key";
+
+export type Keysig = string;
 
 export type TailorKeysig = string;
 
@@ -67,3 +69,5 @@ export interface KeybindingMeta {
 	defaultHotkeys: ObsidianHotkey[];
 	customHotkeys: ObsidianHotkey[];
 }
+
+

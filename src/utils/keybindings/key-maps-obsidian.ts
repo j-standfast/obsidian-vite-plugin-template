@@ -3,7 +3,7 @@ import type {
 	ChromeCode,
 	ObsidianModifierInternal,
 	ObsidianModifierInternalWindows,
-} from "@/types/keys";
+} from "@/_DataManager/types/key";
 import { OBSIDIAN_MODIFIERS_INTERNAL } from "@/constants/keys";
 
 export const isObsidianInternalModifier = (

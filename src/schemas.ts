@@ -22,10 +22,10 @@ import {
 	KeybindingJsonItem,
 	KeymapInfoRequiredKey,
 	ShortcutKeybinding,
-} from "@/types/keybindings";
+} from "@/types/keybinding";
 import { Expect } from "@/types/util";
 import { CoExtends } from "@/types/util";
-import { ObsidianHotkey } from "@/types/keys";
+import { ObsidianHotkey } from "@/_DataManager/types/key";
 
 // type OrderedPermutation<T extends string[], Prev extends string = ''> = T extends [
 // 	infer U extends string,
@@ -181,8 +181,8 @@ const parseKeybindingJsonKey = (key: string): KeymapInfoRequiredKey[] => {
 
 const parseKeybindingJsonItem = (
 	datum: KeybindingJsonItem,
-  isDefault: boolean, 
-  isNegative: boolean,
+	isDefault: boolean,
+	isNegative: boolean
 ): ShortcutKeybinding => {
 	const keymapInfo = parseKeybindingJsonKey(datum.key);
 	return {
@@ -190,8 +190,8 @@ const parseKeybindingJsonItem = (
 		when: datum.when,
 		keymapInfo,
 		key: serializeKeymapInfoSequence(keymapInfo),
-    isDefault,
-    isNegative,
+		isDefault,
+		isNegative,
 	};
 };
 
@@ -217,14 +217,14 @@ export const parseKeybindingsJson = (data: unknown) => {
 		} catch (error) {
 			console.error(error);
 		}
-  });
-  Object.values(negativeKeybindings).forEach((datum) => {
-    try {
-      res.push(parseKeybindingJsonItem(datum, false, true));
-    } catch (error) {
-      console.error(error);
-    }
-  });
+	});
+	Object.values(negativeKeybindings).forEach((datum) => {
+		try {
+			res.push(parseKeybindingJsonItem(datum, false, true));
+		} catch (error) {
+			console.error(error);
+		}
+	});
 	Object.values(customKeybindings).forEach((datum) => {
 		try {
 			res.push(parseKeybindingJsonItem(datum, false, false));
@@ -287,8 +287,8 @@ export const parseKeybindingsFromHotkeysJson = (
 				keymapInfo: [kmi],
 				key: serializeKeymapInfo(kmi),
 				when: undefined,
-        isDefault: false,
-        isNegative: false,
+				isDefault: false,
+				isNegative: false,
 			}));
 		}
 	);
@@ -319,8 +319,8 @@ export const parseKeybindingsFromHotkeysRecord = (
 				keymapInfo: [kmi],
 				key: serializeKeymapInfo(kmi),
 				when: undefined,
-        isDefault,
-        isNegative: false,
+				isDefault,
+				isNegative: false,
 			}));
 		}
 	);
@@ -338,8 +338,8 @@ export const obsidianKeymapInfoToKeybinding = (
 		commandId,
 		keymapInfo: [obsKmi],
 		key: serializeKeymapInfo(obsKmi),
-    isDefault,
-    isNegative: false,
+		isDefault,
+		isNegative: false,
 	};
 };
 

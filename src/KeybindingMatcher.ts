@@ -1,4 +1,4 @@
-import { CommandId } from "@/types/commands";
+import { CommandId } from "@/types/command";
 import { Trie, TrieMatcher } from "@/Trie";
 import type {
 	ShortcutKeybinding,

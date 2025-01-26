@@ -1,4 +1,4 @@
-import { KeymapEventWithCodeListener } from "@/types/keys";
+import { KeymapEventWithCodeListener } from "@/_DataManager/types/key";
 import type {
 	KeymapContext,
 	KeymapEventHandler,
