@@ -1,0 +1,1 @@
+export type FAKE_TYPE = "FAKE_TYPE";

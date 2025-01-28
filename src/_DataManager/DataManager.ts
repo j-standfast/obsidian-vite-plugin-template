@@ -5,9 +5,9 @@ import type {
 	HotkeyMeta,
 	HotkeyTableDatum,
 	PluginMeta,
-	TailorCutsData,
-	TailorCutsPlugin,
-} from "@/types";
+	TailoredCutsData,
+	TailoredCutsPlugin,
+} from "./types";
 import { getCommandData } from "./commands";
 import { CommandsWatcher } from "./CommandsWatcher";
 import { getHotkeyTableData } from "./keybindings";
@@ -15,15 +15,15 @@ import { KeybindingsWatcher } from "./KeybindingsWatcher";
 import { getPluginMetaData } from "./plugins";
 import { PluginsWatcher } from "./PluginsWatcher";
 
-interface TailorCutsDataSubscriber {
-	callback: (data: TailorCutsData) => void;
-	interestedIn: { [P in keyof TailorCutsData]?: true };
+interface DataSubscriber {
+	callback: (data: TailoredCutsData) => void;
+	interestedIn: { [P in keyof TailoredCutsData]?: true };
 	name: string;
 }
 
-export class TailorCutsDataManager {
+export class DataManager {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	isLoaded: boolean;
 	#pluginData: PluginMeta[];
 	#commandData: CommandData[];
@@ -34,10 +34,10 @@ export class TailorCutsDataManager {
 	#keybindingWatcher: KeybindingsWatcher | null;
 	#pluginsWatcher: PluginsWatcher | null;
 	#commandsWatcher: CommandsWatcher | null;
-	#subscribers: TailorCutsDataSubscriber[] = [];
-	#logHeader = "TailorCutsDataManager";
+	#subscribers: DataSubscriber[] = [];
+	#logHeader = "TailoredCutsDataManager";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.isLoaded = false;
@@ -118,7 +118,7 @@ export class TailorCutsDataManager {
 		};
 	}
 
-	subscribe(subscriber: TailorCutsDataSubscriber) {
+	subscribe(subscriber: DataSubscriber) {
 		console.log(`${this.#logHeader} / subscribe`, {
 			subscriber,
 			time: Intl.DateTimeFormat("en-US", {
@@ -134,7 +134,7 @@ export class TailorCutsDataManager {
 		return () => this.unsubscribe(subscriber);
 	}
 
-	unsubscribe(subscriber: TailorCutsDataSubscriber) {
+	unsubscribe(subscriber: DataSubscriber) {
 		console.log(`${this.#logHeader} / unsubscribe`, {
 			subscriber,
 			time: Intl.DateTimeFormat("en-US", {

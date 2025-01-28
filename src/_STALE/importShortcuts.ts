@@ -1,4 +1,4 @@
-import { Chord, TailorCutsSettings } from "../types/types";
+import { Chord, TailoredCutsSettings } from "../types/types";
 import {
 	Command,
 	Modifier,
@@ -227,7 +227,7 @@ const getKeymapProps = (id: string, kmir: KeymapInfoRecord, prefix: string) => {
 		  };
 };
 
-function auditCommands(app: App, settings: TailorCutsSettings) {
+function auditCommands(app: App, settings: TailoredCutsSettings) {
 	// app.commands
 	const commandsRecord = app.commands.commands;
 	const cmds = Object.values(commandsRecord);

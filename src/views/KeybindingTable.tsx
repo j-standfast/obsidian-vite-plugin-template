@@ -13,19 +13,16 @@ import {
 } from "@tanstack/react-table";
 import { SetStateAction, useMemo, useReducer, useState } from "react";
 
-import { CommandId, HotkeyMeta } from "@/types";
+import { CommandId, HotkeyMeta } from "@/_DataManager/types";
 import { boolCellOption, ColumnFilter } from "@/components/shared-table";
 
-interface KeybindingsTableProps {
+interface KeybindingTableProps {
 	data: HotkeyMeta[];
 	// setData: (data: CommandMeta[]) => void;
 	className: string;
 }
 
-export const KeybindingsTable = ({
-	data,
-	className,
-}: KeybindingsTableProps) => {
+export const KeybindingTable = ({ data, className }: KeybindingTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([
 		{
 			id: "commandId",
@@ -35,7 +32,7 @@ export const KeybindingsTable = ({
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
 	const summaryStats = useMemo(() => {
-		if (!data) return { totalBaked: 0, totalShouldBeBaked: 0, nRows: 0 };  // TODO
+		if (!data) return { totalBaked: 0, totalShouldBeBaked: 0, nRows: 0 }; // TODO
 		return data.reduce(
 			(acc, row) => {
 				acc.totalBaked += row.isBaked ? 1 : 0;
@@ -138,7 +135,7 @@ export const KeybindingsTable = ({
 				cell: (info) => info.getValue(),
 				sortUndefined: "last",
 			},
-      {
+			{
 				id: "preRemappedHotkeyMetaIds",
 				header: "preRemapped",
 				accessorFn: (row) =>
@@ -148,7 +145,7 @@ export const KeybindingsTable = ({
 				cell: (info) => info.getValue(),
 				sortUndefined: "last",
 			},
-      {
+			{
 				id: "shadowHotkeyMetaIds",
 				header: "shadow",
 				accessorFn: (row) =>

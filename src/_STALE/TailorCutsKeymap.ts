@@ -1,5 +1,5 @@
 import type { App, KeymapContext, Modifier } from "obsidian";
-import type { TailorCutsPlugin } from "@/types";
+import type { TailoredCutsPlugin } from "@/types";
 import type { TailorKey, TailorMatchKey } from "../KeybindingManager";
 import { Trie } from "../Trie";
 
@@ -8,12 +8,12 @@ type PlatformId = "Windows" | "macOS" | "Linux" | "Unknown OS";
 // TODO
 const platformId: PlatformId = "Windows";
 
-export class TailorCutsKeymap {
+export class TailoredCutsKeymap {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	modifiers: string;
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.modifiers = "";

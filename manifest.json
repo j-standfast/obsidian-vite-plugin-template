@@ -1,9 +1,9 @@
 {
-	"id": "barraclough-tailor-cuts",
-	"name": "barraclough-tailor-cuts",
+	"id": "_obsidian-tailored-cuts",
+	"name": "_obsidian-tailored-cuts",
 	"version": "0.1.0",
 	"minAppVersion": "0.12.0",
-	"description": "Shortcut manager for Obsidian",
+	"description": "Obsidian keybindings, commands, and plugins manager",
 	"author": "Mr. Barraclough",
 	"authorUrl": "",
 	"isDesktopOnly": true

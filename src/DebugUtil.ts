@@ -1,8 +1,8 @@
 import * as z from 'zod';
 import type { App } from "obsidian";
-import { normalizePath, Notice } from "obsidian";
+import { Keymap, normalizePath, Notice, Scope } from "obsidian";
 
-import type { TailorCutsPlugin } from "@/types";
+import type { TailoredCutsPlugin } from "@/types";
 
 type VSCodeKeybinding = {
 	key: string;
@@ -12,15 +12,17 @@ type VSCodeKeybinding = {
 
 export class DebugUtils {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	normalizePath: (path: string) => string;
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
     this.normalizePath = normalizePath;
     globalThis.z = z;
-		// normalizePath = this.app.plugins.plugins['barraclough-tailor-cuts'].util.normalizePath;
+    globalThis.kmappp = Keymap;
+    globalThis.scooo = Scope;
+		// normalizePath = this.app.plugins.plugins['barraclough-tailored-cuts'].util.normalizePath;
 	}
 
 	getVaultAbsolutePath(): string {
@@ -161,7 +163,7 @@ export class DebugUtils {
 			id: "test-read-from-disk",
 			name: "Test read from disk",
 			callback: async () => {
-				console.log("invoked tailor-cuts: test-read-from-disk");
+				console.log("invoked test-read-from-disk");
 				await this.loadObsidianCustomHotkeys();
 				// 	const path = await this.getPluginFilePath("extra-data.json");
 				// 	const cmds = await this.readJSON(path);
@@ -218,7 +220,8 @@ export class DebugUtils {
         console.log("log-scope / checking", { checking });
 				if (checking) {
 					return true;
-				} else {
+        } else {
+          this.
 					return true;
 				}
 			},

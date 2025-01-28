@@ -1,6 +1,10 @@
-import type { ObsidianHotkey, ObsidianKeymapInfo, ObsidianModifierInternal } from "@/types";
+import type {
+	ObsidianHotkey,
+	ObsidianKeymapInfo,
+	ObsidianModifierInternal,
+} from "@/_DataManager/types";
 import { obsidianInternalModifierToWindows } from "./key-maps-obsidian";
-import { capitalize } from "../string";
+import { capitalize } from "../../_DataManager/string-util";
 
 export const hotkeyToKeymapInfo = (
 	hotkey: ObsidianHotkey
@@ -18,9 +22,7 @@ export const keymapInfoToKeysig = (kmi: ObsidianKeymapInfo): string => {
 	const mods = kmi.modifiers
 		? kmi.modifiers.split(",").toSorted((a, b) => a.localeCompare(b))
 		: [];
-	return [...mods, kmi.key ?? ""]
-		.filter(Boolean)
-		.join("+");
+	return [...mods, kmi.key ?? ""].filter(Boolean).join("+");
 };
 
 export const hotkeyToKeysig = (hotkey: ObsidianHotkey): string =>

@@ -5,7 +5,7 @@ import type {
 	KeymapContextWithCode,
 	KeyMatchResult,
 } from "@/types";
-import { serializeKeymapInfo } from "./schemas";
+import { serializeKeymapInfo } from "./schema";
 
 export class KeybindingMatcher {
 	trie: Trie<ShortcutKeybinding>;

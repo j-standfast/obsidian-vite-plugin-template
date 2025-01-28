@@ -12,7 +12,7 @@ import {
 	// getKeybindings,
 	getPluginData,
 } from "@/_DataManager/commands";
-import type { TailorCutsPlugin } from "@/types";
+import type { TailoredCutsPlugin } from "@/types";
 
 interface TodoNavigator {
 	keyboard: {
@@ -27,17 +27,17 @@ const hkString = (hk: Hotkey) =>
 	"Hotkey: " + hk.modifiers.join(",") + " + " + hk.key;
 const dummyHotkey: Hotkey = { modifiers: ["Alt", "Mod", "Shift"], key: "Y" };
 
-const qualifiedId = (id: string): string => `barraclough-tailor-cuts:${id}`;
+const qualifiedId = (id: string): string => `barraclough-tailored-cuts:${id}`;
 
 const TEST_COMMANDS: Command[] = [
 	{
 		id: "debug-test",
 		name: "debug-test",
 		callback: () => {
-			// console.log("EXECUTED tailor-cuts: test");
+			// console.log("EXECUTED tailored-cuts: test");
 		},
 		checkCallback: () => {
-			// console.log("CHECKED tailor-cuts: test");
+			// console.log("CHECKED tailored-cuts: test");
 			return true;
 		},
 	},
@@ -45,7 +45,7 @@ const TEST_COMMANDS: Command[] = [
 		id: "debug-test-2",
 		name: "debug-test-2",
 		callback: () => {
-			// console.log("EXECUTED tailor-cuts: test2");
+			// console.log("EXECUTED tailored-cuts: test2");
 		},
 	},
 ];
@@ -53,10 +53,10 @@ const TEST_COMMANDS: Command[] = [
 export class DebugUtils {
 	sym: CustomHotkeySymbol;
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	TEST_COMMANDS: Command[] = TEST_COMMANDS;
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.sym = Object.getOwnPropertySymbols(
 			app.hotkeyManager
 		)[0] as unknown as CustomHotkeySymbol;

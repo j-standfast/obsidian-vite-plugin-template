@@ -4,8 +4,8 @@ import type {
 	CommandsCommandsRecord,
 	CommandsEditorCommandsRecord,
 } from "obsidian-typings";
-import { WatchedProxy, WatchedProxyEvent } from "@/utils/WatchedProxy";
-import type { TailorCutsPlugin } from "@/types";
+import { WatchedProxy, WatchedProxyEvent } from "@/_DataManager/WatchedProxy";
+import type { TailoredCutsPlugin } from "@/types";
 
 type CommandsAndEditorCommands = {
 	commands: CommandsCommandsRecord;
@@ -14,7 +14,7 @@ type CommandsAndEditorCommands = {
 
 export class CommandsWatcher {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	appCommandsWatcher: WatchedProxy<Commands> | null;
 	appCommandsSubscribers: ((commands: Commands) => void)[] = [];
 	commandsWatcher: WatchedProxy<CommandsCommandsRecord> | null;
@@ -25,7 +25,7 @@ export class CommandsWatcher {
 	isLoaded: boolean = false;
 	#_logHeader = "CommandsWatcher";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.appCommandsWatcher = null;

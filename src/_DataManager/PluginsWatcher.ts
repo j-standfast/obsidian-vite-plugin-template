@@ -1,20 +1,20 @@
 import type { App, Plugin } from "obsidian";
-import { WatchedProxy } from "@/utils/WatchedProxy";
-import type { TailorCutsPlugin } from "@/types";
-import type { WatchedProxyEvent } from "@/utils/WatchedProxy";
+import { WatchedProxy } from "@/_DataManager/WatchedProxy";
+import type { TailoredCutsPlugin } from "@/types";
+import type { WatchedProxyEvent } from "@/_DataManager/WatchedProxy";
 
 type Plugins = App["plugins"];
 
 export class PluginsWatcher {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	enabledPluginsWatcher: WatchedProxy<Record<string, Plugin>> | null;
 	communityPluginsWatcher: WatchedProxy<Plugins> | null;
 	subscribers: ((plugins: Record<string, Plugin>) => void)[] = [];
 	isLoaded: boolean = false;
 	#_logHeader = "PluginsWatcher";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.enabledPluginsWatcher = null;

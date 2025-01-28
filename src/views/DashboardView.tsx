@@ -2,20 +2,20 @@ import { createRoot, Root } from "react-dom/client";
 import React, { StrictMode } from "react";
 import { ItemView, WorkspaceLeaf } from "obsidian";
 
-import type { TailorCutsPlugin } from "@/types";
-import { TAILOR_CUTS_VIEW_TYPE } from "@/constants/plugin";
-import { TailorCutsDashboard } from "./TailorDashboard";
+import type { TailoredCutsPlugin } from "@/types";
+import { Dashboard } from "./Dashboard";
 
 // https://docs.obsidian.md/Plugins/User+interface/Views
+export const DASHBOARD_VIEW_TYPE = "barraclough-tailored-cuts-any-dashboard";
 
-export class TailorView extends ItemView {
-	plugin: TailorCutsPlugin;
+export class DashboardView extends ItemView {
+	plugin: TailoredCutsPlugin;
 	navigation = false;
 	root: Root | null = null;
-	_viewType = TAILOR_CUTS_VIEW_TYPE;
+	_viewType = DASHBOARD_VIEW_TYPE;
 	_displayText = "Tailor Cuts Dashboard";
 
-	constructor(leaf: WorkspaceLeaf, plugin: TailorCutsPlugin) {
+	constructor(leaf: WorkspaceLeaf, plugin: TailoredCutsPlugin) {
 		super(leaf);
 		this.plugin = plugin;
 	}
@@ -36,7 +36,7 @@ export class TailorView extends ItemView {
 		this.root = createRoot(this.contentEl);
 		this.root.render(
 			<StrictMode>
-				<TailorCutsDashboard dataManager={this.plugin.dataManager} />
+				<Dashboard dataManager={this.plugin.dataManager} />
 			</StrictMode>
 		);
 	}

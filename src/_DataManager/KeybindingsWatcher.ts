@@ -2,20 +2,20 @@ import type { App, HotkeyManager } from "obsidian";
 import type {
 	CustomKeysSymbol,
 	HotkeyManagerCustomKeysRecord,
-} from "@/tailor-cuts-obsidian";
-import { WatchedProxy, WatchedProxyEvent } from "@/utils/WatchedProxy";
-import type { TailorCutsPlugin } from "@/types";
+} from "@/tailored-cuts-obsidian"; // TODO - how?
+import { WatchedProxy, WatchedProxyEvent } from "@/_DataManager/WatchedProxy";
+import type { TailoredCutsPlugin } from "@/types";
 
 export class KeybindingsWatcher {
 	app: App;
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	hotkeyManagerWatcher: WatchedProxy<HotkeyManager> | null;
 	hotkeyManagerSubscribers: ((hotkeyManager: HotkeyManager) => void)[];
 	isLoaded: boolean;
 	_obsidianInternalCustomKeysSymbol: CustomKeysSymbol | null;
 	#_logHeader = "KeybindingsWatcher";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
 		this.hotkeyManagerWatcher = null;

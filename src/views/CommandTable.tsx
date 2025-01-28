@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 import { SetStateAction, useMemo, useReducer, useState } from "react";
 
-import { CommandData } from "@/types";
+import { CommandData } from "@/_DataManager/types";
 
 export interface CommandTableProps {
 	data: CommandData[];
@@ -23,7 +23,7 @@ export interface CommandTableProps {
 
 import { boolCellOption, ColumnFilter } from "@/components/shared-table";
 
-export const CommandsTable = ({ data, className }: CommandTableProps) => {
+export const CommandTable = ({ data, className }: CommandTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([
 		{
 			id: "name",

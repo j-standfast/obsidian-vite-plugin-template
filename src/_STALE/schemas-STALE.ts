@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { CHROME_CODES, CHROME_MODIFIER_CODES } from "@/constants/keys";
+import { CHROME_CODES, CHROME_MODIFIER_CODES } from "@/_STALE_KEYS";
 import type {
 	Expect,
 	CoExtends,
@@ -13,10 +13,7 @@ import type {
 
 const modifierCodeSchema = z.enum(CHROME_MODIFIER_CODES);
 const modifierKeySchema = z.enum(CHROME_MODIFIER_CODES);
-const chordKeyModifiersSchema = z.map(
-	modifierKeySchema,
-	z.literal(true)
-);
+const chordKeyModifiersSchema = z.map(modifierKeySchema, z.literal(true));
 const codeCamelSchema = z.enum(CHROME_CODES);
 const validChordSchema = z.object({
 	modifiers: chordKeyModifiersSchema,

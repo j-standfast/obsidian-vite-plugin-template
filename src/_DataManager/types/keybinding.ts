@@ -4,6 +4,8 @@ import type {
 	ObsidianHotkey,
 } from "./key";
 
+import type { CommandId } from "./command";
+
 export type Keysig = string;
 
 export type TailorKeysig = string;
@@ -70,4 +72,59 @@ export interface KeybindingMeta {
 	customHotkeys: ObsidianHotkey[];
 }
 
+
+type HotkeyTableDatumA = {
+  // keysig: string;
+  commandId: CommandId;
+  bakedCommandIdsForKeysig: CommandId[];
+  obsidianModifiers: string;
+  obsidianKey: string;
+  isDefaultHotkey: boolean;
+  isEffectiveHotkey: boolean;
+  isOverriding: boolean;
+  keysigsOverriding: string;
+  isOverridden: boolean;
+  keysigsOverriddenBy: string;
+  conflictingCommandIds: CommandId[];
+  probablyShouldBeBaked: boolean;
+  isBaked: boolean;
+  keysig: Keysig;
+}
+
+type HotkeyTableDatumB = {
+  // keysig: string;
+  commandId: string;
+  obsidianModifiers: string;
+  obsidianKey: string;
+  isDefault: boolean;
+}
+
+export type HotkeyTableDatum = HotkeyTableDatumA;
+
+export interface HotkeyMetaBase {
+	hotkeyMetaId: string;
+	hotkey: ObsidianHotkey;
+	isCustom: boolean;
+	commandId: CommandId;
+	hotkeyIdx: number;
+	recordIdx: number;
+	keysig: Keysig;
+	isEnabled: boolean;
+	isBaked: boolean;
+	duplicateHotkeyMetaIds: string[];
+	complementHotkeyMetaIds: string[] | undefined;
+	bakedIdx: number | undefined;
+	bakedKeysig: Keysig | undefined;
+}
+
+export interface HotkeyMetaRelations {
+	conflictingHotkeyMetaIds: string[] | undefined;
+	preConflictingHotkeyMetaIds: string[] | undefined;
+	remappedHotkeyMetaIds: string[] | undefined;
+	preRemappedHotkeyMetaIds: string[] | undefined;
+	shadowHotkeyMetaIds: string[] | undefined;
+	preShadowHotkeyMetaIds: string[] | undefined;
+}
+
+export interface HotkeyMeta extends HotkeyMetaBase, HotkeyMetaRelations {}
 

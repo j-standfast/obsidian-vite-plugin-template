@@ -1,21 +1,23 @@
-import { DASHBOARD_KINDS } from "@/constants/plugin";
-
-import type { CommandData } from "./command";
-import type { HotkeyMeta, HotkeyTableDatum } from "./keybinding";
-import type { PluginMeta } from "./plugin";
+import type { CommandData } from "@/_DataManager/types/command";
+import type {
+	HotkeyMeta,
+	HotkeyTableDatum,
+} from "@/_DataManager/types/keybinding";
+import type { PluginMeta } from "@/_DataManager/types/plugin";
 import type {
 	KeybindingStale,
 	SerializedHotkeysStale,
-} from "../_DataManager/types/keybinding";
+} from "@/_DataManager/types/keybinding";
 
-export type { TailorCutsPlugin } from "@/main";
+export type { TailoredCutsPlugin } from "@/main";
+export type { DashboardType as DashboardKind } from "@/views/Dashboard";
 
-export interface TailorCutsSettings {
+export interface TailoredCutsSettings {
 	keybindings: KeybindingStale[];
 	obsidianHotkeys: SerializedHotkeysStale;
 }
 
-export interface TailorCutsData {
+export interface TailoredCutsData {
 	plugins: PluginMeta[];
 	commands: CommandData[];
 	keybindings: {
@@ -23,5 +25,3 @@ export interface TailorCutsData {
 		hotkeyMeta: HotkeyMeta[];
 	};
 }
-
-export type DashboardKind = (typeof DASHBOARD_KINDS)[number];

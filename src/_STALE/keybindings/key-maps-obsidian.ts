@@ -4,12 +4,12 @@ import type {
 	ObsidianModifierInternal,
 	ObsidianModifierInternalWindows,
 } from "@/_DataManager/types/key";
-import { OBSIDIAN_MODIFIERS_INTERNAL } from "@/constants/keys";
+import { MOD_KEYS_OBS_RUN } from "@/key/keylist/obsidian-keylist";
 
 export const isObsidianInternalModifier = (
 	k: string
 ): k is ObsidianModifierInternal => {
-	return (OBSIDIAN_MODIFIERS_INTERNAL as readonly string[]).includes(k);
+	return (MOD_KEYS_OBS_RUN as readonly string[]).includes(k);
 };
 
 // TODO: define/use OBSIDIAN_KEYS

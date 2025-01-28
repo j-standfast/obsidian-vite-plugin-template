@@ -1,10 +1,10 @@
 import * as z from "zod";
 import {
-	VSC_NONMOD_KEYS,
-	OBS_NONMOD_KEYS,
+	NONMOD_KEYS,
+	NONMOD_KEYS_OBS,
 	VscWindowsModifier,
 	ObsModifierInternal,
-	VSC_WINDOWS_MODIFIERS,
+	MOD_KEYS_VSC,
 	VscNonmodKey,
 	ObsNonmodKey,
 	OBS_INTERNAL_MODIFIERS,
@@ -13,10 +13,10 @@ import {
 	VSC_TO_OBS_NONMOD_KEYMAP,
 	obsNonmodToUnlowercaseKeymap,
 	obsToVscNonmodKeymap,
-	OBS_JSON_MODIFIERS,
+	MOD_KEYS_OBS_JSON,
 	ObsJsonModifier,
 	OBS_JSON_TO_OBS_INTERNAL_MODIFIERS_KEYMAP,
-} from "@/constants/keys/keys-vscode";
+} from "@/key";
 import { KeymapInfo } from "obsidian";
 import {
 	KeybindingJsonItem,
@@ -36,17 +36,17 @@ import { ObsidianHotkey } from "@/_DataManager/types/key";
 // type Test = OrderedPermutation<['a', 'b', 'c']>;
 
 const isVscWindowsModifier = (key: string): key is VscWindowsModifier => {
-	return (VSC_WINDOWS_MODIFIERS as readonly string[]).includes(
+	return (MOD_KEYS_VSC as readonly string[]).includes(
 		key as VscWindowsModifier
 	);
 };
 
 const isVscNonModifierKey = (val: string): val is VscNonmodKey => {
-	return (VSC_NONMOD_KEYS as readonly string[]).includes(val);
+	return (NONMOD_KEYS as readonly string[]).includes(val);
 };
 
 const isObsidianKey = (key: string): key is ObsNonmodKey => {
-	return (OBS_NONMOD_KEYS as readonly string[]).includes(key as ObsNonmodKey);
+	return (NONMOD_KEYS_OBS as readonly string[]).includes(key as ObsNonmodKey);
 };
 
 const isObsidianWindowsModifier = (key: string): key is ObsModifierInternal => {
@@ -236,7 +236,7 @@ export const parseKeybindingsJson = (data: unknown) => {
 };
 
 const isObsJsonModifier = (val: string): val is ObsJsonModifier => {
-	return (OBS_JSON_MODIFIERS as readonly string[]).includes(val);
+	return (MOD_KEYS_OBS_JSON as readonly string[]).includes(val);
 };
 
 const hotkeyOneHotkeySchema = z.object({

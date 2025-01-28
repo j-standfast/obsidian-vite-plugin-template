@@ -2,31 +2,31 @@ import type { App, HotkeyManager } from "obsidian";
 import type {
 	HotkeyManagerCustomKeysRecord,
 	HotkeyManagerDefaultKeysRecord,
-} from "@/tailor-cuts-obsidian";
+} from "@/tailored-cuts-obsidian";
+import type {
+	HotkeyMeta,
+	HotkeyMetaRelations,
+	HotkeyMetaBase,
+	HotkeyTableDatum,
+} from "./types";
 
 import type {
-	HotkeyTableDatum,
 	Keysig,
 	ObsidianHotkey,
 	ObsidianKeymapInfo,
 	CommandId,
-	ObsidianModifierInternal,
 } from "@/types";
-import {
-	obsidianInternalModifierToWindows,
-	obsidianInternalModifierToWindowsDict,
-} from "@/utils/keybindings";
 import {
 	hotkeyToKeymapInfo,
 	keymapInfoToKeysig,
 	hotkeyToKeysig,
 	keymapInfoEquals,
-} from "@/utils/keybindings/conversion";
-import { capitalize } from "@/utils/string";
+} from "@/_STALE/keybindings/conversion";
+import { capitalize } from "@/_DataManager/string-util";
 import {
 	getHotkeyCounts,
 	getUniqueModifiers,
-} from "@/utils/keybindings/test-precursors";
+} from "@/_STALE/keybindings/test-precursors";
 
 interface ParseHotkeyTableDatumContext {
 	commandId: string;
@@ -260,33 +260,6 @@ const getAllCommandIdsByKeysig = (hotkeyManager: HotkeyManager) => {
 	}
 	return res;
 };
-
-interface HotkeyMetaBase {
-	hotkeyMetaId: string;
-	hotkey: ObsidianHotkey;
-	isCustom: boolean;
-	commandId: CommandId;
-	hotkeyIdx: number;
-	recordIdx: number;
-	keysig: Keysig;
-	isEnabled: boolean;
-	isBaked: boolean;
-	duplicateHotkeyMetaIds: string[];
-	complementHotkeyMetaIds: string[] | undefined;
-	bakedIdx: number | undefined;
-	bakedKeysig: Keysig | undefined;
-}
-
-export interface HotkeyMetaRelations {
-	conflictingHotkeyMetaIds: string[] | undefined;
-	preConflictingHotkeyMetaIds: string[] | undefined;
-	remappedHotkeyMetaIds: string[] | undefined;
-	preRemappedHotkeyMetaIds: string[] | undefined;
-	shadowHotkeyMetaIds: string[] | undefined;
-	preShadowHotkeyMetaIds: string[] | undefined;
-}
-
-export interface HotkeyMeta extends HotkeyMetaBase, HotkeyMetaRelations {}
 
 const getHotkeyMetaId = (
 	commandId: CommandId,
@@ -544,12 +517,12 @@ const getHotkeyMetaById = (
 						return m;
 					})
 					.filter((m) => m.keysig === hotkeyMeta.keysig)
-      : [];
-    const preShadowIds = preShadows.map((m) => m.hotkeyMetaId);
+			: [];
+		const preShadowIds = preShadows.map((m) => m.hotkeyMetaId);
 		const shadows = preShadows.filter(
 			(m) => m.isEnabled && hotkeyMeta.isEnabled
-    );
-    const shadowIds = shadows.map((m) => m.hotkeyMetaId);
+		);
+		const shadowIds = shadows.map((m) => m.hotkeyMetaId);
 
 		const preRemaps = relations.preRemaps
 			? relations.preRemaps

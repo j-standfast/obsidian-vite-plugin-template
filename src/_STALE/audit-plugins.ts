@@ -5,7 +5,7 @@
 // 	KeymapInfo,
 // 	PluginManifest,
 // } from "obsidian";
-// import type { CommandData, TailorCutsSettings } from "@/types";
+// import type { CommandData, TailoredCutsSettings } from "@/types";
 
 // interface HotkeyRecord {
 // 	[commandId: string]: Hotkey[];
@@ -95,7 +95,7 @@
 // 		  };
 // };
 
-// function auditCommands(app: App, settings: TailorCutsSettings) {
+// function auditCommands(app: App, settings: TailoredCutsSettings) {
 // 	// app.commands
 // 	if (!app.hotkeyManager.baked) {
 // 		console.error(" not baked");

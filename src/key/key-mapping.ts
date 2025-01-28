@@ -1,16 +1,25 @@
-import { Expect, CoExtends } from "@/types";
+import { MOD_KEYS_OBS_JSON, NONMOD_KEYS_OBS } from "./keylist/obsidian-keylist";
+import { KB_MOD_KEYS_JSON, NONMOD_KEYS } from "./keylist/this-plugin-keylist";
 
-export const VSC_WINDOWS_MODIFIERS = ["Ctrl", "Shift", "Alt", "Win"] as const;
+export type ObsJsonModifier = (typeof MOD_KEYS_OBS_JSON)[number];
 
-export const OBS_JSON_MODIFIERS = [
-	"Ctrl",
-	"Mod",
-	"Shift",
-	"Alt",
-	"Meta",
-] as const;
+type ObsJsonToObsInternalModifierKeymapBase = {
+	Ctrl: "Ctrl";
+	Shift: "Shift";
+	Alt: "Alt";
+	Mod: "Ctrl";
+	Meta: "Meta";
+};
 
-export const OBS_INTERNAL_MODIFIERS = ["Ctrl", "Shift", "Alt", "Meta"] as const;
+export type ObsJsonToObsInternalModifierKeymap<
+	K extends ObsJsonModifier = ObsJsonModifier
+> = {
+	[P in K]: ObsJsonToObsInternalModifierKeymapBase[P];
+};
+
+export type ObsJsonToObsInternalModifier<
+	K extends ObsJsonModifier = ObsJsonModifier
+> = ObsJsonToObsInternalModifierKeymap[K];
 
 export const VSC_WINDOWS_TO_OBS_MODIFIERS_KEYMAP: VscWindowsToObsModifierKeymap =
 	{
@@ -29,24 +38,6 @@ export const OBS_JSON_TO_OBS_INTERNAL_MODIFIERS_KEYMAP: ObsJsonToObsInternalModi
 		Meta: "Meta",
 	};
 
-type ObsJsonToObsInternalModifierKeymapBase = {
-	Ctrl: "Ctrl";
-	Shift: "Shift";
-	Alt: "Alt";
-	Mod: "Ctrl";
-	Meta: "Meta";
-};
-
-export type ObsJsonModifier = (typeof OBS_JSON_MODIFIERS)[number];
-export type ObsJsonToObsInternalModifierKeymap<
-	K extends ObsJsonModifier = ObsJsonModifier
-> = {
-	[P in K]: ObsJsonToObsInternalModifierKeymapBase[P];
-};
-export type ObsJsonToObsInternalModifier<
-	K extends ObsJsonModifier = ObsJsonModifier
-> = ObsJsonToObsInternalModifierKeymap[K];
-
 type VscWindowsToObsModifierKeymapBase = {
 	Ctrl: "Ctrl";
 	Shift: "Shift";
@@ -54,7 +45,7 @@ type VscWindowsToObsModifierKeymapBase = {
 	Win: "Meta";
 };
 
-export type VscWindowsModifier = (typeof VSC_WINDOWS_MODIFIERS)[number];
+export type VscWindowsModifier = (typeof MOD_KEYS_VSC)[number];
 export type ObsModifierInternal =
 	VscWindowsToObsModifierKeymapBase[VscWindowsModifier];
 
@@ -76,210 +67,6 @@ export type ObsToVscWindowsModifierKeymap<
 export type ObsToVscWindowsModifier<
 	K extends ObsModifierInternal = ObsModifierInternal
 > = ObsToVscWindowsModifierKeymap[K];
-
-export const VSC_NONMOD_KEYS = [
-	"f1",
-	"f2",
-	"f3",
-	"f4",
-	"f5",
-	"f6",
-	"f7",
-	"f8",
-	"f9",
-	"f10",
-	"f11",
-	"f12",
-	"f13",
-	"f14",
-	"f15",
-	"f16",
-	"f17",
-	"f18",
-	"f19",
-	"a",
-	"b",
-	"c",
-	"d",
-	"e",
-	"f",
-	"g",
-	"h",
-	"i",
-	"j",
-	"k",
-	"l",
-	"m",
-	"n",
-	"o",
-	"p",
-	"q",
-	"r",
-	"s",
-	"t",
-	"u",
-	"v",
-	"w",
-	"x",
-	"y",
-	"z",
-	"0",
-	"1",
-	"2",
-	"3",
-	"4",
-	"5",
-	"6",
-	"7",
-	"8",
-	"9",
-	"`",
-	"-",
-	"=",
-	"[",
-	"]",
-	"\\",
-	";",
-	"'",
-	",",
-	".",
-	"/",
-	"left",
-	"up",
-	"right",
-	"down",
-	"pageup",
-	"pagedown",
-	"end",
-	"home",
-	"tab",
-	"enter",
-	"escape",
-	"space",
-	"backspace",
-	"delete",
-	// 'pausebreak', // TODO? does not exist in obsidian?
-	"capslock",
-	"insert",
-	"numpad0",
-	"numpad1",
-	"numpad2",
-	"numpad3",
-	"numpad4",
-	"numpad5",
-	"numpad6",
-	"numpad7",
-	"numpad8",
-	"numpad9",
-	"numpad_multiply",
-	"numpad_add",
-	"numpad_separator",
-	"numpad_subtract",
-	"numpad_decimal",
-	"numpad_divide",
-] as const;
-
-export const OBS_NONMOD_KEYS = [
-	"F1",
-	"F2",
-	"F3",
-	"F4",
-	"F5",
-	"F6",
-	"F7",
-	"F8",
-	"F9",
-	"F10",
-	"F11",
-	"F12",
-	"F13",
-	"F14",
-	"F15",
-	"F16",
-	"F17",
-	"F18",
-	"F19",
-	"A",
-	"B",
-	"C",
-	"D",
-	"E",
-	"F",
-	"G",
-	"H",
-	"I",
-	"J",
-	"K",
-	"L",
-	"M",
-	"N",
-	"O",
-	"P",
-	"Q",
-	"R",
-	"S",
-	"T",
-	"U",
-	"V",
-	"W",
-	"X",
-	"Y",
-	"Z",
-	"0",
-	"1",
-	"2",
-	"3",
-	"4",
-	"5",
-	"6",
-	"7",
-	"8",
-	"9",
-	"`",
-	"-",
-	"=",
-	"[",
-	"]",
-	"\\",
-	";",
-	"'",
-	",",
-	".",
-	"/",
-	"ArrowLeft",
-	"ArrowUp",
-	"ArrowRight",
-	"ArrowDown",
-	"PageUp",
-	"PageDown",
-	"End",
-	"Home",
-	"Tab",
-	"Enter",
-	"Escape",
-	"Space",
-	"Backspace",
-	"Delete",
-	// 'Pause', // TODO? does not exist in obsidian?
-	"CapsLock",
-	"Insert",
-	"Numpad0",
-	"Numpad1",
-	"Numpad2",
-	"Numpad3",
-	"Numpad4",
-	"Numpad5",
-	"Numpad6",
-	"Numpad7",
-	"Numpad8",
-	"Numpad9",
-	"NumpadMultiply",
-	"NumpadAdd",
-	"NumpadSeparator",
-	"NumpadSubtract",
-	"NumpadDecimal",
-	"NumpadDivide",
-] as const;
 
 type VscToObsNonmodKeymapBase = {
 	f1: "F1";
@@ -499,29 +286,8 @@ export type ObsNonmodKey = keyof ObsToVscNonmodKeymap;
 export type ObsToVscNonmodKey<K extends ObsNonmodKey = ObsNonmodKey> =
 	ObsToVscNonmodKeymap[K];
 
-type tests = [
-	Expect<CoExtends<VscToObsNonmodKey<"left">, "ArrowLeft">>,
-	Expect<CoExtends<VscToObsNonmodKeymap["left"], "ArrowLeft">>,
-	Expect<CoExtends<ObsToVscNonmodKeymap["ArrowLeft"], "left">>,
-	Expect<CoExtends<ObsToVscNonmodKey<"ArrowLeft">, "left">>,
-	Expect<CoExtends<ObsToVscWindowsModifier<"Meta">, "Win">>,
-	Expect<CoExtends<VscToObsWindowsModifier<"Win">, "Meta">>,
-	Expect<CoExtends<ObsToVscWindowsModifier<"Ctrl">, "Ctrl">>,
-	Expect<CoExtends<VscToObsWindowsModifier<"Ctrl">, "Ctrl">>,
-	Expect<CoExtends<ObsNonmodToLowercaseKeymapBase["A"], "a">>,
-	Expect<CoExtends<ObsNonmodToUnloweredcaseKeymapBase["a"], "A">>,
-	Expect<CoExtends<ObsNonmodToUnlowerCaseKeymap["a"], "A">>,
-	Expect<CoExtends<ObsNonmodToUnlowerCaseKeymap["A"], "A">>,
-	Expect<CoExtends<ObsNonmodToUnlowerCaseKeymap["pagedown"], "PageDown">>,
-	Expect<CoExtends<ObsNonmodToUnlowerCaseKeymap["PageDown"], "PageDown">>,
-	Expect<CoExtends<ObsNonmodToLowercaseKeymap["PageDown"], "pagedown">>,
-	Expect<CoExtends<ObsNonmodToLowercaseKeymap["pagedown"], "pagedown">>,
-	Expect<CoExtends<ObsNonmodToLowercaseKeymap["a"], "a">>,
-	Expect<CoExtends<ObsNonmodToLowercaseKeymap["A"], "a">>
-];
-
 export const obsNonmodToUnlowercaseKeymap: ObsNonmodToUnlowerCaseKeymap =
-	OBS_NONMOD_KEYS.reduce((acc, key) => {
+	NONMOD_KEYS_OBS.reduce((acc, key) => {
 		// @ts-ignore
 		acc[key.toLowerCase()] = key;
 		// @ts-ignore
@@ -558,14 +324,16 @@ export const obsNonmodToUnlowercaseKey = <T extends Lowercase<ObsNonmodKey>>(
 };
 
 type ObsNonmodLowercaseKey = Lowercase<ObsNonmodKey>;
-type ObsNonmodToLowercaseKeymapBase<K extends ObsNonmodKey = ObsNonmodKey> = {
+export type ObsNonmodToLowercaseKeymapBase<
+	K extends ObsNonmodKey = ObsNonmodKey
+> = {
 	[P in K]: Lowercase<P>;
 };
 type ObsNonmodToUnloweredcaseKeymapBase<K extends ObsNonmodKey = ObsNonmodKey> =
 	{
 		[P in K as ObsNonmodToLowercaseKeymapBase[P]]: P;
 	};
-type ObsNonmodToUnlowerCaseKeymap<
+export type ObsNonmodToUnlowerCaseKeymap<
 	K extends ObsNonmodKey | ObsNonmodLowercaseKey =
 		| ObsNonmodKey
 		| ObsNonmodLowercaseKey

@@ -1,14 +1,40 @@
-import type {
-	Keysig,
-	ObsidianModifierInternal,
-} from "../_DataManager/types/key";
 import type { CommandId } from "./command";
-import { KeymapInfo as ObsidianKeymapInfo } from "obsidian";
-export type { HotkeyMeta } from "@/_DataManager/keybindings";
+import {
+	KeymapInfo as ObsidianKeymapInfo,
+	KeymapContext as ObsidianKeymapContext,
+} from "obsidian";
+import type { KBScope } from "@/KeybindingScope/KeybindingScope";
 
 export interface KeymapInfoRequiredKey extends ObsidianKeymapInfo {
 	key: string;
 }
+
+export interface KeymapContextWithCode extends ObsidianKeymapContext {
+	code: string;
+}
+export type KeymapEventWithCodeListener = (
+	evt: KeyboardEvent,
+	ctx: KeymapContextWithCode
+) => false | any;
+
+export interface KeymapEventWithCodeHandler {
+	scope: KBScope;
+	modifiers: ObsidianModifierInternalWindows | null;
+	key: ObsidianKeymapInfo | null;
+	func: KeymapEventWithCodeListener;
+}
+
+export type KeyMatchResult =
+	| {
+			status: "execute";
+			commandId: CommandId;
+	  }
+	| {
+			status: "chord";
+	  }
+	| {
+			status: "none";
+	  };
 
 export type ShortcutKeybindingOld = {
 	key: string;

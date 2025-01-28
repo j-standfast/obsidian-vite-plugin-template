@@ -12,14 +12,14 @@ import {
 import React, { SetStateAction, useMemo, useReducer, useState } from "react";
 
 import { boolCellOption } from "@/components/shared-table";
-import type { PluginMeta } from "@/types";
+import type { PluginMeta } from "@/_DataManager/types";
 
 export interface PluginTableProps {
 	data: PluginMeta[];
 	className: string;
 }
 
-export const PluginsTable = ({ data, className }: PluginTableProps) => {
+export const PluginTable = ({ data, className }: PluginTableProps) => {
 	// initial sorting state; see:
 	// https://tanstack.com/table/latest/docs/guide/sorting#initial-sorting-state
 	const [sorting, setSorting] = useState<SortingState>([

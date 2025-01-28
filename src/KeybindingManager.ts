@@ -1,24 +1,24 @@
 import {
-  Scope,
-  type App,
-  type KeymapContext,
-  type KeymapEventHandler,
-  type Modifier,
+	Scope,
+	type App,
+	type KeymapContext,
+	type KeymapEventHandler,
+	type Modifier,
 } from "obsidian";
 
 import type {
-  CommandId,
-  KeymapContextWithCode,
-  TailorCutsPlugin,
+	CommandId,
+	KeymapContextWithCode,
+	TailoredCutsPlugin,
 } from "@/types";
-import { debounce } from "@/utils/debounce";
+import { debounce } from "@/util/debounce";
 import { KeybindingMatcher } from "./KeybindingMatcher";
-import { KeybindingScope } from "./KeybindingScope";
+import { KBScope } from "./KeybindingScope/KeybindingScope";
 import {
-  parseKeybindingsFromHotkeysJson,
-  parseKeybindingsFromHotkeysRecord,
-  parseKeybindingsJson,
-} from "./schemas";
+	parseKeybindingsFromHotkeysJson,
+	parseKeybindingsFromHotkeysRecord,
+	parseKeybindingsJson,
+} from "./schema";
 
 export interface TailorKey extends KeymapContext {
 	code: string;
@@ -43,23 +43,23 @@ export interface TailorKeybinding {
 export class KeybindingManager {
 	app: App;
 
-	plugin: TailorCutsPlugin;
+	plugin: TailoredCutsPlugin;
 	keymapEventHandler: KeymapEventHandlerWithFunc;
-	scope: KeybindingScope;
+	scope: Scope;
 	shortcutMatcher: KeybindingMatcher;
 	_VERBOSE = true;
 	_LOG_KEYS = false;
 	_logPrefix = "KeybindingManager";
 
-	constructor(app: App, plugin: TailorCutsPlugin) {
+	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
-		this.scope = new KeybindingScope(this.app.scope);
+		this.scope = new Scope(this.app.scope);
 		this.shortcutMatcher = new KeybindingMatcher([]);
 
 		// TODO: scope/listener cleanup
 		this.onObsidianConfigChange = debounce(this.load.bind(this), 50);
-		this.onTailorCutsConfigChange = debounce(this.load.bind(this), 50);
+		this.onTailoredCutsConfigChange = debounce(this.load.bind(this), 50);
 		this.keymapEventHandler = this.scope.register(
 			null,
 			null,
@@ -134,10 +134,10 @@ export class KeybindingManager {
 		try {
 			const keybindings = parseKeybindingsJson(data);
 			this.shortcutMatcher.setKeybindings(keybindings);
-			const msg = `loadTailorCuts / loaded ${keybindings.length} keybindings`;
+			const msg = `loadTailoredCuts / loaded ${keybindings.length} keybindings`;
 			this._log(msg, { path, data, keybindings });
 		} catch (error) {
-			this._log("loadTailorCuts / error", { error, data });
+			this._log("loadTailoredCuts / error", { error, data });
 		}
 	}
 
@@ -196,7 +196,7 @@ export class KeybindingManager {
 		this._log("onObsidianConfigChange");
 	}
 
-	onTailorCutsConfigChange() {
-		this._log("onTailorCutsConfigChange");
+	onTailoredCutsConfigChange() {
+		this._log("onTailoredCutsConfigChange");
 	}
 }

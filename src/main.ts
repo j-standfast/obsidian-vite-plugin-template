@@ -1,19 +1,20 @@
-import { App, Plugin, PluginManifest, WorkspaceLeaf } from "obsidian";
+import type { App, PluginManifest, WorkspaceLeaf } from "obsidian";
+import { Plugin } from "obsidian";
 
-// import { ShortcutListener } from "@/ShortcutListener/ShortcutListener";
-import { TAILOR_CUTS_VIEW_TYPE } from "@/constants/plugin";
-import { TailorCutsDataManager } from "@/_DataManager/TailorCutsDataManager";
+import { DataManager } from "@/_DataManager/DataManager";
+import type { SerializedHotkeysStale } from "@/_DataManager/types/keybinding";
 import { serializedSettingsSchema } from "@/_STALE/schemas-STALE";
-import "@/styles.css";
-import type { SerializedHotkeysStale, TailorCutsSettings } from "@/types";
-import { DebugUtils } from "@/utils/DebugUtils/DebugUtils2";
-import { TailorView } from "./views/TailorView";
-import { KeybindingManager } from "@/KeybindingManager";
 
-export default class TailorCutsPlugin extends Plugin {
-	settings: TailorCutsSettings;
-	dataManager: TailorCutsDataManager;
-	keybindingManager: KeybindingManager;
+import { DebugUtils } from "@/DebugUtil";
+// import { KeybindingManager } from "@/KeybindingManager";
+import "@/styles.css";
+import type { TailoredCutsSettings } from "@/types";
+import { DashboardView, DASHBOARD_VIEW_TYPE } from "@/views/DashboardView";
+
+export default class TailoredCutsPlugin extends Plugin {
+	settings: TailoredCutsSettings;
+	// dataManager: DataManager;
+	// keybindingManager: KeybindingManager;
 	util: DebugUtils;
 
 	constructor(app: App, manifest: PluginManifest) {
@@ -27,8 +28,8 @@ export default class TailorCutsPlugin extends Plugin {
 		// 	app,
 		// 	this.settings.keybindings
 		// );
-		this.dataManager = new TailorCutsDataManager(app, this);
-		this.keybindingManager = new KeybindingManager(app, this);
+		// this.dataManager = new DataManager(app, this);
+		// this.keybindingManager = new KeybindingManager(app, this);
 		this.util = new DebugUtils(this.app, this);
 	}
 
@@ -39,17 +40,17 @@ export default class TailorCutsPlugin extends Plugin {
 		this.addCommand({
 			id: "show-dashboard",
 			name: "Show dashboard",
-			callback: () => this.addTailorCutsView(),
+			callback: () => this.addTailoredCutsView(),
 		});
 		this.util.onload();
 
 		this.registerView(
-			TAILOR_CUTS_VIEW_TYPE,
-			(leaf: WorkspaceLeaf) => new TailorView(leaf, this)
+			DASHBOARD_VIEW_TYPE,
+			(leaf: WorkspaceLeaf) => new DashboardView(leaf, this)
 		);
 		this.app.workspace.onLayoutReady(() => {
 			try {
-				this.keybindingManager.load();
+				// this.keybindingManager.load();
 			} catch (err) {
 				console.error("Error watching plugins", err);
 				throw new Error("Error watching plugins");
@@ -60,7 +61,7 @@ export default class TailorCutsPlugin extends Plugin {
 	onunload() {
 		// this.shortcutListener.unload();
 		this.util.unload();
-		this.app.workspace.detachLeavesOfType(TAILOR_CUTS_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
 	}
 
 	async loadSettings() {
@@ -92,15 +93,13 @@ export default class TailorCutsPlugin extends Plugin {
 		}
 	}
 
-	async addTailorCutsView() {
-		const isViewOpen = this.app.workspace.getLeavesOfType(
-			TAILOR_CUTS_VIEW_TYPE
-		);
+	async addTailoredCutsView() {
+		const isViewOpen = this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
 		if (isViewOpen.length > 0) return;
 		this.app.workspace.getLeaf().setViewState({
-			type: TAILOR_CUTS_VIEW_TYPE,
+			type: DASHBOARD_VIEW_TYPE,
 		});
 	}
 }
 
-export type { TailorCutsPlugin };
+export type { TailoredCutsPlugin };
