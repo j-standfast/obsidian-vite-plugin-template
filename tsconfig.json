@@ -16,5 +16,6 @@
 		"strict": true,
 		"target": "ES2022",
 	},
-	"include": ["./src/**/*.ts", "./src/**/*.tsx", "src/tanstack-table.d.ts", "src/tailored-cuts-obsidian.d.ts"]
+	"include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.d.ts", "_STALE/tailored-cuts-obsidian.d.ts"],
+  "exclude": ["node_modules", "dist", "_STALE/**"]
 }

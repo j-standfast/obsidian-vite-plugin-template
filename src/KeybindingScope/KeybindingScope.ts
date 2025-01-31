@@ -6,10 +6,7 @@ import type {
 } from "obsidian";
 import { Scope as ObsScope } from "obsidian";
 
-import type {
-	KeyEventContext,
-	CompiledModifierString,
-} from "@/tailored-cuts-obsidian";
+import type { KeyEventContext, CompiledModifierString } from "obsidian";
 import type {
 	KBCodeSig,
 	KBKeysig,
@@ -79,9 +76,16 @@ export class KBScope extends ObsScope {
 
 			const modifiers = (ctx.modifiers ?? "") as CompiledModifierString; // TODO check?
 			const keysig = this.keyEventContextToKeysig({ modifiers, key });
-      const code = evt.code as KeyCode; // TODO check?
+			const code = evt.code as KeyCode; // TODO check?
 			const vkey = ctx.vkey as ObsVirtualKey; // TODO check?
-			return func(evt, { modifiers, key, code, keysig, codesig: keysig, vkey });   // TODO codesig
+			return func(evt, {
+				modifiers,
+				key,
+				code,
+				keysig,
+				codesig: keysig,
+				vkey,
+			}); // TODO codesig
 		};
 	}
 }

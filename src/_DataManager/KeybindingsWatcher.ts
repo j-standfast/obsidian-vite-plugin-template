@@ -1,8 +1,5 @@
 import type { App, HotkeyManager } from "obsidian";
-import type {
-	CustomKeysSymbol,
-	HotkeyManagerCustomKeysRecord,
-} from "@/tailored-cuts-obsidian"; // TODO - how?
+import type { CustomKeysSymbol, HotkeyManagerCustomKeysRecord } from "obsidian"; // TODO - how?
 import { WatchedProxy, WatchedProxyEvent } from "@/_DataManager/WatchedProxy";
 import type { TailoredCutsPlugin } from "@/types";
 

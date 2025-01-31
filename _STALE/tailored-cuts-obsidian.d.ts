@@ -244,7 +244,7 @@ declare module "obsidian" {
 		 * @param event - Keyboard event to trigger command with
 		 * @param keymapInfo - Pressed key information
 		 */
-		onTrigger(event: KeyboardEvent, keymapInfo: ObsKeymapInfo): boolean;
+		onTrigger(event: KeyboardEvent, keyEventContext: KeyEventContext): boolean;
 		/**
 		 * Pretty-print hotkey of a command
 		 *

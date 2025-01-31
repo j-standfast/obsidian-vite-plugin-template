@@ -2,7 +2,7 @@ import type { App, HotkeyManager } from "obsidian";
 import type {
 	HotkeyManagerCustomKeysRecord,
 	HotkeyManagerDefaultKeysRecord,
-} from "@/tailored-cuts-obsidian";
+} from "obsidian";
 import type {
 	HotkeyMeta,
 	HotkeyMetaRelations,
