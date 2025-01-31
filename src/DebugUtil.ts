@@ -233,7 +233,7 @@ export class DebugUtils {
 			id: "log-scope",
 			name: "Log scope",
 			checkCallback: (checking: boolean) => {
-				this._logLev(1, "log-scope / checking (newer)", { checking });
+				this._logLev(1, "log-scope / checking (yet newer)", { checking });
 				if (checking) {
 					return true;
 				} else {

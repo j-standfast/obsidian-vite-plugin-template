@@ -1,4 +1,4 @@
-import { UserConfig, defineConfig } from "vite";
+import { UserConfig, defineConfig, Plugin } from "vite";
 import path from "path";
 import builtins from "builtin-modules";
 import react from "@vitejs/plugin-react";
@@ -8,6 +8,16 @@ import react from "@vitejs/plugin-react";
 // if you want to view the source, please visit the github repository of this plugin
 // */
 // `;
+
+const logWatcherConfig: Plugin = {
+  name: 'log-watcher-config',
+  configureServer(server) {
+    console.log('Chokidar watcher configuration:', {
+      watchOptions: server.watcher.options,
+      watchedPaths: server.watcher.getWatched()
+    });
+  }
+};
 
 export default defineConfig(async ({ mode }) => {
 	const { resolve } = path;
@@ -54,7 +64,7 @@ export default defineConfig(async ({ mode }) => {
 			sourcemap: prod ? false : "inline",
 			target: "es2022",
 		},
-		plugins: [react()],
+		plugins: [react(), logWatcherConfig],
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "./src"),
