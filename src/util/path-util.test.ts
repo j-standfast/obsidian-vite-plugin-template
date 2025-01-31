@@ -17,4 +17,8 @@ describe("path-utils", () => {
 	it("should handle empty paths", () => {
 		expect(normalizeFilePath("")).toBe("");
 	});
+
+  it("should handle empty paths", () => {
+		expect(normalizeFilePath("")).toBe("");
+	});
 });
