@@ -15,19 +15,19 @@ export default defineConfig(async ({ mode }) => {
 
 	return {
 		build: {
-      cssCodeSplit: false,
-      emptyOutDir: false,
+			cssCodeSplit: false,
+			emptyOutDir: false,
 			lib: {
-        entry: resolve(__dirname, "src/main.ts"),
+				entry: resolve(__dirname, "src/main.ts"),
 				fileName: () => "main.js",
 				formats: ["cjs"],
 				name: "main",
 			},
 			minify: prod,
-			outDir: "./",
-      rollupOptions: {
-        external: [
-          "obsidian",
+			outDir: "dist",
+			rollupOptions: {
+				external: [
+					"obsidian",
 					"electron",
 					"@codemirror/autocomplete",
 					"@codemirror/collab",
@@ -42,33 +42,42 @@ export default defineConfig(async ({ mode }) => {
 					"@lezer/lr",
 					...builtins,
 				],
-        input: {
-          main: resolve(__dirname, "src/main.ts"),
+				input: {
+					main: resolve(__dirname, "src/main.ts"),
 				},
 				output: {
           entryFileNames: "main.js",
+          dir: './',
 					// assetFileNames: "styles.css",
 				},
-      },
-      sourcemap: prod ? false : "inline",
-      target: "es2022",
-    },
+			},
+			sourcemap: prod ? false : "inline",
+			target: "es2022",
+		},
 		plugins: [react()],
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "./src"),
 			},
-		},
+    },
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 1000,
+        // You might also need to explicitly exclude the output file
+        ignored: ['main.js', 'main.js.map']
+      }
+    }
 		// test: {
-    // 	browser: {
-    // 		enabled: true,
-    // 	},
-    // 	deps: {
-    // 		external: [/^obsidian$/, ...builtins],
-    // 	},
-    // 	environment: "jsdom",
+		// 	browser: {
+		// 		enabled: true,
+		// 	},
+		// 	deps: {
+		// 		external: [/^obsidian$/, ...builtins],
+		// 	},
+		// 	environment: "jsdom",
 		// 	globals: true,
-    // 	instances: [{ browser: "chromium" }],
+		// 	instances: [{ browser: "chromium" }],
 		// 	setupFiles: ["./vitest.setup.ts"],
 		// },
 	} as UserConfig;
