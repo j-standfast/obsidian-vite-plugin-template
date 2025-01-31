@@ -1,0 +1,14 @@
+[
+	{
+		"command": "barraclough-tailor-cuts:log-scope",
+		"key": "Ctrl+Shift+Alt+j Ctrl+Shift+Alt+j"
+	},
+	{
+		"command": "-barraclough-tailor-cuts:log-scope",
+		"key": "Ctrl+Shift+Alt+j Ctrl+Shift+Alt+\\"
+	},
+	{
+		"command": "barraclough-tailor-cuts:log-scope",
+		"key": "Ctrl+Shift+Alt+pagedown Ctrl+Shift+Win+j"
+	}
+]

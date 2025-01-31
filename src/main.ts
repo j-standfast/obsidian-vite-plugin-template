@@ -12,94 +12,93 @@ import type { TailoredCutsSettings } from "@/types";
 import { DashboardView, DASHBOARD_VIEW_TYPE } from "@/views/DashboardView";
 
 export default class TailoredCutsPlugin extends Plugin {
-	settings: TailoredCutsSettings;
-	// dataManager: DataManager;
-	// keybindingManager: KeybindingManager;
-	util: DebugUtils;
+  settings: TailoredCutsSettings;
+  // dataManager: DataManager;
+  // keybindingManager: KeybindingManager;
+  util: DebugUtils;
 
-	constructor(app: App, manifest: PluginManifest) {
-		super(app, manifest);
-		this.settings = {
-			// hotkeys: [],
-			keybindings: [],
-			obsidianHotkeys: {},
-		};
-		// this.shortcutListener = new ShortcutListener(
-		// 	app,
-		// 	this.settings.keybindings
-		// );
-		// this.dataManager = new DataManager(app, this);
-		// this.keybindingManager = new KeybindingManager(app, this);
-		this.util = new DebugUtils(this.app, this);
-	}
+  constructor(app: App, manifest: PluginManifest) {
+    super(app, manifest);
+    this.settings = {
+      // hotkeys: [],
+      keybindings: [],
+      obsidianHotkeys: {},
+    };
+    // this.shortcutListener = new ShortcutListener(
+    // 	app,
+    // 	this.settings.keybindings
+    // );
+    // this.dataManager = new DataManager(app, this);
+    // this.keybindingManager = new KeybindingManager(app, this);
+    this.util = new DebugUtils(this.app, this);
+  }
 
-	async onload() {
-		await this.loadSettings();
-		// this.addSettingTab(new SequenceHotkeysSettingTab(this.app, this));
-		// this.shortcutListener.onLoad(this.settings.keybindings);
-		this.addCommand({
-			id: "show-dashboard",
-			name: "Show dashboard",
-			callback: () => this.addTailoredCutsView(),
-		});
-		this.util.onload();
+  async onload() {
+    // await this.loadSettings();
+    // this.addSettingTab(new SequenceHotkeysSettingTab(this.app, this));
+    // this.shortcutListener.onLoad(this.settings.keybindings);
+    // this.addCommand({
+    // 	id: "show-dashboard",
+    // 	name: "Show dashboard",
+    // 	callback: () => this.addTailoredCutsView(),
+    // });
+    this.util.onload();
 
-		this.registerView(
-			DASHBOARD_VIEW_TYPE,
-			(leaf: WorkspaceLeaf) => new DashboardView(leaf, this)
-		);
-		this.app.workspace.onLayoutReady(() => {
-			try {
-				// this.keybindingManager.load();
-			} catch (err) {
-				console.error("Error watching plugins", err);
-				throw new Error("Error watching plugins");
-			}
-		});
-	}
+    // this.registerView(
+    // 	DASHBOARD_VIEW_TYPE,
+    // 	(leaf: WorkspaceLeaf) => new DashboardView(leaf, this)
+    // );
+    this.app.workspace.onLayoutReady(() => {
+      try {
+        // this.keybindingManager.load();
+      } catch (err) {
+        console.error("TailoredCutsPlugin / onload", err);
+        throw new Error(`TailoredCutsPlugin / onload: ${err}`);
+      }
+    });
+  }
 
-	onunload() {
-		// this.shortcutListener.unload();
-		this.util.unload();
-		this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
-	}
+  onunload() {
+    // this.shortcutListener.unload();
+    this.util.unload();
+    this.app.workspace.detachLeavesOfType(DASHBOARD_VIEW_TYPE);
+  }
 
-	async loadSettings() {
-		const unparsed = await this.loadData();
-		const settingsParse = serializedSettingsSchema.safeParse(unparsed);
-		if (!settingsParse.success) {
-			console.log("Error parsing settings", settingsParse.error);
-			throw new Error("Error parsing settings");
-		} else {
-			const { keybindings, obsidianHotkeys } = settingsParse.data;
-			this.settings = {
-				// keybindings: deserializeKeybindings(keybindings),
-				keybindings: [],
-				obsidianHotkeys: obsidianHotkeys as SerializedHotkeysStale, // TODO
-			};
-		}
-	}
+  // async loadSettings() {
+  // 	const unparsed = await this.loadData();
+  // 	const settingsParse = serializedSettingsSchema.safeParse(unparsed);
+  // 	if (!settingsParse.success) {
+  // 		console.log("Error parsing settings", settingsParse.error);
+  // 		throw new Error("Error parsing settings");
+  // 	} else {
+  // 		const { keybindings, obsidianHotkeys } = settingsParse.data;
+  // 		this.settings = {
+  // 			// keybindings: deserializeKeybindings(keybindings),
+  // 			keybindings: [],
+  // 			obsidianHotkeys: obsidianHotkeys as SerializedHotkeysStale, // TODO
+  // 		};
+  // 	}
+  // }
 
-	async saveSettings() {
-		const obsidianHotkeys = this.settings.obsidianHotkeys;
-		// const keybindings = serializeKeybindings(this.settings.keybindings);
-		const saveData = { keybindings: [], obsidianHotkeys };
-		const parsed = serializedSettingsSchema.safeParse(saveData);
-		if (parsed.success) {
-			await this.saveData(parsed.data);
-		} else {
-			console.log("Error parsing settings", parsed.error);
-			throw new Error("Error parsing settings");
-		}
-	}
+  // async saveSettings() {
+  // 	const obsidianHotkeys = this.settings.obsidianHotkeys;
+  // 	// const keybindings = serializeKeybindings(this.settings.keybindings);
+  // 	const saveData = { keybindings: [], obsidianHotkeys };
+  // 	const parsed = serializedSettingsSchema.safeParse(saveData);
+  // 	if (parsed.success) {
+  // 		await this.saveData(parsed.data);
+  // 	} else {
+  // 		console.log("Error parsing settings", parsed.error);
+  // 		throw new Error("Error parsing settings");
+  // 	}
+  // }
 
-	async addTailoredCutsView() {
-		const isViewOpen = this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
-		if (isViewOpen.length > 0) return;
-		this.app.workspace.getLeaf().setViewState({
-			type: DASHBOARD_VIEW_TYPE,
-		});
-	}
+  // 	async addTailoredCutsView() {
+  // 		const isViewOpen = this.app.workspace.getLeavesOfType(DASHBOARD_VIEW_TYPE);
+  // 		if (isViewOpen.length > 0) return;
+  // 		this.app.workspace.getLeaf().setViewState({
+  // 			type: DASHBOARD_VIEW_TYPE,
+  // 		});
+  // 	}
+  // }
 }
-
-export type { TailoredCutsPlugin };

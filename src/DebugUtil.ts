@@ -1,7 +1,13 @@
-import * as z from 'zod';
+import * as z from "zod";
 import type { App } from "obsidian";
 import { Keymap, normalizePath, Notice, Scope } from "obsidian";
 
+import {
+	makeClassLevelLogger,
+	makeClassLogger,
+	type Logger,
+	type LevelLogger,
+} from "@/util/makeClassLogger";
 import type { TailoredCutsPlugin } from "@/types";
 
 type VSCodeKeybinding = {
@@ -11,6 +17,12 @@ type VSCodeKeybinding = {
 };
 
 export class DebugUtils {
+	_log: Logger = makeClassLogger("DebugUtils", () => 1 <= this._LOG_LEVEL);
+	_logLev: LevelLogger = makeClassLevelLogger(
+		"DebugUtils",
+		() => this._LOG_LEVEL
+	);
+	_LOG_LEVEL: number = 1;
 	app: App;
 	plugin: TailoredCutsPlugin;
 	normalizePath: (path: string) => string;
@@ -18,10 +30,14 @@ export class DebugUtils {
 	constructor(app: App, plugin: TailoredCutsPlugin) {
 		this.app = app;
 		this.plugin = plugin;
-    this.normalizePath = normalizePath;
-    globalThis.z = z;
-    globalThis.kmappp = Keymap;
-    globalThis.scooo = Scope;
+		this.normalizePath = normalizePath;
+		this._log = this._log.bind(this);
+		// @ts-ignore
+		globalThis.z = z;
+		// @ts-ignore
+		globalThis.kmappp = Keymap;
+		// @ts-ignore
+		globalThis.scooo = Scope;
 		// normalizePath = this.app.plugins.plugins['barraclough-tailored-cuts'].util.normalizePath;
 	}
 
@@ -216,12 +232,15 @@ export class DebugUtils {
 		this.plugin.addCommand({
 			id: "log-scope",
 			name: "Log scope",
-      checkCallback: (checking: boolean) => {
-        console.log("log-scope / checking", { checking });
+			checkCallback: (checking: boolean) => {
+				this._logLev(2, "log-scope / checking", { checking });
 				if (checking) {
 					return true;
-        } else {
-          this.
+				} else {
+					this._logLev(0, "log-scope", {
+						app: this.app.scope,
+						workspace: this.app.workspace.scope,
+					});
 					return true;
 				}
 			},
