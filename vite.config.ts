@@ -1,4 +1,4 @@
-import { UserConfig, defineConfig, Plugin } from "vite";
+import { UserConfig, defineConfig, Plugin, PluginHookUtils } from "vite";
 import path from "path";
 import builtins from "builtin-modules";
 import react from "@vitejs/plugin-react";
@@ -10,18 +10,32 @@ import react from "@vitejs/plugin-react";
 // `;
 
 const logWatcherConfig: Plugin = {
-  name: 'log-watcher-config',
-  configureServer(server) {
-    console.log('Chokidar watcher configuration:', {
-      watchOptions: server.watcher.options,
-      watchedPaths: server.watcher.getWatched()
-    });
-  }
+	name: "log-watcher-config",
+	configResolved(config) {
+		console.log("\nVite build configuration props:");
+		Object.keys(config).forEach((k) => console.log(`\t${k}`));
+		console.log("\nVite config.build keys:");
+		Object.keys(config.build).forEach((k) => console.log(`\t${k}`));
+		console.log("\nVite  keys:");
+		Object.keys(config.build).forEach((k) => console.log(`\t${k}`));
+		if (config.build.watch) {
+			console.log("\nVite config.build.watch keys:");
+			Object.keys(config.build.watch).forEach((k) =>
+				console.log(`\t${k}`)
+			);
+		} else {
+			console.log("\nVite config.build.watch is undefined");
+		}
+	},
+	watchChange(id, change) {
+		console.log("Watch change detected:", { id, change });
+	},
 };
 
 export default defineConfig(async ({ mode }) => {
 	const { resolve } = path;
 	const prod = mode === "production";
+	console.log(`vite.config.ts / defineConfig / mode=${mode} / prod=${prod}`);
 
 	return {
 		build: {
@@ -56,28 +70,28 @@ export default defineConfig(async ({ mode }) => {
 					main: resolve(__dirname, "src/main.ts"),
 				},
 				output: {
-          entryFileNames: "main.js",
-          dir: './',
+					entryFileNames: "main.js",
+					dir: "./",
 					// assetFileNames: "styles.css",
-				},
+        },
+        watch: {},
 			},
 			sourcemap: prod ? false : "inline",
 			target: "es2022",
+      watch: {
+        chokidar: {
+          usePolling: true,
+          interval: 1000,
+          ignored: ["main.js", "main.js.map"],
+        },
+      },
 		},
 		plugins: [react(), logWatcherConfig],
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "./src"),
 			},
-    },
-    server: {
-      watch: {
-        usePolling: true,
-        interval: 1000,
-        // You might also need to explicitly exclude the output file
-        ignored: ['main.js', 'main.js.map']
-      }
-    }
+		},
 		// test: {
 		// 	browser: {
 		// 		enabled: true,
