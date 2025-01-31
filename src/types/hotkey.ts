@@ -1,1 +1,0 @@
-export type { HotkeyMeta } from "@/_DataManager/types";
