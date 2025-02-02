@@ -1,7 +1,7 @@
 {
-	"name": "tailored-cuts",
-	"version": "0.6.0",
-	"description": "This plugin allows you to set hotkeys with key sequences instead of a single chord.",
+	"name": "obsidian-vite-plugin-template",
+	"version": "0.0.1",
+	"description": "A template for creating an Obsidian plugin using Vite",
 	"main": "main.js",
 	"scripts": {
 		"dev": "vite build --watch --mode development",
@@ -50,6 +50,6 @@
 		"react": "^19.0.0",
 		"react-dom": "^19.0.0",
 		"react-simple-keyboard": "^3.8.41",
-		"zod": "^3.24.1"
+		"zod": "^3.24.1"    
 	}
 }

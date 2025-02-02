@@ -6,7 +6,7 @@ import "@/styles.css";
 import type { MyPluginSettings } from "@/types";
 import { makeClassLevelLogger, makeClassLogger, type LevelLogger, type Logger } from "@/util/makeClassLogger";
 
-export class MyPlugin extends Plugin {
+export default class MyPlugin extends Plugin {
   _LOG_LEVEL: number = 0;
   _log: Logger = makeClassLogger("MyPlugin", () => 0 <= this._LOG_LEVEL);
   _logLev: LevelLogger = makeClassLevelLogger("MyPlugin", () => this._LOG_LEVEL);
@@ -55,4 +55,3 @@ export class MyPlugin extends Plugin {
 	}
 }
 
-export default MyPlugin;

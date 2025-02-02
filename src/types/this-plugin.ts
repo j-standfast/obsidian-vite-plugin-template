@@ -1,4 +1,4 @@
-export type { MyPlugin } from "@/main";
-
+import type MyPlugin from "@/main";
+export type { MyPlugin };
 export interface MyPluginSettings {
 }

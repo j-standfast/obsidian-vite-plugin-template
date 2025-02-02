@@ -1,10 +1,10 @@
 {
-	"id": "_tailored-cuts",
-	"name": "_tailored-cuts",
+	"id": "_new-plugin",
+	"name": "_new-plugin",
 	"version": "0.1.0",
 	"minAppVersion": "0.12.0",
-	"description": "Obsidian keybindings, commands, and plugins manager",
-	"author": "Mr. Barraclough",
-	"authorUrl": "",
+	"description": "a new plugin that will change the world",
+	"author": "J. Standfast",
+	"authorUrl": "https://github.com/j-standfast",
 	"isDesktopOnly": true
 }

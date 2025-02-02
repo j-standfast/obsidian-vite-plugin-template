@@ -37,7 +37,7 @@ export class DebugThingy {
 	onload() {
 		this.plugin.addCommand({
 			id: "debug-thingy-log",
-			name: "MyPlugin ",
+			name: "Debug Thingy Log",
 			callback: async () => {
         console.log("debug-thingy-log");
 			},
