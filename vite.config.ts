@@ -9,26 +9,16 @@ import react from "@vitejs/plugin-react";
 // */
 // `;
 
-const logWatcherConfig: Plugin = {
-	name: "log-watcher-config",
+const myCustomPlugin: Plugin = {
+	name: "my-custom-plugin",
 	configResolved(config) {
-		console.log("\nVite build configuration props:");
-		Object.keys(config).forEach((k) => console.log(`\t${k}`));
-		console.log("\nVite config.build keys:");
-		Object.keys(config.build).forEach((k) => console.log(`\t${k}`));
-		console.log("\nVite  keys:");
-		Object.keys(config.build).forEach((k) => console.log(`\t${k}`));
-		if (config.build.watch) {
-			console.log("\nVite config.build.watch keys:");
-			Object.keys(config.build.watch).forEach((k) =>
-				console.log(`\t${k}`)
-			);
-		} else {
-			console.log("\nVite config.build.watch is undefined");
-		}
+		console.log(
+			"myCustomPlugin: Vite build configuration config object",
+			config
+		);
 	},
 	watchChange(id, change) {
-		console.log("Watch change detected:", { id, change });
+		console.log("myCustomPlugin: Watch change detected:", { id, change });
 	},
 };
 
@@ -72,21 +62,15 @@ export default defineConfig(async ({ mode }) => {
 				output: {
 					entryFileNames: "main.js",
 					dir: "./",
-					// assetFileNames: "styles.css",
-        },
-        watch: {},
+					assetFileNames: "styles.css",
+				},
+				watch: {},
 			},
 			sourcemap: prod ? false : "inline",
 			target: "es2022",
-      watch: {
-        chokidar: {
-          usePolling: true,
-          interval: 1000,
-          ignored: ["main.js", "main.js.map"],
-        },
-      },
+			watch: {},
 		},
-		plugins: [react(), logWatcherConfig],
+		plugins: [react(), myCustomPlugin],
 		resolve: {
 			alias: {
 				"@": path.resolve(__dirname, "./src"),

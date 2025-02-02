@@ -11,20 +11,18 @@ import {
 import type { MyPlugin } from "@/types";
 
 export class DebugThingy {
-	_log: Logger = makeClassLogger("DebugUtils", () => 0 <= this._LOG_LEVEL);
+	_log: Logger = makeClassLogger("DebugThingy", () => 0 <= this._LOG_LEVEL);
 	_logLev: LevelLogger = makeClassLevelLogger(
-		"DebugUtils",
+		"DebugThingy",
 		() => this._LOG_LEVEL
 	);
 	_LOG_LEVEL: number = 1;
 	app: App;
 	plugin: MyPlugin;
-	normalizePath: (path: string) => string;
 
 	constructor(app: App, plugin: MyPlugin) {
 		this.app = app;
 		this.plugin = plugin;
-		this.normalizePath = normalizePath;
 		this._log = this._log.bind(this);
 		// @ts-ignore
     globalThis._dbt = {
@@ -36,15 +34,16 @@ export class DebugThingy {
 
 	onload() {
 		this.plugin.addCommand({
-			id: "debug-thingy-log",
-			name: "Debug Thingy Log",
+			id: "log-from-debug-thingy",
+			name: "log from debug thingy",
 			callback: async () => {
-        console.log("debug-thingy-log");
+        console.log("debug-thingy-log called");
 			},
 		});
 	}
 
 	unload() {
-		this.plugin.removeCommand("debug-thingy-log");
+		this.plugin.removeCommand("log-from-debug-thingy");
 	}
+
 }
