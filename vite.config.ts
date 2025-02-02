@@ -92,17 +92,5 @@ export default defineConfig(async ({ mode }) => {
 				"@": path.resolve(__dirname, "./src"),
 			},
 		},
-		// test: {
-		// 	browser: {
-		// 		enabled: true,
-		// 	},
-		// 	deps: {
-		// 		external: [/^obsidian$/, ...builtins],
-		// 	},
-		// 	environment: "jsdom",
-		// 	globals: true,
-		// 	instances: [{ browser: "chromium" }],
-		// 	setupFiles: ["./vitest.setup.ts"],
-		// },
 	} as UserConfig;
 });

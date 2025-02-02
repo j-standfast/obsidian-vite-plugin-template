@@ -1,4 +1,4 @@
-export type { TailoredCutsPlugin } from "@/main";
+export type { MyPlugin } from "@/main";
 
-export interface TailoredCutsSettings {
+export interface MyPluginSettings {
 }
